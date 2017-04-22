@@ -15,7 +15,34 @@
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[parameters('networkSecurityGroupName')]",
             "location": "[parameters('location')]",
-            "properties": {}
+            "subnets": [
+                {
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('SubnetPrefix')]",
+                        "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                        }
+                    }
+                }], 
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allow-rdp",
+                            "properties": {
+                            "description": "Allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
         }
     ]
 }

@@ -12,7 +12,7 @@
             "value": "10.0.0.0/24"
         },
         "subnetName": {
-            "value": "jumpbox_subnet"
+            "value": "jumpBox_subnet"
         },
         "subnetAddressPrefix": {
             "value": "10.0.0.0/29"
