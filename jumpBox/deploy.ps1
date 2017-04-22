@@ -66,14 +66,6 @@ Function RegisterRP {
 #******************************************************************************
 $ErrorActionPreference = "Stop"
 
-# sign in
-Write-Host "Logging in...";
-Login-AzureRmAccount;
-
-# select subscription
-Write-Host "Selecting subscription '$subscriptionId'";
-Select-AzureRmSubscription -SubscriptionID $subscriptionId;
-
 # Register RPs
 $resourceProviders = @("microsoft.compute","microsoft.storage","microsoft.network");
 if($resourceProviders.length) {
