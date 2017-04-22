@@ -82,14 +82,14 @@ If (!$resourceGroup) {
     Write-Host "Using existing resource group '$resourceGroupName'";
 }
 
-# Test the deployment
-Write-Host "Testing deployment...";
-Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -verbose;
-
 # Start the deployment
-If ($?) {
-    Write-Host "Starting deployment...";
-    New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose;
-} Else {
-    Write-Error "Validation failed."
-}
+Write-Host "Testing deployment..."
+Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose
+
+Write-Host "Starting deployment..."
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose
+
+
+#        "networkSecurityGroupName2": {
+#            "value": "[concat(parameters('subnet2Name'),'_nsg')]"
+#        }

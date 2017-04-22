@@ -12,13 +12,43 @@
             "value": "Core"
         },
         "addressPrefix": {
-            "value": "10.0.0.0/24"
+            "value": "10.0.0.0/16"
         },
-        "subnetName": {
+        "subnet1Name": {
             "value": "jumpBox_subnet"
         },
-        "subnetAddressPrefix": {
+        "subnet1AddressPrefix": {
             "value": "10.0.0.0/29"
+        },
+        "networkSecurityGroupName1": {
+            "value": "jumpBox_subnet_nsg"
+        },
+        "subnet2Name": {
+            "value": "authn_subnet"
+        },
+        "subnet2AddressPrefix": {
+            "value": "10.0.1.0/24"
+        },
+        "networkSecurityGroupName2": {
+            "value": "authn_subnet_nsg"
+        },
+        "subnet3Name": {
+            "value": "citrixddc_subnet"
+        },
+        "subnet3AddressPrefix": {
+            "value": "10.0.2.0/24"
+        },
+        "networkSecurityGroupName3": {
+            "value": "citrixddc_subnet_nsg"
+        },
+        "subnet4Name": {
+            "value": "citrixvda_subnet"
+        },
+        "subnet4AddressPrefix": {
+            "value": "10.0.3.0/24"
+        },
+        "networkSecurityGroupName4": {
+            "value": "citrixvda_subnet_nsg"
         }
     }
 }

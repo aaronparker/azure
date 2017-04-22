@@ -23,6 +23,9 @@
             "type": "string",
             "defaultValue": "10.0.0.0/24"
         },
+        "networkSecurityGroupName1": {
+            "type": "string"
+        },
         "subnet2Name": {
             "type": "string",
             "defaultValue": "subnet-2"
@@ -30,7 +33,32 @@
         "subnet2AddressPrefix": {
             "type": "string",
             "defaultValue": "10.0.1.0/24"
-        }        
+        },
+        "networkSecurityGroupName2": {
+            "type": "string"
+        },
+        "subnet3Name": {
+            "type": "string",
+            "defaultValue": "subnet-3"
+        },
+        "subnet3AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.2.0/24"
+        },
+        "networkSecurityGroupName3": {
+            "type": "string"
+        },
+        "subnet4Name": {
+            "type": "string",
+            "defaultValue": "subnet-4"
+        },
+        "subnet4AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.3.0/24"
+        },
+        "networkSecurityGroupName4": {
+            "type": "string"
+        }
     },
     "resources": [
         {
@@ -51,13 +79,133 @@
                     {
                         "name": "[parameters('subnet1Name')]",
                         "properties": {
-                            "addressPrefix": "[parameters('subnet1AddressPrefix')]"
+                            "addressPrefix": "[parameters('subnet1AddressPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName1'))]"
+                            }
                         }
                     },
                     {
                         "name": "[parameters('subnet2Name')]",
                         "properties": {
-                            "addressPrefix": "[parameters('subnet2AddressPrefix')]"
+                            "addressPrefix": "[parameters('subnet2AddressPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName2'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet3Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet3AddressPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName3'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet4Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet4AddressPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName4'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroupName1')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allow-rdp",
+                        "properties": {
+                            "description": "Allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroupName2')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allow-rdp",
+                        "properties": {
+                            "description": "Allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroupName3')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allow-rdp",
+                        "properties": {
+                            "description": "Allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroupName4')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allow-rdp",
+                        "properties": {
+                            "description": "Allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
                         }
                     }
                 ]
