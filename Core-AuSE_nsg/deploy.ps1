@@ -91,7 +91,7 @@ Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Templ
 # Start the deployment
 If ($?) {
     Write-Host "Starting deployment...";
-    New-AzureRmResourceGroupDeployment -NameFromTemplate (Get-ChildItem $templateFilePath).BaseName -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose;
+    New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose;
 } Else {
     Write-Error "Validation failed."
 }
