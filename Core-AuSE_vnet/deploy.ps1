@@ -29,7 +29,7 @@ param(
     [string]$subscriptionId,
 
     [Parameter(Mandatory=$False)]
-    [string]$resourceGroupName,
+    [string]$resourceGroupName ="Core-AuSE_rg",
 
     [Parameter(Mandatory=$False)]
     [string]$resourceGroupLocation = "australiasoutheast",
@@ -38,7 +38,7 @@ param(
     [string]$deploymentName,
 
     [Parameter(Mandatory=$False)]
-    [string]$templateFilePath = ".\template.json",
+    [string]$templateFilePath = ".\virtualnetwork.json",
 
     [Parameter(Mandatory=$False)]
     [string]$parametersFilePath = ".\parameters.json"
@@ -63,52 +63,40 @@ Function RegisterRP {
 #******************************************************************************
 $ErrorActionPreference = "Stop"
 
-# sign in
-Write-Host "Logging in...";
-# Login-AzureRmAccount;
-$Username = 'user@account.com'
-$Password = 'password'
-$SecurePassword = convertto-securestring -String $Password -AsPlainText -Force
-$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $Username, $SecurePassword
-
-# $RmLogin = Login-AzureRmAccount -Credential $cred
-# $Subscription = Select-AzureRmSubscription -SubscriptionName $RmLogin.Context.Subscription.SubscriptionName -TenantId $RmLogin.Context.Subscription.TenantId
-
-
-# select subscription
-# Write-Host "Selecting subscription '$subscriptionId'";
-# Select-AzureRmSubscription -SubscriptionID $subscriptionId;
-Write-Host "Selecting subscription"
-$RmLogin = Login-AzureRmAccount
-$Subscription = Select-AzureRmSubscription -SubscriptionName $RmLogin.Context.Subscription.SubscriptionName -TenantId $RmLogin.Context.Subscription.TenantId
-
 # Register RPs
 $resourceProviders = @("microsoft.network");
-if($resourceProviders.length) {
+If ($resourceProviders.length) {
     Write-Host "Registering resource providers"
-    foreach($resourceProvider in $resourceProviders) {
+    ForEach ($resourceProvider in $resourceProviders) {
         RegisterRP($resourceProvider);
     }
 }
 
 #Create or check for existing resource group
 $resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue
-if(!$resourceGroup)
-{
+If (!$resourceGroup) {
     Write-Host "Resource group '$resourceGroupName' does not exist. To create a new resource group, please enter a location.";
-    if(!$resourceGroupLocation) {
+    If (!$resourceGroupLocation) {
         $resourceGroupLocation = Read-Host "resourceGroupLocation";
     }
     Write-Host "Creating resource group '$resourceGroupName' in location '$resourceGroupLocation'";
     New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourceGroupLocation
-}
-else{
+} Else {
     Write-Host "Using existing resource group '$resourceGroupName'";
 }
 
+# Test the deployment
+Write-Host "Testing deployment...";
+Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -verbose;
+
 # Start the deployment
-Write-Host "Starting deployment...";
-New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath;
+If ($?) {
+    Write-Host "Starting deployment...";
+    New-AzureRmResourceGroupDeployment -NameFromTemplate "Core-AuSE_vnet" -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose;
+} Else {
+    Write-Error "Validation failed."
+}
+
 # if(Test-Path $parametersFilePath) {
 #    New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath;
 #} else {
