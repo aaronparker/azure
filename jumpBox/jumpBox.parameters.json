@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "australiasoutheast"
+        },
+        "virtualMachineName": {
+            "value": "jumpBox"
+        },
+        "virtualMachineSize": {
+            "value": "Standard_DS2_v2"
+        },
+        "adminUsername": {
+            "value": "rmuser"
+        },
+        "virtualNetworkName": {
+            "value": "Core-AuSE_vnet"
+        },
+        "networkInterfaceName": {
+            "value": "jumpbox596"
+        },
+        "adminPassword": {
+            "value": null
+        },
+        "diagnosticsStorageAccountName": {
+            "value": "coreausergdiag133"
+        },
+        "diagnosticsStorageAccountType": {
+            "value": "Standard_LRS"
+        },
+        "diagnosticsStorageAccountId": {
+            "value": "Microsoft.Storage/storageAccounts/coreausergdiag133"
+        },
+        "subnetName": {
+            "value": "jumpbox_subnet"
+        },
+        "publicIpAddressName": {
+            "value": "jumpBox-ip"
+        },
+        "publicIpAddressType": {
+            "value": "Dynamic"
+        }
+    }
+}
