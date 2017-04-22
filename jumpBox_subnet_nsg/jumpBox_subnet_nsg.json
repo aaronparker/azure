@@ -28,7 +28,7 @@
                         "properties": {
                             "addressPrefix": "[parameters('subnetPrefix')]",
                             "networkSecurityGroup": {
-                            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
                             }
                         }
                     }
@@ -36,7 +36,7 @@
                 "securityRules": [
                     {
                         "name": "allow-rdp",
-                            "properties": {
+                        "properties": {
                             "description": "Allow RDP",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
