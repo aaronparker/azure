@@ -35,10 +35,10 @@ param(
     [string]$deploymentName,
 
     [Parameter(Mandatory=$False)]
-    [string]$templateFilePath = ".\Core-AuSE_nsg.json",
+    [string]$templateFilePath = ".\jumpBox_subnet_nsg.json",
 
     [Parameter(Mandatory=$False)]
-    [string]$parametersFilePath = ".\Core-AuSE_nsg.parameters.json"
+    [string]$parametersFilePath = ".\jumpBox_subnet_nsg.parameters.json"
 )
 
 <#

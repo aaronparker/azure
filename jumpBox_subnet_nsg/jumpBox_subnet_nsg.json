@@ -10,7 +10,10 @@
         },
         "subnetName": {
             "type": "string"
-        }        
+        },
+        "subnetPrefix": {
+            "type": "string"
+        }
     },
     "resources": [
         {
@@ -18,18 +21,18 @@
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[parameters('networkSecurityGroupName')]",
             "location": "[parameters('location')]",
-            "subnets": [
-                {
-                    "name": "[parameters('subnetName')]",
-                    "properties": {
-                        "addressPrefix": "[parameters('SubnetPrefix')]",
-                        "networkSecurityGroup": {
-                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+            "properties": {
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetPrefix')]",
+                            "networkSecurityGroup": {
+                            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                            }
                         }
                     }
-                }
-            ],
-            "properties": {
+                ],
                 "securityRules": [
                     {
                         "name": "allow-rdp",
