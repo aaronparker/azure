@@ -35,7 +35,7 @@ param(
     [string]$deploymentName,
 
     [Parameter(Mandatory=$False)]
-    [string]$templateFilePath = ".\Core-AuSE_vnet.template.json",
+    [string]$templateFilePath = ".\Core-AuSE_vnet.json",
 
     [Parameter(Mandatory=$False)]
     [string]$parametersFilePath = ".\Core-AuSE_vnet.parameters.json"
@@ -89,7 +89,7 @@ Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Templ
 # Start the deployment
 If ($?) {
     Write-Host "Starting deployment...";
-    New-AzureRmResourceGroupDeployment -NameFromTemplate (Get-ChildItem $templateFilePath).BaseName -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose;
+    New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose;
 } Else {
     Write-Error "Validation failed."
 }

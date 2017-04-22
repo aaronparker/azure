@@ -5,7 +5,7 @@
         "location": {
             "value": "australiasoutheast"
         },
-        "name": {
+        "vnetname": {
             "value": "Core-AuSE_vnet"
         },
         "addressPrefix": {

@@ -35,7 +35,7 @@ param(
     [string]$deploymentName,
 
     [Parameter(Mandatory=$False)]
-    [string]$templateFilePath = ".\Core-AuSE_nsg.template.json",
+    [string]$templateFilePath = ".\Core-AuSE_nsg.json",
 
     [Parameter(Mandatory=$False)]
     [string]$parametersFilePath = ".\Core-AuSE_nsg.parameters.json"
