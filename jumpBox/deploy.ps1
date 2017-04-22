@@ -25,18 +25,14 @@
 #>
 
 param(
- [Parameter(Mandatory=$True)]
- [string]
- $subscriptionId,
-
- [Parameter(Mandatory=$True)]
+ [Parameter(Mandatory=$False)]
  [string]
  $resourceGroupName = "Core-AuSE_rg",
 
  [string]
  $resourceGroupLocation = "australiasoutheast",
 
- [Parameter(Mandatory=$True)]
+ [Parameter(Mandatory=$False)]
  [string]
  $deploymentName,
 
@@ -97,7 +93,8 @@ Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Templ
 # Start the deployment
 If ($?) {
     Write-Host "Starting deployment...";
-    New-AzureRmResourceGroupDeployment -NameFromTemplate (Get-ChildItem $templateFilePath).BaseName -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath;
+    # New-AzureRmResourceGroupDeployment -NameFromTemplate (Get-ChildItem $templateFilePath).BaseName -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath;
+    New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose;
 } Else {
     Write-Error "Validation failed."
 }

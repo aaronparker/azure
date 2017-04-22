@@ -21,7 +21,7 @@
             "value": "jumpbox596"
         },
         "adminPassword": {
-            "value": null
+            "value": "dglhd$%dfglkjgFsd"
         },
         "diagnosticsStorageAccountName": {
             "value": "coreausergdiag133"
@@ -36,7 +36,7 @@
             "value": "jumpbox_subnet"
         },
         "publicIpAddressName": {
-            "value": "jumpBox-ip"
+            "value": "jumpBox-pip"
         },
         "publicIpAddressType": {
             "value": "Dynamic"
