@@ -5,9 +5,6 @@
  .DESCRIPTION
     Deploys an Azure Resource Manager template
 
- .PARAMETER subscriptionId
-    The subscription id where the template will be deployed.
-
  .PARAMETER resourceGroupName
     The resource group where the template will be deployed. Can be the name of an existing or a new resource group.
 
