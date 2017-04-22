@@ -8,6 +8,9 @@
         "vnetname": {
             "value": "Core-AuSE_vnet"
         },
+        "vnettags": {
+            "value": "Core"
+        },
         "addressPrefix": {
             "value": "10.0.0.0/24"
         },

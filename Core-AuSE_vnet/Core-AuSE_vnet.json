@@ -5,6 +5,9 @@
         "vnetname": {
             "type": "string"
         },
+        "vnettags": {
+            "type": "string"
+        },
         "location": {
             "type": "string"
         },
@@ -12,14 +15,22 @@
             "type": "string",
             "defaultValue": "10.0.0.0/16"
         },
-        "subnetName": {
+        "subnet1Name": {
             "type": "string",
             "defaultValue": "subnet-1"
         },
-        "subnetAddressPrefix": {
+        "subnet1AddressPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.0/24"
-        }
+        },
+        "subnet2Name": {
+            "type": "string",
+            "defaultValue": "subnet-2"
+        },
+        "subnet2AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/24"
+        }        
     },
     "resources": [
         {
@@ -27,6 +38,9 @@
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[parameters('vnetname')]",
             "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "[parameters('vnettags')]"
+            },
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -35,9 +49,15 @@
                 },
                 "subnets": [
                     {
-                        "name": "[parameters('subnetName')]",
+                        "name": "[parameters('subnet1Name')]",
                         "properties": {
-                            "addressPrefix": "[parameters('subnetAddressPrefix')]"
+                            "addressPrefix": "[parameters('subnet1AddressPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2AddressPrefix')]"
                         }
                     }
                 ]
