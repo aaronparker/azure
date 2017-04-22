@@ -31,20 +31,20 @@ param(
 
  [Parameter(Mandatory=$True)]
  [string]
- $resourceGroupName,
+ $resourceGroupName = "Core-AuSE_rg",
 
  [string]
- $resourceGroupLocation,
+ $resourceGroupLocation = "australiasoutheast",
 
  [Parameter(Mandatory=$True)]
  [string]
  $deploymentName,
 
  [string]
- $templateFilePath = "template.json",
+ $templateFilePath = ".\jumpBox.template.json",
 
  [string]
- $parametersFilePath = "parameters.json"
+ $parametersFilePath = ".\jumpBox.parameters.json"
 )
 
 <#

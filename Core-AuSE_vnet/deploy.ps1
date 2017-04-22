@@ -29,7 +29,7 @@ param(
     [string]$subscriptionId,
 
     [Parameter(Mandatory=$False)]
-    [string]$resourceGroupName ="Core-AuSE_rg",
+    [string]$resourceGroupName = "Core-AuSE_rg",
 
     [Parameter(Mandatory=$False)]
     [string]$resourceGroupLocation = "australiasoutheast",
