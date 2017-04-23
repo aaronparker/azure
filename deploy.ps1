@@ -61,7 +61,7 @@ Function RegisterRP {
 $ErrorActionPreference = "Stop"
 
 # Register RPs
-$resourceProviders = @("microsoft.network");
+$resourceProviders = @("microsoft.compute","microsoft.storage","microsoft.network");
 If ($resourceProviders.length) {
     Write-Host "Registering resource providers"
     ForEach ($resourceProvider in $resourceProviders) {
@@ -82,12 +82,22 @@ If (!$resourceGroup) {
     Write-Host "Using existing resource group '$resourceGroupName'";
 }
 
-# Start the deployment
-Write-Host "Testing deployment..."
-Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose
+$dirs = Get-ChildItem -Attribute Directory
+ForEach ($dir in $dirs) {
+    If ((Test-Path("$($dir.FullName)\azuredeploy.json")) -and (Test-Path("$($dir.FullName)\azuredeploy.parameters.json"))) {
+        
+        Write-Host "Testing deployment..."
+        Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($dir.FullName)\azuredeploy.json" -TemplateParameterFile "$($dir.FullName)\azuredeploy.parameters.json" -Verbose
 
-Write-Host "Starting deployment..."
-New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose
+        Write-Host "Starting deployment..."
+        New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($dir.FullName)\azuredeploy.json" -TemplateParameterFile "$($dir.FullName)\azuredeploy.parameters.json" -Verbose
+    }
+}
+
+# Start the deployment
+
+# Write-Host "Starting deployment..."
+# New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose
 
 
 #        "networkSecurityGroupName2": {
