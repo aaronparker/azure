@@ -37,10 +37,10 @@ param(
  $deploymentName,
 
  [string]
- $templateFilePath = ".\jumpBox.template.json",
+ $templateFilePath = ".\azuredeploy.json",
 
  [string]
- $parametersFilePath = ".\jumpBox.parameters.json"
+ $parametersFilePath = ".\azuredeploy.parameters.json"
 )
 
 <#
