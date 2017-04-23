@@ -94,11 +94,6 @@ ForEach ($dir in $dirs) {
     }
 }
 
-# Start the deployment
-
-# Write-Host "Starting deployment..."
-# New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose
-
 
 #        "networkSecurityGroupName2": {
 #            "value": "[concat(parameters('subnet2Name'),'_nsg')]"
