@@ -5,4 +5,5 @@
 # $RmLogin = Login-AzureRmAccount -Credential $cred
 
 $RmLogin = Login-AzureRmAccount
-$Subscription = Select-AzureRmSubscription -Default -SubscriptionName $RmLogin.Context.Subscription.SubscriptionName -TenantId $RmLogin.Context.Subscription.TenantId
+# $Subscription = Select-AzureRmSubscription -Default -SubscriptionName $RmLogin.Context.Subscription.SubscriptionName -TenantId $RmLogin.Context.Subscription.TenantId
+$Subscription = Set-AzureRmContext -SubscriptionName $RmLogin.Context.Subscription.Name -TenantId $RmLogin.Context.Subscription.TenantId
