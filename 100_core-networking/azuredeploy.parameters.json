@@ -6,7 +6,7 @@
             "value": "australiasoutheast"
         },
         "vnetname": {
-            "value": "Core-AuSE_vnet"
+            "value": "Core-AuSE-vnet"
         },
         "vnettags": {
             "value": "Core"
