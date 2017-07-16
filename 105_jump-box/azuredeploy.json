@@ -78,7 +78,7 @@
                     },
                     "osDisk": {
                         "name": "[parameters('virtualMachineName')]",
-                        "createOption": "fromImage",
+                        "createOption": "FromImage",
                         "managedDisk": {
                             "storageAccountType": "Premium_LRS"
                         }
