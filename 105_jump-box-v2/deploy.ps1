@@ -25,6 +25,10 @@
 #>
 
 param(
+    [Parameter(Mandatory = $True)]
+    [string]
+    $subscriptionId,
+
     [Parameter(Mandatory = $False)]
     [string]
     $resourceGroupName = "Core-AuSE_rg",
@@ -34,7 +38,7 @@ param(
 
     [Parameter(Mandatory = $False)]
     [string]
-    $deploymentName,
+    $deploymentName = "jumpBox",
 
     [string]
     $templateFilePath = (Join-Path "$PWD" "azuredeploy.json"),
@@ -62,8 +66,16 @@ Function RegisterRP {
 #******************************************************************************
 $ErrorActionPreference = "Stop"
 
+# sign in
+Write-Host "Logging in...";
+# Login-AzureRmAccount;
+
+# select subscription
+Write-Host "Selecting subscription '$subscriptionId'";
+Select-AzureRmSubscription -SubscriptionID $subscriptionId;
+
 # Register RPs
-$resourceProviders = @("microsoft.compute", "microsoft.storage", "microsoft.network");
+$resourceProviders = @("microsoft.compute", "microsoft.resources", "microsoft.devtestlab", "microsoft.storage", "microsoft.network");
 if ($resourceProviders.length) {
     Write-Host "Registering resource providers"
     foreach ($resourceProvider in $resourceProviders) {
@@ -85,16 +97,11 @@ else {
     Write-Host "Using existing resource group '$resourceGroupName'";
 }
 
-# Test the deployment
-Write-Host "Testing deployment...";
-Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -verbose;
-
 # Start the deployment
-If ($?) {
-    Write-Host "Starting deployment...";
-    # New-AzureRmResourceGroupDeployment -NameFromTemplate (Get-ChildItem $templateFilePath).BaseName -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath;
-    New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose;
+Write-Host "Starting deployment...";
+if (Test-Path $parametersFilePath) {
+    New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath;
 }
-Else {
-    Write-Error "Validation failed."
+else {
+    New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath;
 }
