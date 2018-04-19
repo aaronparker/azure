@@ -9,37 +9,55 @@
             "value": "jumpBox"
         },
         "virtualMachineSize": {
-            "value": "Standard_DS2_v2"
+            "value": "Standard_D1_v2"
         },
         "adminUsername": {
             "value": "rmuser"
         },
         "virtualNetworkName": {
-            "value": "Core-AuSE_vnet"
+            "value": "Core-AuSE-vnet"
         },
         "networkInterfaceName": {
-            "value": "jumpbox596"
+            "value": "jumpbox438"
+        },
+        "networkSecurityGroupName": {
+            "value": "jumpBox-nsg"
         },
         "adminPassword": {
             "value": "dglhd$%dfglkjgFsd"
         },
         "diagnosticsStorageAccountName": {
-            "value": "coreausergdiag133"
+            "value": "coreausergdiag297"
         },
         "diagnosticsStorageAccountType": {
             "value": "Standard_LRS"
         },
         "diagnosticsStorageAccountId": {
-            "value": "Microsoft.Storage/storageAccounts/coreausergdiag133"
+            "value": "Microsoft.Storage/storageAccounts/coreausergdiag297"
         },
         "subnetName": {
-            "value": "jumpbox_subnet"
+            "value": "jumpBox_subnet"
         },
         "publicIpAddressName": {
-            "value": "jumpBox-pip"
+            "value": "jumpBox-ip"
         },
         "publicIpAddressType": {
             "value": "Dynamic"
+        },
+        "publicIpAddressSku": {
+            "value": "Basic"
+        },
+        "autoShutdownStatus": {
+            "value": "Enabled"
+        },
+        "autoShutdownTime": {
+            "value": "19:00"
+        },
+        "autoShutdownTimeZone": {
+            "value": "AUS Eastern Standard Time"
+        },
+        "autoShutdownNotificationStatus": {
+            "value": "Disabled"
         }
     }
 }
