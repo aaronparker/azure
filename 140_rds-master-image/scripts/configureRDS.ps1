@@ -9,7 +9,7 @@ start-sleep -Seconds 10
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0
 Start-Sleep -Seconds 2
 
-Remove-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE -Force
-Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Features -IncludeAllSubFeature
+Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
+Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Core
 
 Stop-Transript
