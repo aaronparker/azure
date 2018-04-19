@@ -52,6 +52,6 @@ Catch {
 }
 
 # Return the Azure login context
-Write-Verbose "Successful log into Azure."
+Write-Verbose "Successful login to Azure."
 Write-Verbose "Returning context object."
 Write-Output (Set-AzureRmContext -Context $RmLogin.Context)

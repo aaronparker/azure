@@ -31,14 +31,14 @@ param(
 
     [Parameter(Mandatory = $False)]
     [string]
-    $resourceGroupName = "Core-AuSE_rg",
+    $resourceGroupName = "MasterImage-AusSe_rg",
 
     [string]
     $resourceGroupLocation = "australiasoutheast",
 
     [Parameter(Mandatory = $False)]
     [string]
-    $deploymentName = "jumpBox",
+    $deploymentName = "masterImage",
 
     [string]
     $templateFilePath = (Join-Path "$PWD" "azuredeploy.json"),
