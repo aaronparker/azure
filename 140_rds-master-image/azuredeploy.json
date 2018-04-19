@@ -364,7 +364,7 @@
                         "value": "australiasoutheast"
                     },
                     "fileUris": {
-                        "value": "https://iaasv2tempstoragehk.blob.core.windows.net/vmextensionstemporary-1003000098be1727-20180419055446699/setAutoWorkplaceJoin.ps1?sv=2015-04-05&sr=c&sig=DvECaxCC6kaEe9FmBq1ikYpsK%2FuWE%2FhCD5mTGxlvJ%2Fo%3D&se=2018-04-20T05%3A54%3A46Z&sp=rw"
+                        "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/configureRDS.ps1"
                     }
                 }
             },
