@@ -1,9 +1,57 @@
-# $Username = ''
-# $Password = ''
-# $SecurePassword = convertto-securestring -String $Password -AsPlainText -Force
-# $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $Username, $SecurePassword
-# $RmLogin = Login-AzureRmAccount -Credential $cred
+<#
+    .SYNOPSIS
+        Login into an Azure tenant
+#>
+[CmdletBinding()]
+Param (
+    [Parameter(Mandatory = $True, Position = 0)]
+    [String] $Username,
 
-$RmLogin = Login-AzureRmAccount
-# $Subscription = Select-AzureRmSubscription -Default -SubscriptionName $RmLogin.Context.Subscription.SubscriptionName -TenantId $RmLogin.Context.Subscription.TenantId
-$Subscription = Set-AzureRmContext -Context $RmLogin.Context
+    [Parameter(Mandatory = $False, Position = 1)]
+    [String] $Password
+)
+
+# Check for AzureRM module
+If (!(Get-Module -ListAvailable AzureRM)) {
+    Write-Warning "AzureRM module not found. Attempting to install."
+    Try {
+        Write-Verbose "Installing the AzureRM module."
+        Install-Module AzureRM -Force
+    }
+    Catch {
+        Write-Error "Failed to install the AzureRM module with $_.Exception"
+    }
+}
+
+# Get credentials
+If ($Password) { 
+    Write-Verbose "Creating a credential object with $Username."
+    $securePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
+    $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $securePassword
+}
+
+If (!($cred)) {
+    Try {
+        Write-Verbose "Prompt for credentials."
+        $cred = Get-Credential -UserName $UserName -Message "Enter Azure credentials"
+    }
+    Catch {
+        Write-Error "Failed to get credentails with $_.Exception"
+        Break
+    }
+}
+
+# Login to the Azure tenant
+Try {
+    Write-Verbose "Logging into Microsoft Azure."
+    $rmLogin = Login-AzureRmAccount -Credential $cred
+}
+Catch {
+    Write-Error "Failed to log into Azure with $_.Exception"
+    Break
+}
+
+# Return the Azure login context
+Write-Verbose "Successful log into Azure."
+Write-Verbose "Returning context object."
+Write-Output (Set-AzureRmContext -Context $RmLogin.Context)
