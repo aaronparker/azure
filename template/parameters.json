@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "australiasoutheast"
+        },
+        "virtualMachineName": {
+            "value": "rdshImage1"
+        },
+        "virtualMachineSize": {
+            "value": "Standard_DS1_v2"
+        },
+        "adminUsername": {
+            "value": "rmuser"
+        },
+        "virtualNetworkName": {
+            "value": "Core-AuSE-vnet"
+        },
+        "networkInterfaceName": {
+            "value": "rdshimage1449"
+        },
+        "adminPassword": {
+            "value": null
+        },
+        "diagnosticsStorageAccountName": {
+            "value": "coreausergdiag297"
+        },
+        "diagnosticsStorageAccountId": {
+            "value": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Core-AuSE_rg/providers/Microsoft.Storage/storageAccounts/coreausergdiag297"
+        },
+        "subnetName": {
+            "value": "citrixvda_subnet"
+        },
+        "autoShutdownStatus": {
+            "value": "Enabled"
+        },
+        "autoShutdownTime": {
+            "value": "19:00"
+        },
+        "autoShutdownTimeZone": {
+            "value": "UTC"
+        },
+        "autoShutdownNotificationStatus": {
+            "value": "Disabled"
+        }
+    }
+}
