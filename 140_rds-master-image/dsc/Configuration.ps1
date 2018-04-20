@@ -53,10 +53,11 @@ configuration SessionHost
             ConfigurationMode  = "ApplyOnly"
         }
 
-        DomainJoin DomainJoin {
+<#        DomainJoin DomainJoin {
             domainName = $domainName 
             adminCreds = $adminCreds 
         }
+#>
 
         WindowsFeature RDS-RD-Server {
             Ensure = "Present"
