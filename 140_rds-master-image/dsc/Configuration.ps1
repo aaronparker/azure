@@ -2,10 +2,10 @@ configuration DomainJoin
 { 
     param 
     ( 
-        [Parameter(Mandatory)]
+        [Parameter()]
         [String]$domainName,
 
-        [Parameter(Mandatory)]
+        [Parameter()]
         [PSCredential]$adminCreds
     ) 
     
@@ -38,10 +38,10 @@ configuration SessionHost
 {
     param 
     ( 
-        [Parameter(Mandatory)]
+        [Parameter()]
         [String]$domainName,
 
-        [Parameter(Mandatory)]
+        [Parameter()]
         [PSCredential]$adminCreds
     ) 
 

@@ -6,10 +6,10 @@
             "value": "australiasoutheast"
         },
         "virtualMachineName": {
-            "value": "rdshImage1"
+            "value": "rdshImage"
         },
         "virtualMachineSize": {
-            "value": "Standard_DS1_v2"
+            "value": "Standard_DS2_v2"
         },
         "adminUsername": {
             "value": "rmuser"
@@ -18,7 +18,7 @@
             "value": "Core-AuSE-vnet"
         },
         "networkInterfaceName": {
-            "value": "rdshimage1449"
+            "value": "rdshimage60"
         },
         "adminPassword": {
             "value": null
@@ -39,7 +39,7 @@
             "value": "19:00"
         },
         "autoShutdownTimeZone": {
-            "value": "UTC"
+            "value": "AUS Eastern Standard Time"
         },
         "autoShutdownNotificationStatus": {
             "value": "Disabled"

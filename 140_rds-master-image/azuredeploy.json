@@ -43,20 +43,6 @@
         },
         "autoShutdownNotificationStatus": {
             "type": "string"
-        },
-        "_artifactsLocation": {
-            "type": "string",
-            "metadata": {
-                "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
-            },
-            "defaultValue": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/"
-        },
-        "_artifactsLocationSasToken": {
-            "type": "securestring",
-            "metadata": {
-                "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated."
-            },
-            "defaultValue": ""
         }
     },
     "variables": {
@@ -362,32 +348,7 @@
             }
         },
         {
-            "name": "Microsoft.CustomScriptExtension-20180419155459",
-            "apiVersion": "2015-01-01",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "incremental",
-                "templateLink": {
-                    "uri": "https://gallery.azure.com/artifact/20161101/Microsoft.CustomScriptExtension-arm.2.0.50/Artifacts/MainTemplate.json"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "rdshImage"
-                    },
-                    "location": {
-                        "value": "australiasoutheast"
-                    },
-                    "fileUris": {
-                        "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/configureRDS.ps1"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', variables('diagnosticsExtensionName'))]"
-            ]
-        },
-        {
-            "name": "microsoft.antimalware-windows-20180419155533",
+            "name": "microsoft.antimalware-windows-20180420144929",
             "apiVersion": "2015-01-01",
             "type": "Microsoft.Resources/deployments",
             "properties": {
@@ -420,11 +381,36 @@
                 }
             },
             "dependsOn": [
-                "Microsoft.CustomScriptExtension-20180419155459"
+                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', variables('diagnosticsExtensionName'))]"
             ]
         },
         {
-            "name": "Microsoft.DSC-20180420140732",
+            "name": "Microsoft.CustomScriptExtension-20180420144947",
+            "apiVersion": "2015-01-01",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "https://gallery.azure.com/artifact/20161101/Microsoft.CustomScriptExtension-arm.2.0.50/Artifacts/MainTemplate.json"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "rdshImage"
+                    },
+                    "location": {
+                        "value": "australiasoutheast"
+                    },
+                    "fileUris": {
+                        "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/configureRDS.ps1"
+                    }
+                }
+            },
+            "dependsOn": [
+                "microsoft.antimalware-windows-20180420144929"
+            ]
+        },
+        {
+            "name": "Microsoft.DSC-20180420145035",
             "apiVersion": "2015-01-01",
             "type": "Microsoft.Resources/deployments",
             "properties": {
@@ -460,7 +446,7 @@
                 }
             },
             "dependsOn": [
-                "microsoft.antimalware-windows-20180420130507"
+                "Microsoft.CustomScriptExtension-20180420144947"
             ]
         },
         {
