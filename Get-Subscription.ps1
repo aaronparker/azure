@@ -15,8 +15,12 @@ Param (
 If (!(Get-Module -ListAvailable AzureRM)) {
     Write-Warning "AzureRM module not found. Attempting to install."
     Try {
+        If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
+            Write-Verbose "Trusting the repository: PSGallery"
+            Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -Force
+        }
         Write-Verbose "Installing the AzureRM module."
-        Install-Module AzureRM -Force
+        Install-Module AzureRM -AllowClobber
     }
     Catch {
         Write-Error "Failed to install the AzureRM module with $_.Exception"
