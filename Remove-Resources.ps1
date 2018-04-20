@@ -1,4 +1,8 @@
-# Simple approach to removing resources in Azure
+<#
+    Simple approach to removing resources in Azure
+#>
+[CmdletBinding()]
+Param()
 
 Get-AzureRmVM |  Remove-AzureRmVM -Verbose -Force
 Get-AzureRmNetworkInterface | Remove-AzureRmNetworkInterface -Verbose -Force
