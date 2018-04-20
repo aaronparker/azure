@@ -20,7 +20,7 @@ If (!(Get-Module -ListAvailable AzureRM)) {
             Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -Force
         }
         Write-Verbose "Installing the AzureRM module."
-        Install-Module AzureRM -AllowClobber
+        Install-Module AzureRM
     }
     Catch {
         Write-Error "Failed to install the AzureRM module with $_.Exception"
@@ -37,10 +37,10 @@ If ($Password) {
 If (!($cred)) {
     Try {
         Write-Verbose "Prompt for credentials."
-        $cred = Get-Credential -UserName $UserName -Message "Enter Azure credentials"
+        $cred = Get-Credential -UserName $UserName -Message "Enter Azure credentials" -ErrorAction SilentlyContinue
     }
     Catch {
-        Write-Error "Failed to get credentails with $_.Exception"
+        Write-Error "Failed to get credentials with $_.Exception"
         Break
     }
 }
@@ -48,7 +48,7 @@ If (!($cred)) {
 # Login to the Azure tenant
 Try {
     Write-Verbose "Logging into Microsoft Azure."
-    $rmLogin = Login-AzureRmAccount -Credential $cred
+    $rmLogin = Login-AzureRmAccount -Credential $cred -ErrorAction SilentlyContinue
 }
 Catch {
     Write-Error "Failed to log into Azure with $_.Exception"
@@ -56,6 +56,11 @@ Catch {
 }
 
 # Return the Azure login context
-Write-Verbose "Successful login to Azure."
-Write-Verbose "Returning context object."
-Write-Output (Set-AzureRmContext -Context $RmLogin.Context)
+If ($rmLogin) {
+    Write-Verbose "Successful login to Azure."
+    Write-Verbose "Returning context object."
+    Write-Output (Set-AzureRmContext -Context $RmLogin.Context)
+}
+Else {
+    Write-Warning "Unable to set Azure login context."
+}
