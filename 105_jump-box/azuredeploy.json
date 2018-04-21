@@ -380,7 +380,7 @@
                         "value": "australiasoutheast"
                     },
                     "fileUris": {
-                        "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/setAutoWorkplaceJoin.ps1"
+                        "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/100_jump-box/scripts/Configure.ps1"
                     }
                 }
             },
