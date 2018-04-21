@@ -410,6 +410,46 @@
             ]
         },
         {
+            "name": "Microsoft.DSC-20180420145035",
+            "apiVersion": "2015-01-01",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "https://gallery.azure.com/artifact/20161101/Microsoft.DSC-arm.2.0.8/Artifacts/MainTemplate.json"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "rdshImage"
+                    },
+                    "location": {
+                        "value": "australiasoutheast"
+                    },
+                    "modulesUrl": {
+                        "value": "https://github.com/aaronparker/build-azure-lab/blob/master/140_rds-master-image/dsc/Configuration.zip?raw=true"
+                    },
+                    "configurationFunction": {
+                        "value": "Configuration.ps1\\SessionHost"
+                    },
+                    "wmfVersion": {
+                        "value": "latest"
+                    },
+                    "privacy": {
+                        "value": "Enable"
+                    },
+                    "version": {
+                        "value": "2.72"
+                    },
+                    "autoUpdate": {
+                        "value": true
+                    }
+                }
+            },
+            "dependsOn": [
+                "Microsoft.CustomScriptExtension-20180420144947"
+            ]
+        },
+        {
             "name": "[concat('shutdown-computevm-', parameters('virtualMachineName'))]",
             "type": "Microsoft.DevTestLab/schedules",
             "apiVersion": "2017-04-26-preview",
