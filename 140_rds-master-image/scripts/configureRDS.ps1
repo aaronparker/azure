@@ -50,7 +50,7 @@ New-Item -Path $Dest -ItemType Directory
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/Office.zip"
 Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
-Invoke-Command -FilePath "$Dest\setup.exe" /ArgumentList "/configure $Dest\configurationRDS.xml"
+Start-Process -FilePath "$Dest\setup.exe" -ArgumentList "/configure $Dest\configurationRDS.xml" -Wait
 
 # Stop Logging
 Stop-Transcript
