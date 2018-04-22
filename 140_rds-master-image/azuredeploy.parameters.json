@@ -11,11 +11,17 @@
         "virtualMachineSize": {
             "value": "Standard_DS2_v2"
         },
+        "storageAccountType": {
+            "value": "Premium_LRS"
+        },
         "adminUsername": {
             "value": "rmuser"
         },
         "virtualNetworkName": {
             "value": "Core-AuSE-vnet"
+        },
+        "virtualNetworkRg": {
+            "value": "Core-AuSE_rg"
         },
         "networkInterfaceName": {
             "value": "rdshimage904"
@@ -34,6 +40,9 @@
         "diagnosticsStorageAccountId": {
             "value": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Core-AuSE_rg/providers/Microsoft.Storage/storageAccounts/coreausergdiag297"
         },
+        "diagnosticsStorageAccountRg": {
+            "value": "Core-AuSE_rg"
+        },
         "subnetName": {
             "value": "citrixvda_subnet"
         },
@@ -48,6 +57,24 @@
         },
         "autoShutdownNotificationStatus": {
             "value": "Disabled"
+        },
+        "scriptFileUris": {
+            "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/configureRDS.ps1"
+        },
+        "realtimeProtectionEnabled": {
+            "value": "true"
+        },
+        "scheduledScanSettingsIsEnabled": {
+            "value": "false"
+        },
+        "scheduledScanSettingsScanType": {
+            "value": "Quick"
+        },
+        "scheduledScanSettingsDay": {
+            "value": "7"
+        },
+        "scheduledScanSettingsTime": {
+            "value": "120"
         }
     }
 }

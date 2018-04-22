@@ -11,10 +11,16 @@
         "virtualMachineSize": {
             "type": "string"
         },
+        "storageAccountType": {
+            "type": "string"
+        },
         "adminUsername": {
             "type": "string"
         },
         "virtualNetworkName": {
+            "type": "string"
+        },
+        "virtualNetworkRg": {
             "type": "string"
         },
         "networkInterfaceName": {
@@ -27,6 +33,9 @@
             "type": "string"
         },
         "diagnosticsStorageAccountId": {
+            "type": "string"
+        },
+        "diagnosticsStorageAccountRg": {
             "type": "string"
         },
         "subnetName": {
@@ -43,10 +52,28 @@
         },
         "autoShutdownNotificationStatus": {
             "type": "string"
+        },
+        "scriptFileUris": {
+            "type": "string"
+        },
+        "realtimeProtectionEnabled": {
+            "type": "string"
+        },
+        "scheduledScanSettingsIsEnabled": {
+            "type": "string"
+        },
+        "scheduledScanSettingsScanType": {
+            "type": "string"
+        },
+        "scheduledScanSettingsDay": {
+            "type": "string"
+        },
+        "scheduledScanSettingsTime": {
+            "type": "string"
         }
     },
     "variables": {
-        "vnetId": "[resourceId('Core-AuSE_rg','Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "vnetId": "[resourceId(parameters('virtualNetworkRg'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
         "diagnosticsExtensionName": "IaaSDiagnostics"
     },
@@ -81,7 +108,7 @@
                     "osDisk": {
                         "createOption": "fromImage",
                         "managedDisk": {
-                            "storageAccountType": "Premium_LRS"
+                            "storageAccountType": "[parameters('storageAccountType')]"
                         }
                     },
                     "dataDisks": []
@@ -97,7 +124,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId('Core-AuSE_rg', 'Microsoft.Storage/storageAccounts', parameters('diagnosticsStorageAccountName')), '2015-06-15').primaryEndpoints['blob']]"
+                        "storageUri": "[reference(resourceId(parameters('diagnosticsStorageAccountRg'), 'Microsoft.Storage/storageAccounts', parameters('diagnosticsStorageAccountName')), '2015-06-15').primaryEndpoints['blob']]"
                     }
                 }
             }
@@ -358,25 +385,25 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "rdshImage"
+                        "value": "[parameters('virtualMachineName')]"
                     },
                     "location": {
-                        "value": "australiasoutheast"
+                        "value": "[parameters('location')]"
                     },
                     "RealtimeProtectionEnabled": {
-                        "value": "true"
+                        "value": "[parameters('realtimeProtectionEnabled')]"
                     },
                     "ScheduledScanSettingsIsEnabled": {
-                        "value": "false"
+                        "value": "[parameters('scheduledScanSettingsIsEnabled')]"
                     },
                     "ScheduledScanSettingsScanType": {
-                        "value": "Quick"
+                        "value": "[parameters('scheduledScanSettingsScanType')]"
                     },
                     "ScheduledScanSettingsDay": {
-                        "value": "7"
+                        "value": "[parameters('scheduledScanSettingsDay')]"
                     },
                     "ScheduledScanSettingsTime": {
-                        "value": "120"
+                        "value": "[parameters('scheduledScanSettingsTime')]"
                     }
                 }
             },
@@ -395,13 +422,13 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "rdshImage"
+                        "value": "[parameters('virtualMachineName')]"
                     },
                     "location": {
-                        "value": "australiasoutheast"
+                        "value": "[parameters('location')]"
                     },
                     "fileUris": {
-                        "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/configureRDS.ps1"
+                        "value": "[parameters('scriptFileUris')]"
                     }
                 }
             },

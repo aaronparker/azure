@@ -17,7 +17,8 @@ If (!(Get-Module -ListAvailable AzureRM)) {
     Try {
         If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
             Write-Verbose "Trusting the repository: PSGallery"
-            Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -Force
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+            Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
         }
         Write-Verbose "Installing the AzureRM module."
         Install-Module AzureRM
