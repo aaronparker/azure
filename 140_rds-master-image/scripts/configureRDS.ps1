@@ -1,7 +1,10 @@
 [CmdletBinding()]
 Param (
     [Parameter()]
-    [String] $Log = "$env:SystemRoot\Temp\azureDeploy.log"
+    [String] $Log = "$env:SystemRoot\Temp\azureDeploy.log",
+
+    [Parameter()]
+    [String] $Target = "$env:SystemDrive\Apps"
 )
 
 If ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::Continue) {
@@ -36,10 +39,18 @@ If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.Installati
 Install-Module VcRedist
 
 # Install the VcRedists
-$VcPath = "$env:SystemDrive\Apps\VcRedist"
-New-Item -Path $VcPath -ItemType Directory
-$VcList = Get-VcList | Get-VcRedist -Path $VcPath
-Install-VcRedist -VcList $VcList -Path $VcPath
+$Dest = "$Target\VcRedist"
+New-Item -Path $Dest -ItemType Directory
+$VcList = Get-VcList | Get-VcRedist -Path $Dest
+Install-VcRedist -VcList $VcList -Path $Dest
+
+# Install Office 365 ProPlus
+$Dest = "$Target\Office"
+New-Item -Path $Dest -ItemType Directory
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/Office.zip"
+Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
+Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
+Invoke-Command -FilePath "$Dest\setup.exe" /ArgumentList "/configure $Dest\configurationRDS.xml"
 
 # Stop Logging
 Stop-Transcript
