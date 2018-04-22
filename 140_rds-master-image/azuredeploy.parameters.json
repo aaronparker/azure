@@ -3,10 +3,16 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
-            "value": "australiasoutheast"
+            "value": "australiasoutheast",
+            "metadata": {
+                "description": "Region to deploy the virtual machine to."
+              }
         },
         "virtualMachineName": {
-            "value": "rdshImage"
+            "value": "rdshImage",
+            "metadata": {
+                "description": "Name of the virtual machine."
+              }
         },
         "virtualMachineSize": {
             "value": "Standard_DS2_v2"
