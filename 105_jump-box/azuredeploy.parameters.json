@@ -12,7 +12,12 @@
             "value": "Standard_D1_v2"
         },
         "adminUsername": {
-            "value": "rmuser"
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Secure-AusSE_rg/providers/Microsoft.KeyVault/vaults/AusSE-keyvault"
+                },
+                "secretName": "LocalUser"
+            }
         },
         "virtualNetworkName": {
             "value": "Core-AuSE-vnet"
