@@ -1,7 +1,7 @@
 [CmdletBinding()]
 Param (
     [Parameter()]
-    [String] $Log = "$env:SystemRoot\Temp\azureDeploy.log",
+    [String] $Log = "$env:SystemDrive\Apps\azureDeploy.log",
 
     [Parameter()]
     [String] $Target = "$env:SystemDrive\Apps"
@@ -27,6 +27,7 @@ Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service
 
 # Configure services
 Set-Service Audiosrv -StartupType Automatic
+Set-Service WSearch -StartupType Automatic
 
 # Trust the PSGaller for installing modules
 If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
@@ -36,6 +37,7 @@ If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.Installati
 }
 
 # Install the VcRedist module
+# https://docs.stealthpuppy.com/vcredist/
 Install-Module VcRedist
 
 # Install the VcRedists

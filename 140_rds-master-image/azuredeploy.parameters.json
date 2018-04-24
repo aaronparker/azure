@@ -15,7 +15,10 @@
               }
         },
         "virtualMachineSize": {
-            "value": "Standard_DS2_v2"
+            "value": "Standard_DS2_v2",
+            "metadata": {
+                "description": "Virtual machine size."
+              }
         },
         "storageAccountType": {
             "value": "Premium_LRS"
@@ -66,6 +69,15 @@
         },
         "scriptFileUris": {
             "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/configureRDS.ps1"
+        },
+        "exclusionsPaths": {
+            "value": "C:\\pagefile.sys;C:\\Program Files\\Citrix"
+        },
+        "exclusionsExtensions": {
+            "value": ""
+        },
+        "exclusionsProcesses": {
+            "value": "sson.exe"
         },
         "realtimeProtectionEnabled": {
             "value": "true"

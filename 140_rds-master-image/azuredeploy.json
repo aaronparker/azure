@@ -56,6 +56,15 @@
         "scriptFileUris": {
             "type": "string"
         },
+        "exclusionsPaths": {
+            "type": "string"
+        },
+        "exclusionsExtensions": {
+            "type": "string"
+        },
+        "exclusionsProcesses": {
+            "type": "string"
+        },
         "realtimeProtectionEnabled": {
             "type": "string"
         },
@@ -390,19 +399,28 @@
                     "location": {
                         "value": "[parameters('location')]"
                     },
-                    "RealtimeProtectionEnabled": {
+                    "exclusionsPaths": {
+                        "value": "[parameters('exclusionsPaths')]"
+                    },
+                    "exclusionsExtensions": {
+                        "value": "[parameters('exclusionsExtensions')]"
+                    },
+                    "exclusionsProcesses": {
+                        "value": "[parameters('exclusionsProcesses')]"
+                    },
+                    "realtimeProtectionEnabled": {
                         "value": "[parameters('realtimeProtectionEnabled')]"
                     },
-                    "ScheduledScanSettingsIsEnabled": {
+                    "scheduledScanSettingsIsEnabled": {
                         "value": "[parameters('scheduledScanSettingsIsEnabled')]"
                     },
-                    "ScheduledScanSettingsScanType": {
+                    "scheduledScanSettingsScanType": {
                         "value": "[parameters('scheduledScanSettingsScanType')]"
                     },
-                    "ScheduledScanSettingsDay": {
+                    "scheduledScanSettingsDay": {
                         "value": "[parameters('scheduledScanSettingsDay')]"
                     },
-                    "ScheduledScanSettingsTime": {
+                    "scheduledScanSettingsTime": {
                         "value": "[parameters('scheduledScanSettingsTime')]"
                     }
                 }
