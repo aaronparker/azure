@@ -1,3 +1,7 @@
+<# 
+    .SYSOPSIS
+        Customise a Windows Server image for use as an RDS/XenApp VM in Azure
+#>
 [CmdletBinding()]
 Param (
     [Parameter()]
@@ -7,11 +11,8 @@ Param (
     [String] $Target = "$env:SystemDrive\Apps"
 )
 
-If ($VerbosePreference -ne [System.Management.Automation.ActionPreference]::Continue) {
-    $VerbosePreference = "Continue"
-}
-
-# Start logging
+# Start logging; Set $VerbosePreference so full details are sent to the log
+$VerbosePreference = "Continue"
 Start-Transcript -Path $Log
 
 # Disable autoWorkplaceJoin
@@ -111,8 +112,19 @@ Disable-ScheduledTask -TaskName "Microsoft\Windows\Defrag\ScheduledDefrag"
 Stop-Service "SysMain" -WarningAction SilentlyContinue
 Set-Service "SysMain" -StartupType Disabled
 
+
 # Clean up
 Remove-Item -Path "$env:SystemDrive\Logs" -Recurse -Logs
+
+# Profile etc.
+$Dest = "$Target\Customise"
+New-Item -Path $Dest -ItemType Directory
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/Customise.zip"
+Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
+Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
+Push-Location $Dest
+ForEach ($script in (Get-ChildItem -Path $Dest -Filter *.ps1)) { & $_.FullName }
+Pop-Location
 
 
 # Windows Updates

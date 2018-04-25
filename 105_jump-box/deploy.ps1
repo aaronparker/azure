@@ -25,14 +25,15 @@
 #>
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $True)]
+    [Parameter(Mandatory = $False)]
     [string]
-    $subscriptionId,
+    $subscriptionId = (Get-AzureRmSubscription).Id,
 
     [Parameter(Mandatory = $False)]
     [string]
     $resourceGroupName = "Core-AuSE_rg",
 
+    [Parameter(Mandatory = $False)]
     [string]
     $resourceGroupLocation = "australiasoutheast",
 
@@ -40,11 +41,13 @@ param(
     [string]
     $deploymentName = "jumpBox",
 
+    [Parameter(Mandatory = $False)]
     [string]
-    $templateFilePath = (Join-Path "$PWD" "azuredeploy.json"),
+    $templateFilePath = (Join-Path $PWD "azuredeploy.json"),
 
+    [Parameter(Mandatory = $False)]
     [string]
-    $parametersFilePath = (Join-Path "$PWD" "azuredeploy.parameters.json")
+    $parametersFilePath = (Join-Path $PWD "azuredeploy.parameters.json")
 )
 
 <#
