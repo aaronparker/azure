@@ -111,5 +111,13 @@ Disable-ScheduledTask -TaskName "Microsoft\Windows\Defrag\ScheduledDefrag"
 Stop-Service "SysMain" -WarningAction SilentlyContinue
 Set-Service "SysMain" -StartupType Disabled
 
+# Clean up
+Remove-Item -Path "$env:SystemDrive\Logs" -Recurse -Logs
+
+
+# Windows Updates
+Install-Module PSPowerShell
+Get-WUInstall –MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
+
 # Stop Logging
 Stop-Transcript
