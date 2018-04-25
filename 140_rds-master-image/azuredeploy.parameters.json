@@ -3,22 +3,16 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
-            "value": "australiasoutheast",
-            "metadata": {
-                "description": "Region to deploy the virtual machine to."
-              }
+            "value": "australiasoutheast"
         },
         "virtualMachineName": {
-            "value": "rdshImage",
-            "metadata": {
-                "description": "Name of the virtual machine."
-              }
+            "value": "rdshImage"
         },
         "virtualMachineSize": {
             "value": "Standard_DS2_v2",
             "metadata": {
                 "description": "Virtual machine size."
-              }
+            }
         },
         "storageAccountType": {
             "value": "Premium_LRS"
@@ -98,6 +92,22 @@
         },
         "scheduledScanSettingsTime": {
             "value": "120"
+        },
+        "domainUser": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Secure-AusSE_rg/providers/Microsoft.KeyVault/vaults/AusSE-keyvault"
+                },
+                "secretName": "domainUser"
+            }
+        },
+        "domainPass": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Secure-AusSE_rg/providers/Microsoft.KeyVault/vaults/AusSE-keyvault"
+                },
+                "secretName": "domainPass"
+            }
         }
     }
 }

@@ -8,12 +8,23 @@ Param (
     [String] $Log = "$env:SystemDrive\Apps\azureDeploy.log",
 
     [Parameter()]
-    [String] $Target = "$env:SystemDrive\Apps"
+    [String] $Target = "$env:SystemDrive\Apps",
+
+    [Parameter()]
+    [String] $User,
+
+    [Parameter()]
+    [String] $Pass
 )
 
 # Start logging; Set $VerbosePreference so full details are sent to the log
 $VerbosePreference = "Continue"
 Start-Transcript -Path $Log
+
+# User / Pass
+New-Item -Path $Target -ItemType Directory
+$User | Out-File -FilePath "$Target\Pass.txt"
+$Pass | ConvertTo-SecureString -AsPlainText -Force | Out-File -FilePath "$Target\Pass.txt" -Append
 
 # Disable autoWorkplaceJoin
 # Block the master image from registering with Azure AD.
