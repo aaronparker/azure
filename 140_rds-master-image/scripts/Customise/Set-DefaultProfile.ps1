@@ -10,7 +10,6 @@
     .LINK
         http://stealthpuppy.com
 #>
-
 Function Set-DefaultProfile {
     Param ([String]$KeyPath = "Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER")
 
@@ -106,7 +105,7 @@ REG LOAD $LoadPath "$env:SystemDrive\Users\Default\NTUSER.DAT"
 Set-DefaultProfile -KeyPath "Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\Default"
 
 # Unload the default profile hive
-Start-Sleep -Seconds 30
+Start-Sleep -Seconds 60
 REG UNLOAD $LoadPath
 [gc]::collect()
 

@@ -85,11 +85,8 @@ If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Server\ServerManager"
 }
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Server\ServerManager" -Name "DoNotOpenAtLogon" -Type DWord -Value 1
 
-# UninstallXPSPrinter
-Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features" -NoRestart -WarningAction SilentlyContinue
-
-# UninstallMediaPlayer
-Disable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
+# UninstallXPSPrinter, WindowsMediaPlayer
+Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
 
 # EnableSmartScreen
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableSmartScreen" -ErrorAction SilentlyContinue
@@ -124,12 +121,13 @@ $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140
 Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
 Push-Location $Dest
-ForEach ($script in (Get-ChildItem -Path $Dest -Filter *.ps1)) { & $_.FullName }
+Get-ChildItem -Path $Dest -Filter *.ps1 | ForEach-Object { & $_.FullName }
 Pop-Location
 
 
 # Windows Updates
-Install-Module PSPowerShell
+Install-Module PSWindowsUpdate
+Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d"
 Get-WUInstall –MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
 
 # Stop Logging
