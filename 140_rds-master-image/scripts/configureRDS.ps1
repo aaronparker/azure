@@ -114,7 +114,8 @@ Set-Service "SysMain" -StartupType Disabled
 
 
 # Clean up
-Remove-Item -Path "$env:SystemDrive\Logs" -Recurse -Logs
+$Path = "$env:SystemDrive\Logs"
+If (Test-Path $Path) { Remove-Item -Path $Path -Recurse }
 
 # Profile etc.
 $Dest = "$Target\Customise"
