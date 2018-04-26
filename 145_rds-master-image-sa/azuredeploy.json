@@ -52,6 +52,39 @@
         },
         "autoShutdownNotificationStatus": {
             "type": "string"
+        },
+        "scriptFileUris": {
+            "type": "string"
+        },
+        "exclusionsPaths": {
+            "type": "string"
+        },
+        "exclusionsExtensions": {
+            "type": "string"
+        },
+        "exclusionsProcesses": {
+            "type": "string"
+        },
+        "realtimeProtectionEnabled": {
+            "type": "string"
+        },
+        "scheduledScanSettingsIsEnabled": {
+            "type": "string"
+        },
+        "scheduledScanSettingsScanType": {
+            "type": "string"
+        },
+        "scheduledScanSettingsDay": {
+            "type": "string"
+        },
+        "scheduledScanSettingsTime": {
+            "type": "string"
+        },
+        "domainUser": {
+            "type": "string"
+        },
+        "domainPass": {
+            "type": "string"
         }
     },
     "variables": {
@@ -369,34 +402,34 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "rsdhImage2"
+                        "value": "[parameters('virtualMachineName')]"
                     },
                     "location": {
-                        "value": "australiasoutheast"
+                        "value": "[parameters('location')]"
                     },
-                    "ExclusionsPaths": {
-                        "value": "C:\\pagefile.sys;C:\\Program Files\\Citrix"
+                    "exclusionsPaths": {
+                        "value": "[parameters('exclusionsPaths')]"
                     },
-                    "ExclusionsExtensions": {
-                        "value": ".txt"
+                    "exclusionsExtensions": {
+                        "value": "[parameters('exclusionsExtensions')]"
                     },
-                    "ExclusionsProcesses": {
-                        "value": "sson.exe"
+                    "exclusionsProcesses": {
+                        "value": "[parameters('exclusionsProcesses')]"
                     },
-                    "RealtimeProtectionEnabled": {
-                        "value": "true"
+                    "realtimeProtectionEnabled": {
+                        "value": "[parameters('realtimeProtectionEnabled')]"
                     },
-                    "ScheduledScanSettingsIsEnabled": {
-                        "value": "false"
+                    "scheduledScanSettingsIsEnabled": {
+                        "value": "[parameters('scheduledScanSettingsIsEnabled')]"
                     },
-                    "ScheduledScanSettingsScanType": {
-                        "value": "Quick"
+                    "scheduledScanSettingsScanType": {
+                        "value": "[parameters('scheduledScanSettingsScanType')]"
                     },
-                    "ScheduledScanSettingsDay": {
-                        "value": "7"
+                    "scheduledScanSettingsDay": {
+                        "value": "[parameters('scheduledScanSettingsDay')]"
                     },
-                    "ScheduledScanSettingsTime": {
-                        "value": "120"
+                    "scheduledScanSettingsTime": {
+                        "value": "[parameters('scheduledScanSettingsTime')]"
                     }
                 }
             },
@@ -415,16 +448,16 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "rsdhImage2"
+                        "value": "[parameters('virtualMachineName')]"
                     },
                     "location": {
-                        "value": "australiasoutheast"
+                        "value": "[parameters('location')]"
                     },
                     "fileUris": {
-                        "value": "https://iaasv2tempstoreeastus.blob.core.windows.net/vmextensionstemporary-1003000098be1727-20180426081145139/configureRDS.ps1?sv=2015-04-05&sr=c&sig=FLzor0AINEGtKhCwMFJ058YhW4pHYZ6pppMPCzNW%2FWs%3D&se=2018-04-27T08%3A11%3A45Z&sp=rw"
+                        "value": "[parameters('scriptFileUris')]"
                     },
                     "arguments": {
-                        "value": "-user \"rmuser\", -pass \"pass\""
+                        "value": "-User \"rmuser\", -Pass \"pass\""
                     }
                 }
             },

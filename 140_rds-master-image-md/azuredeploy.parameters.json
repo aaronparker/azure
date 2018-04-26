@@ -17,14 +17,6 @@
         "storageAccountType": {
             "value": "Premium_LRS"
         },
-        "adminUsername": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Secure-AusSE_rg/providers/Microsoft.KeyVault/vaults/AusSE-keyvault"
-                },
-                "secretName": "LocalUser"
-            }
-        },
         "virtualNetworkName": {
             "value": "Core-AuSE-vnet"
         },
@@ -33,6 +25,14 @@
         },
         "networkInterfaceName": {
             "value": "rdshimage904"
+        },
+        "adminUsername": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Secure-AusSE_rg/providers/Microsoft.KeyVault/vaults/AusSE-keyvault"
+                },
+                "secretName": "LocalUser"
+            }
         },
         "adminPassword": {
             "reference": {
@@ -67,7 +67,7 @@
             "value": "Disabled"
         },
         "scriptFileUris": {
-            "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/configureRDS.ps1"
+            "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/configureRDS.ps1"
         },
         "exclusionsPaths": {
             "value": "C:\\pagefile.sys;C:\\Program Files\\Citrix"

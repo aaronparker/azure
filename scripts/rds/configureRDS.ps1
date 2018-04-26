@@ -60,7 +60,7 @@ Install-VcRedist -VcList $VcList -Path $Dest
 # manage installed options in configurationRDS.xml
 $Dest = "$Target\Office"
 New-Item -Path $Dest -ItemType Directory
-$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/Office.zip"
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office.zip"
 Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
 Start-Process -FilePath "$Dest\setup.exe" -ArgumentList "/configure $Dest\configurationRDS.xml" -Wait
@@ -128,7 +128,7 @@ If (Test-Path $Path) { Remove-Item -Path $Path -Recurse }
 # Profile etc.
 $Dest = "$Target\Customise"
 New-Item -Path $Dest -ItemType Directory
-$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/140_rds-master-image/scripts/Customise.zip"
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip"
 Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
 Push-Location $Dest

@@ -459,6 +459,9 @@
                     },
                     "fileUris": {
                         "value": "[parameters('scriptFileUris')]"
+                    },
+                    "arguments": {
+                        "value": "[concat('-User ', parameters('domainUser'), ' -Pass \"', parameters('domainPass'), '\"')]"
                     }
                 }
             },
