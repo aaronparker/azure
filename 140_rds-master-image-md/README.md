@@ -1,4 +1,4 @@
-# Remote Desktop Services Host Master Image
+# RDSH Master Image - Managed Disk
 
 Deploys a Windows Server 2016 VM to create an RDSH master image using Premium storage / SSDs on Managed Disks. Configures the VM with a configuration script to add/remove roles and features, install applications and configure the default user experience.
 
