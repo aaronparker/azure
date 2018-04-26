@@ -14,31 +14,35 @@ Param (
     [String] $User,
 
     [Parameter()]
-    [String] $Pass
+    [String] $Pass,
+
+    [Parameter()]
+    [String] $AppShare
 )
 
 # Start logging; Set $VerbosePreference so full details are sent to the log
 $VerbosePreference = "Continue"
 Start-Transcript -Path $Log
 
-# User / Pass
-New-Item -Path $Target -ItemType Directory
-$User | Out-File -FilePath "$Target\Pass.txt"
-$Pass | ConvertTo-SecureString -AsPlainText -Force | Out-File -FilePath "$Target\Pass.txt" -Append
 
-# Disable autoWorkplaceJoin
-# Block the master image from registering with Azure AD.
-# Enable autoWorkplaceJoin after the VMs are provisioned via GPO.
+#region Configure system
+# Block the master image from registering with Azure AD; Enable autoWorkplaceJoin after the VMs are provisioned via GPO.
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0
 
-# Add / Remove roles (requires reboot)
+# Add / Remove roles (requires reboot at end of deployment)
 Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
 Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Core
+
+# Uninstall features
+Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
 
 # Configure services
 Set-Service Audiosrv -StartupType Automatic
 Set-Service WSearch -StartupType Automatic
+#endregion
 
+
+#region Applications - source Internet
 # Trust the PSGaller for installing modules
 If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
     Write-Verbose "Trusting the repository: PSGallery"
@@ -46,20 +50,17 @@ If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.Installati
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 }
 
-# Install the VcRedist module
+# Install the VcRedist module and VcRedists
 # https://docs.stealthpuppy.com/vcredist/
 Install-Module VcRedist
-
-# Install the VcRedists
 $Dest = "$Target\VcRedist"
-New-Item -Path $Dest -ItemType Directory
+If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
 $VcList = Get-VcList | Get-VcRedist -Path $Dest
 Install-VcRedist -VcList $VcList -Path $Dest
 
-# Install Office 365 ProPlus
-# manage installed options in configurationRDS.xml
+# Install Office 365 ProPlus; manage installed options in configurationRDS.xml
 $Dest = "$Target\Office"
-New-Item -Path $Dest -ItemType Directory
+If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office.zip"
 Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
@@ -83,9 +84,27 @@ Start-Process -FilePath "$Dest\$(Split-Path $url -Leaf)" -ArgumentList $Argument
 $url = "http://ftp.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120038/AcroRdrDCUpd1801120038.msp"
 Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
 Start-Process -FilePath "$env:SystemRoot\System32\msiexec" -ArgumentList "/quiet /update $Dest\$(Split-Path $url -Leaf)" -Wait
+#endregion
 
 
-# Customisations
+#region Applications - Source local
+# Create credential to authenticate
+If ($AppShare) {
+    
+    # Create PS drive to apps share (Apps:)
+    $password = ($Pass | ConvertTo-SecureString -AsPlainText -Force)
+    $cred = New-Object System.Management.Automation.PSCredential ($User, $password)
+    New-PSDrive -Name Apps -PSProvider FileSystem -Root $AppShare -Credential $cred
+
+    # Call install apps from share
+    # Copy Apps:\Application\* C:\Apps\Application
+    # Install application
+    # Clean up source
+}
+#endregion
+
+
+#region Customisations
 # DisableIEEnhancedSecurity 
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}" -Name "IsInstalled" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}" -Name "IsInstalled" -Type DWord -Value 0
@@ -96,12 +115,9 @@ If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Server\ServerManager"
 }
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Server\ServerManager" -Name "DoNotOpenAtLogon" -Type DWord -Value 1
 
-# UninstallXPSPrinter, WindowsMediaPlayer
-Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
-
 # EnableSmartScreen
-Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableSmartScreen" -ErrorAction SilentlyContinue
-Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "EnabledV9" -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableSmartScreen" -Type DWord -Value 2
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "EnabledV9" -Type DWord -Value 1
 
 # DisableErrorReporting
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
@@ -120,26 +136,27 @@ Disable-ScheduledTask -TaskName "Microsoft\Windows\Defrag\ScheduledDefrag"
 Stop-Service "SysMain" -WarningAction SilentlyContinue
 Set-Service "SysMain" -StartupType Disabled
 
-
-# Clean up
-$Path = "$env:SystemDrive\Logs"
-If (Test-Path $Path) { Remove-Item -Path $Path -Recurse }
-
 # Profile etc.
 $Dest = "$Target\Customise"
-New-Item -Path $Dest -ItemType Directory
+If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip"
 Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
 Push-Location $Dest
 Get-ChildItem -Path $Dest -Filter *.ps1 | ForEach-Object { & $_.FullName }
 Pop-Location
+#endregion
 
+
+# Clean up
+$Path = "$env:SystemDrive\Logs"
+If (Test-Path $Path) { Remove-Item -Path $Path -Recurse }
 
 # Windows Updates
 Install-Module PSWindowsUpdate
 Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$False
 Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
+
 
 # Stop Logging
 Stop-Transcript

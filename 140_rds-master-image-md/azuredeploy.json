@@ -91,6 +91,9 @@
         },
         "domainPass": {
             "type": "string"
+        },
+        "appShare": {
+            "type": "string"
         }
     },
     "variables": {
@@ -461,7 +464,7 @@
                         "value": "[parameters('scriptFileUris')]"
                     },
                     "arguments": {
-                        "value": "[concat('-User ', parameters('domainUser'), ' -Pass \"', parameters('domainPass'), '\"')]"
+                        "value": "[concat('-AppShare ', parameters('appShare'), ' -User ', parameters('domainUser'), ' -Pass \"', parameters('domainPass'), '\"')]"
                     }
                 }
             },

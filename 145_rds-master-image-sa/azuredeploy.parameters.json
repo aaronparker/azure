@@ -105,6 +105,9 @@
                 },
                 "secretName": "domainPass"
             }
+        },
+        "appShare": {
+            "value": "\\\\jumpbox\\apps"
         }
     }
 }

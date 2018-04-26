@@ -85,6 +85,9 @@
         },
         "domainPass": {
             "type": "string"
+        },
+        "appShare": {
+            "type": "string"
         }
     },
     "variables": {
@@ -124,7 +127,7 @@
                     "osDisk": {
                         "createOption": "fromImage",
                         "vhd": {
-                            "uri": "[concat(concat(reference(resourceId('masterImage', 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2015-06-15').primaryEndpoints['blob'], 'vhds/'), parameters('virtualMachineName'), '20180426181512.vhd')]"
+                            "uri": "[concat(concat(reference(resourceId('MasterImage-AusSe_rg', 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2015-06-15').primaryEndpoints['blob'], 'vhds/'), parameters('virtualMachineName'), '20180426181512.vhd')]"
                         },
                         "name": "[parameters('virtualMachineName')]"
                     },
@@ -457,7 +460,7 @@
                         "value": "[parameters('scriptFileUris')]"
                     },
                     "arguments": {
-                        "value": "-User \"rmuser\", -Pass \"pass\""
+                        "value": "[concat('-AppShare ', parameters('appShare'), ' -User ', parameters('domainUser'), ' -Pass \"', parameters('domainPass'), '\"')]"
                     }
                 }
             },
