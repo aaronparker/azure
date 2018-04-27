@@ -29,6 +29,13 @@ Start-Transcript -Path $Log
 # Block the master image from registering with Azure AD; Enable autoWorkplaceJoin after the VMs are provisioned via GPO.
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0
 
+# Regional settings - set to en-AU / Australia
+Import-Module International
+Set-Culture -CultureInfo en-AU
+Set-WinHomeLocation -GeoId 12
+Set-WinUserLanguageList -LanguageList en-AU -Force
+Set-TimeZone -Id "AUS Eastern Standard Time" -Verbose
+
 # Add / Remove roles (requires reboot at end of deployment)
 Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
 Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Core
