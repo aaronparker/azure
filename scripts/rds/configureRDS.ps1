@@ -104,17 +104,18 @@ If ($AppShare) {
     $cred = New-Object System.Management.Automation.PSCredential ($User, $password)
     New-PSDrive -Name Apps -PSProvider FileSystem -Root $AppShare -Credential $cred
 
-    # Call install apps from share
-    # Copy Apps:\Application\* C:\Apps\Application
-    # Install application
-    # Clean up source
-
+    $current = $PWD
     Push-Location Apps:
+
+    # Copy each folder locally and install
     ForEach ($folder in (Get-ChildItem -Path ".\" -Directory)) {
-        Copy-Item -Path (Resolve-Path $folder) -Destination "$target\$($folder.Name)" -Recurse
-        Push-Location "$target\$($folder.Name)"        
-        Start-Process -FilePath "$env:SystemRoot\System32\cmd.exe" -ArgumentList "/c $target\$($folder.Name)\install.cmd" -Wait
+        Copy-Item -Path $folder.FullName -Destination "$target\$($folder.Name)" -Recurse -Force
+        Push-Location "$target\$($folder.Name)"
+        If (Test-Path "$target\$($folder.Name)\install.cmd") {
+            Start-Process -FilePath "$env:SystemRoot\System32\cmd.exe" -ArgumentList "/c $target\$($folder.Name)\install.cmd" -Wait
+        }
     }
+    Push-Location $current
 }
 #endregion
 
