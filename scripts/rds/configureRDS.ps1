@@ -102,20 +102,22 @@ If ($AppShare) {
     # Create PS drive to apps share (Apps:)
     $password = ($Pass | ConvertTo-SecureString -AsPlainText -Force)
     $cred = New-Object System.Management.Automation.PSCredential ($User, $password)
-    New-PSDrive -Name Apps -PSProvider FileSystem -Root $AppShare -Credential $cred
+    $drive = New-PSDrive -Name Apps -PSProvider FileSystem -Root $AppShare -Credential $cred
 
-    $current = $PWD
-    Push-Location Apps:
+    If ($drive) {
+        $current = $PWD
+        Push-Location Apps:
 
-    # Copy each folder locally and install
-    ForEach ($folder in (Get-ChildItem -Path ".\" -Directory)) {
-        Copy-Item -Path $folder.FullName -Destination "$target\$($folder.Name)" -Recurse -Force
-        Push-Location "$target\$($folder.Name)"
-        If (Test-Path "$target\$($folder.Name)\install.cmd") {
-            Start-Process -FilePath "$env:SystemRoot\System32\cmd.exe" -ArgumentList "/c $target\$($folder.Name)\install.cmd" -Wait
+        # Copy each folder locally and install
+        ForEach ($folder in (Get-ChildItem -Path ".\" -Directory)) {
+            Copy-Item -Path $folder.FullName -Destination "$target\$($folder.Name)" -Recurse -Force
+            Push-Location "$target\$($folder.Name)"
+            If (Test-Path "$target\$($folder.Name)\install.cmd") {
+                Start-Process -FilePath "$env:SystemRoot\System32\cmd.exe" -ArgumentList "/c $target\$($folder.Name)\install.cmd" -Wait
+            }
         }
+        Push-Location $current
     }
-    Push-Location $current
 }
 #endregion
 
