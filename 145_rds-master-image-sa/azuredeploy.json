@@ -17,6 +17,9 @@
         "virtualNetworkName": {
             "type": "string"
         },
+        "virtualNetworkResourceGroup": {
+            "type": "string"
+        },
         "networkInterfaceName": {
             "type": "string"
         },
@@ -36,6 +39,9 @@
             "type": "string"
         },
         "diagnosticsStorageAccountId": {
+            "type": "string"
+        },
+        "diagnosticsStorageAccountResourceGroup": {
             "type": "string"
         },
         "subnetName": {
@@ -91,7 +97,7 @@
         }
     },
     "variables": {
-        "vnetId": "[resourceId('Core-AuSE_rg','Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "vnetId": "[resourceId(parameters('virtualNetworkResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
         "diagnosticsExtensionName": "IaaSDiagnostics"
     },
@@ -144,7 +150,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId('Core-AuSE_rg', 'Microsoft.Storage/storageAccounts', parameters('diagnosticsStorageAccountName')), '2015-06-15').primaryEndpoints['blob']]"
+                        "storageUri": "[reference(resourceId(parameters('diagnosticsStorageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('diagnosticsStorageAccountName')), '2015-06-15').primaryEndpoints['blob']]"
                     }
                 }
             }

@@ -30,6 +30,9 @@
         "virtualNetworkName": {
             "value": "Core-AuSE-vnet"
         },
+        "virtualNetworkResourceGroup": {
+            "value": "Core-AuSE_rg"
+        },
         "networkInterfaceName": {
             "value": "rsdhimage2437"
         },
@@ -48,6 +51,9 @@
         "diagnosticsStorageAccountId": {
             "value": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Core-AuSE_rg/providers/Microsoft.Storage/storageAccounts/coreausergdiag297"
         },
+        "diagnosticsStorageAccountResourceGroup": {
+            "value": "Core-AuSE_rg"
+        },
         "subnetName": {
             "value": "citrixvda_subnet"
         },
@@ -64,16 +70,21 @@
             "value": "Disabled"
         },
         "scriptFileUris": {
-            "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/configureRDS.ps1"
+            "value": [
+                "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/configureRDS.ps1",
+                "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office.zip",
+                "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip",
+                "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/common/language.xml"
+            ]
         },
         "exclusionsPaths": {
-            "value": "C:\\pagefile.sys;C:\\Program Files\\Citrix"
+            "value": "C:\\pagefile.sys; C:\\Program Files\\Citrix\\User Profile Manager"
         },
         "exclusionsExtensions": {
             "value": ""
         },
         "exclusionsProcesses": {
-            "value": "sson.exe"
+            "value": "%ProgramFiles%\\Citrix\\User Profile Manager\\UserProfileManager.exe; %ProgramFiles%\\Citrix\\Virtual Desktop Agent\\BrokerAgent.exe; %SystemRoot%\\System32\\spoolsv.exe; %SystemRoot%\\System32\\winlogon.exe"
         },
         "realtimeProtectionEnabled": {
             "value": "true"
