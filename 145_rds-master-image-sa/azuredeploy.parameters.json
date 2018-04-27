@@ -70,12 +70,7 @@
             "value": "Disabled"
         },
         "scriptFileUris": {
-            "value": [
-                "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/configureRDS.ps1",
-                "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office.zip",
-                "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip",
-                "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/common/language.xml"
-            ]
+            "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/configureRDS.ps1"
         },
         "exclusionsPaths": {
             "value": "C:\\pagefile.sys; C:\\Program Files\\Citrix\\User Profile Manager"

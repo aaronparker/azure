@@ -34,7 +34,9 @@ Import-Module International
 Set-WinHomeLocation -GeoId 12
 Set-WinSystemLocale -SystemLocale en-AU
 Set-TimeZone -Id "AUS Eastern Standard Time" -Verbose
-& $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$PSScriptRoot\language.xml`""
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/common/language.xml"
+Start-BitsTransfer -Source $url -Destination "$Target\$(Split-Path $url -Leaf)"
+& $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$Target\language.xml`""
 
 # Add / Remove roles (requires reboot at end of deployment)
 Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
@@ -68,10 +70,10 @@ Install-VcRedist -VcList $VcList -Path $Dest
 # Install Office 365 ProPlus; manage installed options in configurationRDS.xml
 $Dest = "$Target\Office"
 If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
-# $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office.zip"
-# Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
-# Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest"
-Expand-Archive -Path "$PSScriptRoot\Office.zip" -DestinationPath "$Dest"
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office.zip"
+Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
+Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest"
+# Expand-Archive -Path "$PSScriptRoot\Office.zip" -DestinationPath "$Dest"
 Start-Process -FilePath "$Dest\setup.exe" -ArgumentList "/configure $Dest\configurationRDS.xml" -Wait
 
 # Install Adobe Reader DC
@@ -157,10 +159,10 @@ Set-Service "SysMain" -StartupType Disabled
 # Profile etc.
 $Dest = "$Target\Customise"
 If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
-# $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip"
-# Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
-# Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
-Expand-Archive -Path "$PSScriptRoot\Customise.zip" -DestinationPath "$Dest"
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip"
+Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
+Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
+# Expand-Archive -Path "$PSScriptRoot\Customise.zip" -DestinationPath "$Dest"
 Push-Location $Dest
 Get-ChildItem -Path $Dest -Filter *.ps1 | ForEach-Object { & $_.FullName }
 Pop-Location

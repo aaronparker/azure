@@ -60,7 +60,7 @@
             "type": "string"
         },
         "scriptFileUris": {
-            "type": "string"
+            "type": "array"
         },
         "exclusionsPaths": {
             "type": "string"
