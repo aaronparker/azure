@@ -1,6 +1,9 @@
 <# 
     .SYSOPSIS
-        Customise a Windows Server image for use as an RDS/XenApp VM in Azure
+        Customise a Windows Server image for use as an RDS/XenApp VM in Azure.
+        Installs Office 365 ProPlus, Adobe Reader DC, Visual C++ Redistributables. Installs applications from a network path specified in AppShare.
+        Sets regional settings, installs Windows Updates, configures the default profile.
+        Runs Windows Defender quick scan, Citrix Optimizer, BIS-F
 #>
 [CmdletBinding()]
 Param (
@@ -39,11 +42,9 @@ Start-BitsTransfer -Source $url -Destination "$Target\$(Split-Path $url -Leaf)"
 & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$Target\language.xml`""
 
 # Add / Remove roles (requires reboot at end of deployment)
+Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
 Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
 Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Core
-
-# Uninstall features
-Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
 
 # Configure services
 Set-Service Audiosrv -StartupType Automatic
@@ -77,7 +78,7 @@ Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest"
 Start-Process -FilePath "$Dest\setup.exe" -ArgumentList "/configure $Dest\configurationRDS.xml" -Wait
 
 # Install Adobe Reader DC
-# control access to menu settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
+# Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
 $Dest = "$Target\Reader"
 New-Item -Path $Dest -ItemType Directory
 $url = "http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120035/AcroRdrDC1801120035_en_US.exe"
@@ -98,7 +99,7 @@ Get-Service -Name AdobeARMservice | Set-Service -StartupType Disabled
 #endregion
 
 
-#region Applications - Source local
+#region Applications - Source local share
 # Create credential to authenticate
 If ($AppShare) {
     
@@ -141,24 +142,13 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Server\ServerM
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableSmartScreen" -Type DWORD -Value 2
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "EnabledV9" -Type DWORD -Value 1
 
-# DisableErrorReporting
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWORD -Value 1
-Disable-ScheduledTask -TaskName "Microsoft\Windows\Windows Error Reporting\QueueReporting"
-
 # DisableAutorun
 If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer")) {
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
 }
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoDriveTypeAutoRun" -Type DWORD -Value 255
 
-# DisableDefragmentation
-Disable-ScheduledTask -TaskName "Microsoft\Windows\Defrag\ScheduledDefrag"
-
-# DisableSuperfetch
-Stop-Service "SysMain" -WarningAction SilentlyContinue
-Set-Service "SysMain" -StartupType Disabled
-
-# Profile etc.
+# Default Profile etc.
 $Dest = "$Target\Customise"
 If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip"
@@ -171,15 +161,16 @@ Pop-Location
 #endregion
 
 
-# Clean up
-$Path = "$env:SystemDrive\Logs"
-If (Test-Path $Path) { Remove-Item -Path $Path -Recurse }
-
+#region Optimisations
 # Windows Updates
 Install-Module PSWindowsUpdate
 Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$False
 Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
 
+# Run Windows Defender quick scan; Running via BISF doesn't exit
+Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-SignatureUpdate -MMPC" -Wait
+Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-Scan -ScanType 1" -Wait
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\RemovalTools\MRT" -Name "GUID" -Value ""
 
 # Citrix Optimizer
 $Dest = "$Target\CitrixOptimizer"
@@ -201,10 +192,16 @@ Start-Process -FilePath "$Dest\setup-BIS-F-6.1.0_build01.100.exe" -ArgumentList 
 Remove-Item -Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Base Image Script Framework (BIS-F).lnk" -Force
 Copy-Item -Path "$Dest\*.xml" -Destination "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)"
 & "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1"
+#endregion
 
+
+# Clean up
+$Path = "$env:SystemDrive\Logs"
+If (Test-Path $Path) { Remove-Item -Path $Path -Recurse }
+If (Test-Path $Target) { Remove-Item -Path $Target -Recurse }
 
 # Stop Logging
 Stop-Transcript
 
 # Replace clear text passwords in the log file
-(Get-Content $Log).replace($Pass, "pass") | Set-Content $Log
+(Get-Content $Log).replace($Pass, "") | Set-Content $Log
