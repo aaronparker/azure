@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<!--Path to the BIS-F XML Configuration, if you run the Computer in Workgroup you must set the shared path NTFS Rights to "Everyone read" to get access without prompt.-->
+<BISFconfig>
+    <ConfigFile>C:\Program Files (x86)\Base Image Script Framework (BIS-F)\BISFconfig_MicrosoftWindowsServerDatacenter_64-bit.xml</ConfigFile>
+</BISFconfig>
