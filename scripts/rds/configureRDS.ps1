@@ -180,6 +180,27 @@ Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:
 Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
 
 
+# Citrix Optimizer
+$Dest = "$Target\CitrixOptimizer"
+If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/CitrixOptimizer.zip"
+Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
+Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
+& "$Dest\$(Split-Path $url -Leaf)\CtxOptimizerEngine.ps1" `
+    -Source "$Dest\$(Split-Path $url -Leaf)\Templates\WindowsServer2016-WindowsDefender-Azure.xml" `
+    -Mode execute -OutputHtml "$Dest\$(Split-Path $url -Leaf)\CitrixOptimizer.html"
+
+# BIS-F
+$Dest = "$Target\BISF"
+If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/bisf-6.1.0.zip"
+Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
+Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
+Start-Process -FilePath "$Dest\setup-BIS-F-6.1.0_build01.100.exe" -ArgumentList "/SILENT"
+Copy-Item -Path "$Dest\*.xml" -Destination "$env:ProgramFiles(x86)\Base Image Script Framework (BIS-F)"
+& "$env:ProgramFiles(x86)\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1"
+
+
 # Stop Logging
 Stop-Transcript
 
