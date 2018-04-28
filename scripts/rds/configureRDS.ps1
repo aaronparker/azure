@@ -5,7 +5,7 @@
 [CmdletBinding()]
 Param (
     [Parameter()]
-    [String] $Log = "$env:SystemDrive\Apps\azureDeploy.log",
+    [String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter()]
     [String] $Target = "$env:SystemDrive\Apps",
@@ -108,7 +108,7 @@ If ($AppShare) {
 
     If ($drive) {
         $current = $PWD
-        Push-Location Apps:
+        Push-Location "Apps:\"
 
         # Copy each folder locally and install
         ForEach ($folder in (Get-ChildItem -Path ".\" -Directory)) {
@@ -120,6 +120,7 @@ If ($AppShare) {
         }
         Push-Location $current
     }
+    Remove-PSDrive Apps
 }
 #endregion
 
