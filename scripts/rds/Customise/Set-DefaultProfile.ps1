@@ -11,6 +11,7 @@
         http://stealthpuppy.com
 #>
 Function Set-DefaultProfile {
+    [CmdletBinding()]
     Param ([String]$KeyPath = "Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER")
 
     # Remove PC beeps
@@ -92,9 +93,6 @@ Function Set-DefaultProfile {
     New-ItemProperty -Path "$KeyPath\Software\Microsoft\MediaPlayer\Preferences" -Name "DisableMRU" -Value 1 -Force
     New-ItemProperty -Path "$KeyPath\Software\Microsoft\MediaPlayer\Preferences" -Name "AutoCopyCD" -Value 0 -Force
 }
-
-# Set default in the current profile for use with CopyProfile in unattend.xml
-Set-DefaultProfile -KeyPath "Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER"
 
 # Set defaults in the default profile
 # Load the default profile hive

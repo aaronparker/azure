@@ -101,7 +101,7 @@ Get-Service -Name AdobeARMservice | Set-Service -StartupType Disabled
 
 #region Applications - Source local share
 # Create credential to authenticate
-If ($AppShare) {
+<# If ($AppShare) {
     
     # Create PS drive to apps share (Apps:)
     $password = ($Pass | ConvertTo-SecureString -AsPlainText -Force)
@@ -123,7 +123,7 @@ If ($AppShare) {
         Push-Location $current
     }
     Remove-PSDrive Apps
-}
+} #>
 #endregion
 
 
