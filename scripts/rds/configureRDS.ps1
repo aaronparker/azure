@@ -162,13 +162,13 @@ Pop-Location
 #endregion
 
 
-<#
 #region Optimisations
 # Windows Updates
 Install-Module PSWindowsUpdate
 Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$False
 Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
 
+<#
 # Run Windows Defender quick scan; Running via BISF doesn't exit
 Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-SignatureUpdate -MMPC" -Wait
 Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-Scan -ScanType 1" -Wait
