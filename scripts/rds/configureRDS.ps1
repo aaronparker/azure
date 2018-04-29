@@ -26,6 +26,7 @@ Param (
 # Start logging; Set $VerbosePreference so full details are sent to the log
 $VerbosePreference = "Continue"
 Start-Transcript -Path $Log
+New-Item -Path $Target -ItemType Directory
 
 
 #region Configure system
@@ -163,9 +164,9 @@ Pop-Location
 
 #region Optimisations
 # Windows Updates
-Install-Module PSWindowsUpdate
+<# Install-Module PSWindowsUpdate
 Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$False
-Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
+Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install #>
 
 # Run Windows Defender quick scan; Running via BISF doesn't exit
 Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-SignatureUpdate -MMPC" -Wait
