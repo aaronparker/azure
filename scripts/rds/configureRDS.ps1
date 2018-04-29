@@ -102,7 +102,7 @@ Get-Service -Name AdobeARMservice | Set-Service -StartupType Disabled
 
 #region Applications - Source local share
 # Create credential to authenticate
-<# If ($AppShare) {
+If ($AppShare) {
     
     # Create PS drive to apps share (Apps:)
     $password = ($Pass | ConvertTo-SecureString -AsPlainText -Force)
@@ -124,7 +124,7 @@ Get-Service -Name AdobeARMservice | Set-Service -StartupType Disabled
         Push-Location $current
     }
     Remove-PSDrive Apps
-} #>
+}
 #endregion
 
 
@@ -162,11 +162,12 @@ Pop-Location
 #endregion
 
 
+<#
 #region Optimisations
 # Windows Updates
-<# Install-Module PSWindowsUpdate
+Install-Module PSWindowsUpdate
 Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$False
-Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install #>
+Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
 
 # Run Windows Defender quick scan; Running via BISF doesn't exit
 Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-SignatureUpdate -MMPC" -Wait
@@ -200,6 +201,7 @@ Copy-Item -Path "$Dest\*.xml" -Destination "${env:ProgramFiles(x86)}\Base Image 
 $Path = "$env:SystemDrive\Logs"
 If (Test-Path $Path) { Remove-Item -Path $Path -Recurse }
 If (Test-Path $Target) { Remove-Item -Path $Target -Recurse }
+#>
 
 # Stop Logging
 Stop-Transcript
