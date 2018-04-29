@@ -1,0 +1,26 @@
+{
+    "apiVersion": "2015-06-15",
+    "type": "Microsoft.Compute/virtualMachines/extensions",
+    "name": "seal-image",
+    "location": "[resourceGroup().location]",
+    "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'),copyindex())]"
+    ],
+    "tags": {
+        "ImageState": "sealed-image"
+    },
+    "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.9",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+            "fileUris": [
+                "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/sealRDS.ps1"
+            ]
+        },
+        "protectedSettings": {
+            "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File sealRDS.ps1"
+        }
+    }
+}
