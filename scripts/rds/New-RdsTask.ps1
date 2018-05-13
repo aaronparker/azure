@@ -4,7 +4,7 @@
 #>
 [CmdletBinding()]
 Param (
-    [Parameter()] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeployTask.log",
+    [Parameter()] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploySealTask.log",
     [Parameter()] $Target = "$env:SystemDrive\Apps\Scripts",
     [Parameter()] $Url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/sealRDS.ps1",
     [Parameter()] $Script = (Split-Path $Url -Leaf),
@@ -26,7 +26,7 @@ If (Test-Path "$Target\$Script") { Remove-Item -Path "$Target\$Script" -Force }
 Start-BitsTransfer -Source $Url -Destination "$Target\$Script" -Priority Foreground -TransferPolicy Always -ErrorAction SilentlyContinue -ErrorVariable $TransferError
 
 # Get an existing local task if it exists
-If ($Task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue ) { 
+If ($Task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue) { 
 
     Write-Verbose "Seal image task exists."
     # If the task Action differs from what we have above, update the values and save the task

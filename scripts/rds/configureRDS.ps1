@@ -88,7 +88,9 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force }
     $url = "http://ftp.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120038/AcroRdrDCUpd1801120038.msp"
     Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec" -ArgumentList "/quiet /update $Dest\$(Split-Path $url -Leaf)" -Wait
+    Start-Sleep 20
     Get-Service -Name AdobeARMservice | Set-Service -StartupType Disabled
+    Get-ScheduledTask Adobe* | Unregister-ScheduledTask -Confirm:$False
 #endregion
 
 
@@ -147,53 +149,27 @@ If ($AppShare) {
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip"
     Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
     Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
-    # Expand-Archive -Path "$PSScriptRoot\Customise.zip" -DestinationPath "$Dest"
     Push-Location $Dest
     Get-ChildItem -Path $Dest -Filter *.ps1 | ForEach-Object { & $_.FullName }
     Pop-Location
 #endregion
 
 
-#region Optimisations
-    # Windows Updates
+#region Windows Update
     Install-Module PSWindowsUpdate
     Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$False
     Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
-
-    <#
-    # Run Windows Defender quick scan; Running via BISF doesn't exit
-    Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-SignatureUpdate -MMPC" -Wait
-    Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-Scan -ScanType 1" -Wait
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\RemovalTools\MRT" -Name "GUID" -Value ""
-
-    # Citrix Optimizer
-    $Dest = "$Target\CitrixOptimizer"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/CitrixOptimizer.zip"
-    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
-    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
-    & "$Dest\CtxOptimizerEngine.ps1" `
-        -Source "$Dest\Templates\WindowsServer2016-WindowsDefender-Azure.xml" `
-        -Mode execute -OutputHtml "$Dest\CitrixOptimizer.html"
-
-    # BIS-F
-    $Dest = "$Target\BISF"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/bisf-6.1.0.zip"
-    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
-    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
-    Start-Process -FilePath "$Dest\setup-BIS-F-6.1.0_build01.100.exe" -ArgumentList "/SILENT"
-    Remove-Item -Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Base Image Script Framework (BIS-F).lnk" -Force
-    Copy-Item -Path "$Dest\*.xml" -Destination "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)"
-    & "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1"
 #endregion
 
 
-# Clean up
-$Path = "$env:SystemDrive\Logs"
-If (Test-Path $Path) { Remove-Item -Path $Path -Recurse }
-If (Test-Path $Target) { Remove-Item -Path $Target -Recurse }
-#>
+#region Setup seal script
+    $Dest = "$Target\Seal"
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/sealRDS.ps1"
+    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
+    & "$Dest\$(Split-Path $url -Leaf)"
+#endregion
+
 
 # Stop Logging
 Stop-Transcript
