@@ -23,7 +23,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\RemovalTools\MRT" -Name "GUID" 
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/CitrixOptimizer.zip"
     Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
-    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
+    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest" -Force
     & "$Dest\CtxOptimizerEngine.ps1" `
         -Source "$Dest\Templates\WindowsServer2016-WindowsDefender-Azure.xml" `
         -Mode execute -OutputHtml "$Dest\CitrixOptimizer.html"
@@ -34,7 +34,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\RemovalTools\MRT" -Name "GUID" 
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/bisf-6.1.0.zip"
     Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
-    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest"
+    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest" -Force
     Start-Process -FilePath "$Dest\setup-BIS-F-6.1.0_build01.100.exe" -ArgumentList "/SILENT" -Wait
     Remove-Item -Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Base Image Script Framework (BIS-F).lnk" -Force
     Copy-Item -Path "$Dest\*.xml" -Destination "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)"
