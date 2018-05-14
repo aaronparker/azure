@@ -134,7 +134,7 @@ If ($AppShare) {
 
     # EnableSmartScreen
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableSmartScreen" -Type DWORD -Value 2
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "EnabledV9" -Type DWORD -Value 1
+    # Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "EnabledV9" -Type DWORD -Value 1
 
     # DisableAutorun
     If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer")) {
@@ -165,7 +165,7 @@ If ($AppShare) {
 #region Setup seal script
     $Dest = "$Target\Seal"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/sealRDS.ps1"
+    $url = "https://github.com/aaronparker/build-azure-lab/blob/master/scripts/rds/New-RdsTask.ps1"
     Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
     & "$Dest\$(Split-Path $url -Leaf)"
 #endregion
