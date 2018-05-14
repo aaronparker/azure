@@ -45,8 +45,9 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\RemovalTools\MRT" -Name "GUID" 
 # Clean up
 $Path = "$env:SystemDrive\Logs"
 Push-Location "$env:SystemDrive\"
-If (Test-Path $Path) { Remove-Item -Path $Path -Recurse }
-If (Test-Path $Target) { Remove-Item -Path $Target -Recurse }
+If (Test-Path $Path) { Remove-Item -Path $Path -Recurse -ErrorAction SilentlyContinue -Force }
+If (Test-Path $Target) { Remove-Item -Path $Target -Recurse -ErrorAction SilentlyContinue -Force }
+Get-ScheduledTask "Seal Image" | Unregister-ScheduledTask -Confirm:$False
 
 
 # Stop Logging
