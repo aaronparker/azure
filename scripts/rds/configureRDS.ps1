@@ -88,8 +88,8 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force }
     Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec" -ArgumentList "/quiet /update $Dest\$(Split-Path $url -Leaf)" -Wait
     Start-Sleep 20
-    Get-Service -Name AdobeARMservice | Set-Service -StartupType Disabled
-    Get-ScheduledTask Adobe* | Unregister-ScheduledTask -Confirm:$False
+    Get-Service -Name AdobeARMservice -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
+    Get-ScheduledTask "Adobe Acrobat Update Task*" | Unregister-ScheduledTask -Confirm:$False
 #endregion
 
 
@@ -115,8 +115,8 @@ If ($AppShare) {
             }
         }
         Push-Location $current
+        Remove-PSDrive Apps
     }
-    Remove-PSDrive Apps
 }
 #endregion
 
@@ -165,7 +165,7 @@ If ($AppShare) {
 #region Setup seal script
     $Dest = "$Target\Seal"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
-    $url = "https://github.com/aaronparker/build-azure-lab/blob/master/scripts/rds/New-RdsTask.ps1"
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/New-RdsTask.ps1"
     Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
     & "$Dest\$(Split-Path $url -Leaf)"
 #endregion
