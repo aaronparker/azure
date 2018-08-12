@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetworks_Core_AuSE_vnet_name": {
+            "value": null
+        },
+        "networkSecurityGroups_app_subnet_nsg_name": {
+            "value": null
+        },
+        "networkSecurityGroups_authn_subnet_nsg_name": {
+            "value": null
+        },
+        "networkSecurityGroups_jumpBox_subnet_nsg_name": {
+            "value": null
+        },
+        "networkSecurityGroups_citrixddc_subnet_nsg_name": {
+            "value": null
+        },
+        "networkSecurityGroups_citrixvda_subnet_nsg_name": {
+            "value": null
+        },
+        "subnets_app_subnet_name": {
+            "value": null
+        },
+        "subnets_authn_subnet_name": {
+            "value": null
+        },
+        "subnets_GatewaySubnet_name": {
+            "value": null
+        },
+        "subnets_jumpBox_subnet_name": {
+            "value": null
+        },
+        "subnets_citrixddc_subnet_name": {
+            "value": null
+        },
+        "subnets_citrixvda_subnet_name": {
+            "value": null
+        },
+        "securityRules_allow_rdp_name": {
+            "value": null
+        },
+        "securityRules_allow_rdp_name_1": {
+            "value": null
+        },
+        "securityRules_allow_rdp_name_2": {
+            "value": null
+        },
+        "securityRules_allow_rdp_name_3": {
+            "value": null
+        }
+    }
+}
