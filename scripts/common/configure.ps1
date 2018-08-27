@@ -1,12 +1,12 @@
 <# 
     .SYNOPSIS
         Customise a Windows Server image in Azure.
-        Sets regional settings, installs Windows Updates, configures the default profile.
-        Runs Windows Defender quick scan
+        Sets regional settings, removes features, sets options
 #>
 [CmdletBinding()]
 Param (
     [Parameter()] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
+    [Parameter()] $Target = "$env:SystemRoot\Temp",
     [Parameter()] $VerbosePreference = "Continue"
 )
 
@@ -25,9 +25,12 @@ Start-BitsTransfer -Source $url -Destination "$Target\$(Split-Path $url -Leaf)"
 & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$Target\language.xml`""
 
 # Add / Remove roles (requires reboot at end of deployment)
-Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "FS-SMB1" -NoRestart -WarningAction SilentlyContinue
-# Add-WindowsFeature -Name NET-Framework-Core
-
+$features = @("Printing-XPSServices-Features", "FS-SMB1")
+ForEach ($feature in $features) {
+    If (Get-WindowsFeature -Name $feature | Where-Object { $_.InstallDate -eq "Installed" } ) {
+        Disable-WindowsOptionalFeature -Online -FeatureName $feature -NoRestart -WarningAction SilentlyContinue
+    }
+}
 #endregion
 
 #region Customisations
@@ -58,6 +61,3 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
 
 # Stop Logging
 Stop-Transcript
-
-# Replace clear text passwords in the log file
-(Get-Content $Log).replace($Pass, "") | Set-Content $Log
