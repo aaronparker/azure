@@ -2,87 +2,59 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "location": {
-            "value": "australiasoutheast"
-        },
-        "virtualMachineName": {
-            "value": "rdshImage"
-        },
-        "virtualMachineSize": {
-            "value": "Standard_DS2_v2",
-            "metadata": {
-                "description": "Virtual machine size."
-            }
-        },
-        "storageAccountType": {
-            "value": "Premium_LRS"
+        "virtualNetworkResourceGroup": {
+            "value": "CoreVnet-AutraliaSoutheast-rg"
         },
         "virtualNetworkName": {
-            "value": "Core-AuSE-vnet"
-        },
-        "virtualNetworkRg": {
-            "value": "Core-AuSE_rg"
-        },
-        "networkInterfaceName": {
-            "value": "rdshimage904"
-        },
-        "adminUsername": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Secure-AusSE_rg/providers/Microsoft.KeyVault/vaults/AusSE-keyvault"
-                },
-                "secretName": "LocalUser"
-            }
-        },
-        "adminPassword": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Secure-AusSE_rg/providers/Microsoft.KeyVault/vaults/AusSE-keyvault"
-                },
-                "secretName": "LocalPassword"
-            }
-        },
-        "diagnosticsStorageAccountName": {
-            "value": "coreausergdiag297"
-        },
-        "diagnosticsStorageAccountId": {
-            "value": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Core-AuSE_rg/providers/Microsoft.Storage/storageAccounts/coreausergdiag297"
-        },
-        "diagnosticsStorageAccountRg": {
-            "value": "Core-AuSE_rg"
+            "value": "Core-AustraliaSoutheast-vnet"
         },
         "subnetName": {
-            "value": "citrixvda_subnet"
+            "value": "Rds-subnet"
         },
-        "autoShutdownStatus": {
-            "value": "Enabled"
+        "virtualMachineName": {
+            "value": "rds01"
         },
-        "autoShutdownTime": {
-            "value": "19:00"
+        "virtualMachineSize": {
+            "value": "Standard_A2_v2"
         },
-        "autoShutdownTimeZone": {
-            "value": "AUS Eastern Standard Time"
+        "storageAccountType": {
+            "value": "Standard_LRS"
         },
-        "autoShutdownNotificationStatus": {
-            "value": "Disabled"
+        "imagePublisher": {
+            "value": "MicrosoftWindowsServer"
         },
-        "scriptFileUris": {
-            "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/configureRDS.ps1"
+        "imageOffer": {
+            "value": "WindowsServer"
         },
-        "exclusionsPaths": {
-            "value": "C:\\pagefile.sys;C:\\Program Files\\Citrix"
+        "imageSku": {
+            "value": "2016-Datacenter-Server"
         },
-        "exclusionsExtensions": {
+        "imageVersion": {
+            "value": "latest"
+        },
+        "availabilitySetName": {
             "value": ""
         },
-        "exclusionsProcesses": {
-            "value": "sson.exe"
+        "diagnosticsStorageAccountName": {
+            "value": "slthvmdiagsause"
+        },
+        "diagnosticsStorageAccountId": {
+            "value": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Diagnostics-AustraliaSoutheast-rg/providers/Microsoft.Storage/storageAccounts/slthvmdiagsause"
+        },
+        "numberOfDataDisks": {
+            "value": 0
+        },
+        "dataDiskSize": {
+            "value": 127
+        },
+        "exclusionsPaths": {
+            "value": "F:\\Windows;C:\\Windows\\System32\\Dns"
         },
         "realtimeProtectionEnabled": {
             "value": "true"
         },
         "scheduledScanSettingsIsEnabled": {
-            "value": "false"
+            "value": "true"
         },
         "scheduledScanSettingsScanType": {
             "value": "Quick"
@@ -93,24 +65,31 @@
         "scheduledScanSettingsTime": {
             "value": "120"
         },
-        "domainUser": {
+        "scriptFileUris": {
+            "value": "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/configureRDS.ps1"
+        },
+        "adminUsername": {
             "reference": {
                 "keyVault": {
                     "id": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Secure-AusSE_rg/providers/Microsoft.KeyVault/vaults/AusSE-keyvault"
                 },
-                "secretName": "domainUser"
+                "secretName": "localUser"
             }
         },
-        "domainPass": {
+        "adminPassword": {
             "reference": {
                 "keyVault": {
                     "id": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Secure-AusSE_rg/providers/Microsoft.KeyVault/vaults/AusSE-keyvault"
                 },
-                "secretName": "domainPass"
+                "secretName": "localPass"
             }
         },
-        "appShare": {
-            "value": "\\\\jumpbox\\apps"
+        "tagValues": {
+            "value": {
+                "Role": "RDS, XenApp",
+                "Environment": "Production"
+            }
         }
+
     }
 }

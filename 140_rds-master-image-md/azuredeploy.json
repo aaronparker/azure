@@ -3,30 +3,18 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
-            "type": "string",
-            "metadata": {
-                "description": "Region to deploy the virtual machine to."
-            }
-        },
-        "virtualMachineName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the virtual machine."
-            }
-        },
-        "virtualMachineSize": {
             "type": "string"
         },
-        "storageAccountType": {
+        "virtualMachineName": {
+            "type": "string"
+        },
+        "virtualMachineSize": {
             "type": "string"
         },
         "adminUsername": {
             "type": "string"
         },
         "virtualNetworkName": {
-            "type": "string"
-        },
-        "virtualNetworkRg": {
             "type": "string"
         },
         "networkInterfaceName": {
@@ -41,63 +29,24 @@
         "diagnosticsStorageAccountId": {
             "type": "string"
         },
-        "diagnosticsStorageAccountRg": {
+        "diagnosticsStorageAccountType": {
+            "type": "string"
+        },
+        "diagnosticsStorageAccountKind": {
+            "type": "string"
+        },
+        "addressPrefix": {
             "type": "string"
         },
         "subnetName": {
             "type": "string"
         },
-        "autoShutdownStatus": {
-            "type": "string"
-        },
-        "autoShutdownTime": {
-            "type": "string"
-        },
-        "autoShutdownTimeZone": {
-            "type": "string"
-        },
-        "autoShutdownNotificationStatus": {
-            "type": "string"
-        },
-        "scriptFileUris": {
-            "type": "string"
-        },
-        "exclusionsPaths": {
-            "type": "string"
-        },
-        "exclusionsExtensions": {
-            "type": "string"
-        },
-        "exclusionsProcesses": {
-            "type": "string"
-        },
-        "realtimeProtectionEnabled": {
-            "type": "string"
-        },
-        "scheduledScanSettingsIsEnabled": {
-            "type": "string"
-        },
-        "scheduledScanSettingsScanType": {
-            "type": "string"
-        },
-        "scheduledScanSettingsDay": {
-            "type": "string"
-        },
-        "scheduledScanSettingsTime": {
-            "type": "string"
-        },
-        "domainUser": {
-            "type": "string"
-        },
-        "domainPass": {
-            "type": "string"
-        },
-        "appShare": {
+        "subnetPrefix": {
             "type": "string"
         }
     },
     "variables": {
-        "vnetId": "[resourceId(parameters('virtualNetworkRg'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "vnetId": "[resourceId('Secure-AusSE_rg','Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
         "diagnosticsExtensionName": "IaaSDiagnostics"
     },
@@ -105,10 +54,11 @@
         {
             "name": "[parameters('virtualMachineName')]",
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]"
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]",
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('diagnosticsStorageAccountName'))]"
             ],
             "properties": {
                 "osProfile": {
@@ -116,7 +66,8 @@
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]",
                     "windowsConfiguration": {
-                        "provisionVmAgent": "true"
+                        "provisionVmAgent": "true",
+                        "enableAutomaticUpdates": "true"
                     }
                 },
                 "hardwareProfile": {
@@ -124,18 +75,29 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "MicrosoftWindowsServer",
-                        "offer": "WindowsServer",
-                        "sku": "2016-Datacenter",
-                        "version": "latest"
+                        "publisher": "[parameters('imagePublisher')]",
+                        "offer": "[parameters('imageOffer')]",
+                        "sku": "[parameters('imageSku')]",
+                        "version": "[parameters('imageVersion')]"
                     },
                     "osDisk": {
                         "createOption": "fromImage",
                         "managedDisk": {
-                            "storageAccountType": "[parameters('storageAccountType')]"
+                            "storageAccountType": "Premium_LRS"
                         }
                     },
-                    "dataDisks": []
+                    "copy": [
+                        {
+                            "name": "dataDisks",
+                            "count": "[parameters('numberOfDataDisks')]",
+                            "tags": "[parameters('tagValues')]",
+                            "input": {
+                                "diskSizeGB": "[parameters('dataDiskSize')]",
+                                "lun": "[copyIndex('dataDisks')]",
+                                "createOption": "Empty"
+                            }
+                        }
+                    ]
                 },
                 "networkProfile": {
                     "networkInterfaces": [
@@ -148,7 +110,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId(parameters('diagnosticsStorageAccountRg'), 'Microsoft.Storage/storageAccounts', parameters('diagnosticsStorageAccountName')), '2015-06-15').primaryEndpoints['blob']]"
+                        "storageUri": "[concat('https://', parameters('diagnosticsStorageAccountName'), '.blob.core.windows.net/')]"
                     }
                 }
             }
@@ -156,8 +118,8 @@
         {
             "name": "[concat(parameters('virtualMachineName'),'/', variables('diagnosticsExtensionName'))]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2017-03-30",
-            "location": "[parameters('location')]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
             ],
@@ -399,29 +361,54 @@
             }
         },
         {
-            "name": "microsoft.antimalware-windows-20180420144929",
+            "name": "Microsoft.CustomScriptExtension-20180907211851",
             "apiVersion": "2015-01-01",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "incremental",
                 "templateLink": {
-                    "uri": "https://gallery.azure.com/artifact/20161101/microsoft.antimalware-windows-arm.1.0.0/Artifacts/MainTemplate.json"
+                    "uri": "https://gallery.azure.com/artifact/20161101/Microsoft.CustomScriptExtension-arm.2.0.50/Artifacts/MainTemplate.json"
                 },
                 "parameters": {
                     "vmName": {
                         "value": "[parameters('virtualMachineName')]"
                     },
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[resourceGroup().location]"
+                    },
+                    "fileUris": {
+                        "value": "[parameters('scriptFileUris')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', variables('diagnosticsExtensionName'))]"
+            ]
+        },
+        {
+            "name": "microsoft.antimalware-windows-20180907212035",
+            "apiVersion": "2015-01-01",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "https://gallery.azure.com/artifact/20161101/microsoft.antimalware-windows-arm.1.0.2/Artifacts/MainTemplate.json"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('virtualMachineName')]"
+                    },
+                    "location": {
+                        "value": "[resourceGroup().location]"
                     },
                     "exclusionsPaths": {
                         "value": "[parameters('exclusionsPaths')]"
                     },
                     "exclusionsExtensions": {
-                        "value": "[parameters('exclusionsExtensions')]"
+                        "value": ""
                     },
                     "exclusionsProcesses": {
-                        "value": "[parameters('exclusionsProcesses')]"
+                        "value": ""
                     },
                     "realtimeProtectionEnabled": {
                         "value": "[parameters('realtimeProtectionEnabled')]"
@@ -441,65 +428,49 @@
                 }
             },
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', variables('diagnosticsExtensionName'))]"
+                "Microsoft.CustomScriptExtension-20180907211851"
             ]
         },
         {
-            "name": "Microsoft.CustomScriptExtension-20180420144947",
-            "apiVersion": "2015-01-01",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "incremental",
-                "templateLink": {
-                    "uri": "https://gallery.azure.com/artifact/20161101/Microsoft.CustomScriptExtension-arm.2.0.50/Artifacts/MainTemplate.json"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('virtualMachineName')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    },
-                    "fileUris": {
-                        "value": "[parameters('scriptFileUris')]"
-                    },
-                    "arguments": {
-                        "value": "[concat('-AppShare ', parameters('appShare'), ' -User ', parameters('domainUser'), ' -Pass \"', parameters('domainPass'), '\"')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "microsoft.antimalware-windows-20180420144929"
-            ]
+            "name": "[parameters('diagnosticsStorageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2018-02-01",
+            "location": "[parameters('location')]",
+            "properties": {},
+            "kind": "[parameters('diagnosticsStorageAccountKind')]",
+            "sku": {
+                "name": "[parameters('diagnosticsStorageAccountType')]"
+            }
         },
         {
-            "name": "[concat('shutdown-computevm-', parameters('virtualMachineName'))]",
-            "type": "Microsoft.DevTestLab/schedules",
-            "apiVersion": "2017-04-26-preview",
+            "name": "[parameters('virtualNetworkName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
             "properties": {
-                "status": "[parameters('autoShutdownStatus')]",
-                "taskType": "ComputeVmShutdownTask",
-                "dailyRecurrence": {
-                    "time": "[parameters('autoShutdownTime')]"
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('addressPrefix')]"
+                    ]
                 },
-                "timeZoneId": "[parameters('autoShutdownTimeZone')]",
-                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]",
-                "notificationSettings": {
-                    "status": "[parameters('autoShutdownNotificationStatus')]",
-                    "timeInMinutes": "30"
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
-            ]
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetPrefix')]"
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "[parameters('networkInterfaceName')]",
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2016-09-01",
+            "apiVersion": "2018-04-01",
             "location": "[parameters('location')]",
-            "dependsOn": [],
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
             "properties": {
                 "ipConfigurations": [
                     {
