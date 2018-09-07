@@ -13,7 +13,7 @@
         },
         "addressPrefix": {
             "type": "string",
-            "defaultValue": "10.0.0.0/16"
+            "defaultValue": "10.1.0.0/16"
         },
         "subnet1Name": {
             "type": "string",
@@ -21,7 +21,7 @@
         },
         "subnet1AddressPrefix": {
             "type": "string",
-            "defaultValue": "10.0.0.0/24"
+            "defaultValue": "10.1.0.0/24"
         },
         "networkSecurityGroupName1": {
             "type": "string"
@@ -32,7 +32,7 @@
         },
         "subnet2AddressPrefix": {
             "type": "string",
-            "defaultValue": "10.0.1.0/24"
+            "defaultValue": "10.1.1.0/24"
         },
         "networkSecurityGroupName2": {
             "type": "string"
@@ -43,7 +43,7 @@
         },
         "subnet3AddressPrefix": {
             "type": "string",
-            "defaultValue": "10.0.2.0/24"
+            "defaultValue": "10.1.2.0/24"
         },
         "networkSecurityGroupName3": {
             "type": "string"
@@ -54,7 +54,7 @@
         },
         "subnet4AddressPrefix": {
             "type": "string",
-            "defaultValue": "10.0.3.0/24"
+            "defaultValue": "10.1.3.0/24"
         },
         "networkSecurityGroupName4": {
             "type": "string"
@@ -65,7 +65,7 @@
         },
         "subnet5AddressPrefix": {
             "type": "string",
-            "defaultValue": "10.0.4.0/24"
+            "defaultValue": "10.1.4.0/24"
         },
         "networkSecurityGroupName5": {
             "type": "string"

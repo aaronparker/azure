@@ -26,10 +26,10 @@ param(
     [string]$subscriptionId = (Get-AzureRmSubscription).Id,
 
     [Parameter(Mandatory=$False)]
-    [string]$resourceGroupName = "Core-AuSE_rg",
+    [string]$resourceGroupName = "Core-AuE_rg",
 
     [Parameter(Mandatory=$False)]
-    [string]$resourceGroupLocation = "australiasoutheast",
+    [string]$resourceGroupLocation = "australiaeast",
 
     [Parameter(Mandatory=$False)]
     [string]$deploymentName,
