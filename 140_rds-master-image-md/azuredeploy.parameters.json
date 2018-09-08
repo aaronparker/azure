@@ -12,13 +12,13 @@
             "value": "Rds-AustraliaSoutheast-subnet"
         },
         "virtualMachineName": {
-            "value": "rds01"
+            "value": "rds02"
         },
         "virtualMachineSize": {
             "value": "Standard_B2ms"
         },
         "storageAccountType": {
-            "value": "Standard_LRS"
+            "value": "Premium_LRS"
         },
         "imagePublisher": {
             "value": "MicrosoftWindowsServer"

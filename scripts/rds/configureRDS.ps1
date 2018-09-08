@@ -72,7 +72,7 @@ Start-Process -FilePath "$Dest\setup.exe" -ArgumentList "/configure $Dest\config
 # Install Adobe Reader DC
 # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
 $urlInstall = "http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120058/AcroRdrDC1801120058_en_US.exe"
-$urlUpdate = "http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120058/AcroRdrDCUpd1801120058.msp"
+$urlUpdate  = "http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120058/AcroRdrDCUpd1801120058.msp"
 $Dest = "$Target\Reader"
 New-Item -Path $Dest -ItemType Directory
 Start-BitsTransfer -Source $urlInstall -Destination "$Dest\$(Split-Path $urlInstall -Leaf)"
