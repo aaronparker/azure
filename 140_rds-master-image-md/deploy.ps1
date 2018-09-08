@@ -31,7 +31,7 @@ param(
 
     [Parameter(Mandatory = $False)]
     [string]
-    $resourceGroupName = "MasterImage-AusSe_rg",
+    $resourceGroupName = "MasterImage-AustraliaSoutheast-rg",
 
     [Parameter(Mandatory = $False)]
     [string]

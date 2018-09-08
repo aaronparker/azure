@@ -1,15 +1,20 @@
 <Configuration>
-    <Add OfficeClientEdition="32" Channel="Broad">
+    <Add OfficeClientEdition="32" Channel="Targeted" ForceUpgrade="TRUE">
         <Product ID="O365ProPlusRetail">
             <Language ID="en-us"/>
+            <ExcludeApp ID="Lync"/>
             <ExcludeApp ID="Groove"/>
             <ExcludeApp ID="Access"/>
             <ExcludeApp ID="Publisher"/>
         </Product>
+        <Product ID="SkypeforBusinessRetail">
+            <Language ID="en-us"/>
+        </Product>
     </Add>
     <Updates Enabled="FALSE"/>
     <Display Level="None" AcceptEULA="TRUE"/>
-    <Property Name="FORCEAPPSHUTDOWN" Value="FALSE"/>
+    <Property Name="FORCEAPPSHUTDOWN" Value="TRUE"/>
     <Property Name="SharedComputerLicensing" Value="1"/>
     <Property Name="PinIconsToTaskbar" Value="FALSE"/>
+    <Logging Level="Standard" Path="C:\Windows\Temp"/>
 </Configuration>

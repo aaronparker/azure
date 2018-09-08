@@ -3,19 +3,19 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "virtualNetworkResourceGroup": {
-            "value": "CoreVnet-AutraliaSoutheast-rg"
+            "value": "Core-vnet-AustraliaSoutheast-rg"
         },
         "virtualNetworkName": {
             "value": "Core-AustraliaSoutheast-vnet"
         },
         "subnetName": {
-            "value": "Rds-subnet"
+            "value": "Rds-AustraliaSoutheast-subnet"
         },
         "virtualMachineName": {
             "value": "rds01"
         },
         "virtualMachineSize": {
-            "value": "Standard_A2_v2"
+            "value": "Standard_B2ms"
         },
         "storageAccountType": {
             "value": "Standard_LRS"
@@ -48,7 +48,7 @@
             "value": 127
         },
         "exclusionsPaths": {
-            "value": "F:\\Windows;C:\\Windows\\System32\\Dns"
+            "value": "C:\\pagefile.sys; C:\\Program Files\\Citrix\\User Profile Manager"
         },
         "realtimeProtectionEnabled": {
             "value": "true"
