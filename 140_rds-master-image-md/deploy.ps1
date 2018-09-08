@@ -29,10 +29,10 @@ param(
     [string] $subscriptionId = (Get-AzureRmSubscription).Id,
 
     [Parameter(Mandatory = $False)]
-    [string] $resourceGroupName = "MasterImage-AustraliaSouthEast-rg",
+    [string] $resourceGroupLocation = "AustraliaSoutheast",
 
     [Parameter(Mandatory = $False)]
-    [string] $resourceGroupLocation = "australiasoutheast",
+    [string] $resourceGroupName = "MasterImage-$resourceGroupLocation-rg",
 
     [Parameter(Mandatory = $False)]
     [string] $deploymentName = "masterImage",
