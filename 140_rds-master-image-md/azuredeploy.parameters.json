@@ -27,13 +27,10 @@
             "value": "WindowsServer"
         },
         "imageSku": {
-            "value": "2016-Datacenter-Server"
+            "value": "2016-Datacenter"
         },
         "imageVersion": {
             "value": "latest"
-        },
-        "availabilitySetName": {
-            "value": ""
         },
         "diagnosticsStorageAccountName": {
             "value": "slthvmdiagsause"
@@ -42,7 +39,7 @@
             "value": "/subscriptions/5ddf477f-39c4-460c-a3a1-4f3e13157dc1/resourceGroups/Diagnostics-AustraliaSoutheast-rg/providers/Microsoft.Storage/storageAccounts/slthvmdiagsause"
         },
         "numberOfDataDisks": {
-            "value": 0
+            "value": 1
         },
         "dataDiskSize": {
             "value": 127

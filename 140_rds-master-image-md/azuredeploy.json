@@ -2,51 +2,202 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "location": {
-            "type": "string"
-        },
-        "virtualMachineName": {
-            "type": "string"
-        },
-        "virtualMachineSize": {
-            "type": "string"
-        },
-        "adminUsername": {
-            "type": "string"
+        "virtualNetworkResourceGroup": {
+            "type": "string",
+            "allowedValues": [
+                "Core-vnet-AustraliaSoutheast-rg"
+            ],
+            "metadata": {
+                "description": "Target resource group for the virtual network."
+            }
         },
         "virtualNetworkName": {
-            "type": "string"
+            "type": "string",
+            "allowedValues": [
+                "Core-AustraliaSoutheast-vnet"
+            ],
+            "metadata": {
+                "description": "Virtual network in the target region the VM will be connected to."
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "allowedValues": [
+                "Rds-AustraliaSoutheast-subnet"
+            ],
+            "metadata": {
+                "description": "Target subnet in the virtual network."
+            }
+        },
+        "virtualMachineName": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 15,
+            "metadata": {
+                "description": "Name for the virtual machine."
+            }
+        },
+        "virtualMachineSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_B2s",
+                "Standard_B2ms",
+                "Standard_A2_v2"
+            ],
+            "metadata": {
+                "description": "Virtual machine size."
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Premium_LRS"
+            ],
+            "defaultValue": "Standard_LRS",
+            "metadata": {
+                "description": "Storage account type."
+            }
+        },
+        "imagePublisher": {
+            "type": "string",
+            "allowedValues": [
+                "MicrosoftWindowsServer"
+            ],
+            "defaultValue": "MicrosoftWindowsServer",
+            "metadata": {
+                "description": "VM image publisher."
+            }
+        },
+        "imageOffer": {
+            "type": "string",
+            "allowedValues": [
+                "WindowsServer"
+            ],
+            "defaultValue": "WindowsServer",
+            "metadata": {
+                "description": "VM image offer."
+            }
+        },
+        "imageSku": {
+            "type": "string",
+            "allowedValues": [
+                "2016-Datacenter",
+                "2016-Datacenter-Server-Core"
+            ],
+            "defaultValue": "2016-Datacenter-Server-Core",
+            "metadata": {
+                "description": "Windows image SKUs."
+            }
+        },
+        "imageVersion": {
+            "type": "string",
+            "defaultValue": "latest",
+            "metadata": {
+                "description": "Image version - will choose the latest by default."
+            }
         },
         "networkInterfaceName": {
+            "type": "string",
+            "defaultValue": "[concat(parameters('virtualMachineName'),'-nic001')]",
+            "metadata": {
+                "description": "The local administrator username will be extracted from the Key Vault."
+            }
+        },
+        "diagnosticsStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage account for hosting VM diagnostics."
+            }
+        },
+        "diagnosticsStorageAccountId": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage account for hosting VM diagnostics."
+            }
+        },
+        "numberOfDataDisks": {
+            "type": "int",
+            "minValue": 0,
+            "maxValue": 16,
+            "defaultValue": 0,
+            "metadata": {
+                "description": "The number of dataDisks to be returned in the output array."
+            }
+        },
+        "dataDiskSize": {
+            "type": "int",
+            "minValue": 127,
+            "maxValue": 1023,
+            "metadata": {
+                "description": "The size of each data disk in GB."
+            }
+        },
+        "exclusionsPaths": {
+            "type": "string",
+            "defaultValue": "F:\\Windows;C:\\Windows\\System32\\Dns",
+            "metadata": {
+                "description": "Folder paths to exclude from AV scanning."
+            }
+        },
+        "realtimeProtectionEnabled": {
+            "type": "string",
+            "defaultValue": "true",
+            "metadata": {
+                "description": "Enable Windows Defender realtime protection."
+            }
+        },
+        "scheduledScanSettingsIsEnabled": {
+            "type": "string",
+            "defaultValue": "true",
+            "metadata": {
+                "description": "Enable a scheduled AV scan."
+            }
+        },
+        "scheduledScanSettingsScanType": {
+            "type": "string",
+            "defaultValue": "Quick",
+            "metadata": {
+                "description": "Set a Quick or Full scan type for the scheduled scan."
+            }
+        },
+        "scheduledScanSettingsDay": {
+            "type": "string",
+            "defaultValue": "7",
+            "metadata": {
+                "description": "Day for the scheduled scan."
+            }
+        },
+        "scheduledScanSettingsTime": {
+            "type": "string",
+            "defaultValue": "120",
+            "metadata": {
+                "description": "Time for the scheduled scan."
+            }
+        },
+        "scriptFileUris": {
+            "type": "string",
+            "metadata": {
+                "description": "URI for the script the Custom Script Extension will run during VM deployment."
+            }
+        },
+        "adminUsername": {
             "type": "string"
         },
         "adminPassword": {
             "type": "securestring"
         },
-        "diagnosticsStorageAccountName": {
-            "type": "string"
-        },
-        "diagnosticsStorageAccountId": {
-            "type": "string"
-        },
-        "diagnosticsStorageAccountType": {
-            "type": "string"
-        },
-        "diagnosticsStorageAccountKind": {
-            "type": "string"
-        },
-        "addressPrefix": {
-            "type": "string"
-        },
-        "subnetName": {
-            "type": "string"
-        },
-        "subnetPrefix": {
-            "type": "string"
+        "tagValues": {
+            "type": "object",
+            "defaultValue": {
+                "Role": "",
+                "Environment": "Production"
+            }
         }
     },
     "variables": {
-        "vnetId": "[resourceId('Secure-AusSE_rg','Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "vnetId": "[resourceId(parameters('virtualNetworkResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
         "diagnosticsExtensionName": "IaaSDiagnostics"
     },
@@ -55,11 +206,11 @@
             "name": "[parameters('virtualMachineName')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-04-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]",
-                "[concat('Microsoft.Storage/storageAccounts/', parameters('diagnosticsStorageAccountName'))]"
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]"
             ],
+            "tags": "[parameters('tagValues')]",
             "properties": {
                 "osProfile": {
                     "computerName": "[parameters('virtualMachineName')]",
@@ -70,6 +221,7 @@
                         "enableAutomaticUpdates": "true"
                     }
                 },
+                "licenseType": "Windows_Server",
                 "hardwareProfile": {
                     "vmSize": "[parameters('virtualMachineSize')]"
                 },
@@ -83,7 +235,7 @@
                     "osDisk": {
                         "createOption": "fromImage",
                         "managedDisk": {
-                            "storageAccountType": "Premium_LRS"
+                            "storageAccountType": "[parameters('storageAccountType')]"
                         }
                     },
                     "copy": [
@@ -106,7 +258,6 @@
                         }
                     ]
                 },
-                "licenseType": "Windows_Server",
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
@@ -361,36 +512,11 @@
             }
         },
         {
-            "name": "Microsoft.CustomScriptExtension-20180907211851",
+            "name": "microsoft.antimalware-windows-20180822154834",
             "apiVersion": "2015-01-01",
             "type": "Microsoft.Resources/deployments",
             "properties": {
-                "mode": "incremental",
-                "templateLink": {
-                    "uri": "https://gallery.azure.com/artifact/20161101/Microsoft.CustomScriptExtension-arm.2.0.50/Artifacts/MainTemplate.json"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('virtualMachineName')]"
-                    },
-                    "location": {
-                        "value": "[resourceGroup().location]"
-                    },
-                    "fileUris": {
-                        "value": "[parameters('scriptFileUris')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', variables('diagnosticsExtensionName'))]"
-            ]
-        },
-        {
-            "name": "microsoft.antimalware-windows-20180907212035",
-            "apiVersion": "2015-01-01",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "incremental",
+                "mode": "Incremental",
                 "templateLink": {
                     "uri": "https://gallery.azure.com/artifact/20161101/microsoft.antimalware-windows-arm.1.0.2/Artifacts/MainTemplate.json"
                 },
@@ -428,49 +554,41 @@
                 }
             },
             "dependsOn": [
-                "Microsoft.CustomScriptExtension-20180907211851"
+                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', variables('diagnosticsExtensionName'))]"
             ]
         },
         {
-            "name": "[parameters('diagnosticsStorageAccountName')]",
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2018-02-01",
-            "location": "[parameters('location')]",
-            "properties": {},
-            "kind": "[parameters('diagnosticsStorageAccountKind')]",
-            "sku": {
-                "name": "[parameters('diagnosticsStorageAccountType')]"
-            }
-        },
-        {
-            "name": "[parameters('virtualNetworkName')]",
-            "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2018-04-01",
-            "location": "[parameters('location')]",
+            "name": "Microsoft.CustomScriptExtension-20180822155052",
+            "apiVersion": "2015-01-01",
+            "type": "Microsoft.Resources/deployments",
             "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[parameters('addressPrefix')]"
-                    ]
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://gallery.azure.com/artifact/20161101/Microsoft.CustomScriptExtension-arm.2.0.50/Artifacts/MainTemplate.json"
                 },
-                "subnets": [
-                    {
-                        "name": "[parameters('subnetName')]",
-                        "properties": {
-                            "addressPrefix": "[parameters('subnetPrefix')]"
-                        }
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('virtualMachineName')]"
+                    },
+                    "location": {
+                        "value": "[resourceGroup().location]"
+                    },
+                    "fileUris": {
+                        "value": "[parameters('scriptFileUris')]"
                     }
-                ]
-            }
+                }
+            },
+            "dependsOn": [
+                "microsoft.antimalware-windows-20180822154834"
+            ]
         },
         {
             "name": "[parameters('networkInterfaceName')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2018-04-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
-            ],
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tagValues')]",
+            "dependsOn": [],
             "properties": {
                 "ipConfigurations": [
                     {
@@ -489,7 +607,7 @@
     "outputs": {
         "adminUsername": {
             "type": "string",
-            "value": "[parameters('adminUsername')]"
+            "value": "[parameters('virtualMachineName')]"
         }
     }
 }
