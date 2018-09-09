@@ -20,42 +20,48 @@
       "winrm_timeout": "3m",
       "winrm_username": "packer",
       "azure_tags": {
-        "dept": "Engineering",
-        "task": "Image deployment"
+        "Role": "Master image"
       },
-      "location": "centralus",
+      "location": "australiasoutheast",
       "vm_size": "Standard_DS2_v2"
     }
   ],
   "provisioners": [
     {
       "type": "powershell",
-      "script": "features.ps1"
+      "script": "New-RdsHost.ps1 -Task RegionalSettings"
+    },
+    {
+      "type": "powershell",
+      "script": "New-RdsHost.ps1 -Task Roles"
     },
     {
       "type": "windows-restart"
     },
     {
       "type": "powershell",
-      "script": "modules.ps1"
-    },
-    {
-      "type": "powershell",
-      "script": "ctxvda.ps1"
+      "script": "New-RdsHost.ps1 -Task WindowsUpdates"
     },
     {
       "type": "windows-restart"
     },
     {
       "type": "powershell",
-      "script": "ctxvda.ps1"
+      "script": "New-RdsHost.ps1 -Task CoreApps"
     },
     {
       "type": "windows-restart"
     },
     {
       "type": "powershell",
-      "script": "choco.ps1"
+      "script": "New-RdsHost.ps1 -Task LobApps"
+    },
+    {
+      "type": "powershell",
+      "script": "New-RdsHost.ps1 -Task Customisations"
+    },
+    {
+      "type": "windows-restart"
     }
   ]
 }
