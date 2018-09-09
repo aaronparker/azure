@@ -1,0 +1,61 @@
+{
+  "builders": [
+    {
+      "type": "azure-arm",
+      "client_id": "FROMSCRIPT",
+      "client_secret": "FROMSCRIPT",
+      "subscription_id": "FROMSCRIPT",
+      "tenant_id": "FROMSCRIPT",
+      "resource_group_name": "FROMSCRIPT",
+      "capture_container_name": "vdas",
+      "capture_name_prefix": "ctxvda",
+      "storage_account": "FROMSCRIPT",
+      "os_type": "Windows",
+      "image_publisher": "MicrosoftWindowsServer",
+      "image_offer": "WindowsServer",
+      "image_sku": "2016-Datacenter",
+      "communicator": "winrm",
+      "winrm_use_ssl": true,
+      "winrm_insecure": true,
+      "winrm_timeout": "3m",
+      "winrm_username": "packer",
+      "azure_tags": {
+        "dept": "Engineering",
+        "task": "Image deployment"
+      },
+      "location": "centralus",
+      "vm_size": "Standard_DS2_v2"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "script": "features.ps1"
+    },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "type": "powershell",
+      "script": "modules.ps1"
+    },
+    {
+      "type": "powershell",
+      "script": "ctxvda.ps1"
+    },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "type": "powershell",
+      "script": "ctxvda.ps1"
+    },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "type": "powershell",
+      "script": "choco.ps1"
+    }
+  ]
+}

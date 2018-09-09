@@ -143,6 +143,7 @@ If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explor
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoDriveTypeAutoRun" -Type DWORD -Value 255
 
 # Default Profile etc.
+<#
 $Dest = "$Target\Customise"
 If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip"
@@ -151,6 +152,7 @@ Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest" 
 Push-Location $Dest
 Get-ChildItem -Path $Dest -Filter *.ps1 | ForEach-Object { & $_.FullName }
 Pop-Location
+#>
 #endregion
 
 
