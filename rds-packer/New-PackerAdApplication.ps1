@@ -9,10 +9,10 @@ param(
     [string] $KeyVault = "AusSE-keyvault",
 
     [Parameter(Mandatory = $False)]
-    [string] $AppName = "Packer",
+    [string] $Secret = "packerServicePrincipalPassword",
 
     [Parameter(Mandatory = $False)]
-    [string] $Secret = "packerServicePrincipalPassword",
+    [string] $AppName = "Packer",
 
     [Parameter(Mandatory = $False)]
     [string] $SubscriptionID = (Get-AzureRmSubscription).Id

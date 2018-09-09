@@ -1,4 +1,7 @@
 {
+    "variables": {
+      "subnet_id": "Rds-AustraliaSoutheast-subnet"
+    },
   "builders": [
     {
       "type": "azure-arm",
@@ -6,14 +9,13 @@
       "client_secret": "FROMSCRIPT",
       "subscription_id": "FROMSCRIPT",
       "tenant_id": "FROMSCRIPT",
-      "resource_group_name": "FROMSCRIPT",
-      "capture_container_name": "vdas",
-      "capture_name_prefix": "ctxvda",
-      "storage_account": "FROMSCRIPT",
+      "managed_image_name": "",
+      "managed_image_resource_group_name": "",
       "os_type": "Windows",
       "image_publisher": "MicrosoftWindowsServer",
       "image_offer": "WindowsServer",
       "image_sku": "2016-Datacenter",
+      "image_version": "latest",
       "communicator": "winrm",
       "winrm_use_ssl": true,
       "winrm_insecure": true,
@@ -29,11 +31,10 @@
   "provisioners": [
     {
       "type": "powershell",
-      "script": "New-RdsHost.ps1 -Task RegionalSettings"
-    },
-    {
-      "type": "powershell",
-      "script": "New-RdsHost.ps1 -Task Roles"
+      "scripts": [
+        "New-RdsHost.ps1 -Task RegionalSettings",
+        "New-RdsHost.ps1 -Task Roles"
+      ]
     },
     {
       "type": "windows-restart"
@@ -54,14 +55,20 @@
     },
     {
       "type": "powershell",
-      "script": "New-RdsHost.ps1 -Task LobApps"
-    },
-    {
-      "type": "powershell",
-      "script": "New-RdsHost.ps1 -Task Customisations"
+      "scripts": [
+        "New-RdsHost.ps1 -Task LobApps",
+        "New-RdsHost.ps1 -Task Customisations"
+      ]
     },
     {
       "type": "windows-restart"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "packer-win2016-rds-manifest.json",
+      "strip_path": true
     }
   ]
 }
