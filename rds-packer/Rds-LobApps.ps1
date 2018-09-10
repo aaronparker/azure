@@ -89,7 +89,7 @@ Function Set-Customisations {
     $Dest = "$Target\Customise"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip"
-    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
+    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)"
     Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest" -Force
     Push-Location $Dest
     Get-ChildItem -Path $Dest -Filter *.ps1 | ForEach-Object { & $_.FullName }

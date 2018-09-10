@@ -1,7 +1,8 @@
 {
-    "variables": {
-      "subnet_id": "Rds-AustraliaSoutheast-subnet"
-    },
+  "variables": {
+    "subnet_id": "Rds-AustraliaSoutheast-subnet",
+    "winrmuser": "packer"
+  },
   "builders": [
     {
       "type": "azure-arm",
@@ -20,7 +21,7 @@
       "winrm_use_ssl": true,
       "winrm_insecure": true,
       "winrm_timeout": "3m",
-      "winrm_username": "packer",
+      "winrm_username": "{{user `winrmuser`}}",
       "azure_tags": {
         "Role": "Master image",
         "Type": "Remote Desktop Services"
@@ -32,6 +33,8 @@
   "provisioners": [
     {
       "type": "powershell",
+      "elevated_user": "{{user `winrmuser`}}",
+      "elevated_password": "{{.WinRMPassword}}",
       "script": "Rds-RegionalRoles.ps1"
     },
     {
@@ -39,6 +42,8 @@
     },
     {
       "type": "powershell",
+      "elevated_user": "{{user `winrmuser`}}",
+      "elevated_password": "{{.WinRMPassword}}",
       "script": "Rds-Updates.ps1"
     },
     {
@@ -46,6 +51,8 @@
     },
     {
       "type": "powershell",
+      "elevated_user": "{{user `winrmuser`}}",
+      "elevated_password": "{{.WinRMPassword}}",
       "script": "Rds-CoreApps.ps1"
     },
     {
@@ -53,6 +60,8 @@
     },
     {
       "type": "powershell",
+      "elevated_user": "{{user `winrmuser`}}",
+      "elevated_password": "{{.WinRMPassword}}",
       "script": "Rds-LobApps.ps1"
     },
     {

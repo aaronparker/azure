@@ -50,7 +50,7 @@ Function Install-CoreApps {
     $Dest = "$Target\Office"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office.zip"
-    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
+    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)"
     Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
     Start-Process -FilePath "$Dest\setup.exe" -ArgumentList "/configure $Dest\configurationRDS.xml" -Wait
 
@@ -70,7 +70,7 @@ Function Install-CoreApps {
         "UPDATE_MODE=0 " + `
         "DISABLE_ARM_SERVICE_INSTALL=1"
     Start-Process -FilePath "$Dest\$(Split-Path $urlInstall -Leaf)" -ArgumentList $Arguments -Wait
-    Start-BitsTransfer -Source $urlUpdate -Destination "$Dest\$(Split-Path $urlUpdate -Leaf)"
+    Invoke-WebRequest -Uri $urlUpdate -OutFile "$Dest\$(Split-Path $urlUpdate -Leaf)"
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec" -ArgumentList "/quiet /update $Dest\$(Split-Path $urlUpdate -Leaf)" -Wait
     Start-Sleep 20
     Get-Service -Name AdobeARMservice -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled

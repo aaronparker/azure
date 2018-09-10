@@ -44,7 +44,7 @@ Function Set-RegionalSettings {
     Set-WinSystemLocale -SystemLocale en-AU
     Set-TimeZone -Id "AUS Eastern Standard Time" -Verbose
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/common/language.xml"
-    Start-BitsTransfer -Source $url -Destination "$Target\$(Split-Path $url -Leaf)"
+    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)"
     & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$Target\language.xml`""
 }
 
