@@ -24,4 +24,4 @@ $app = Get-AzureRmADServicePrincipal | Where-Object { $_.DisplayName -like "Pack
 $result = @{subscription_id = $Subscription.Id; tenant_id = $Subscription.TenantId; `
     client_id = $app.ApplicationId; client_secret = $securePassword; }
 
-Write-Output $result | Format-Table -AutoSize
+Write-Output $result

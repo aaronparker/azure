@@ -5,10 +5,10 @@
   "builders": [
     {
       "type": "azure-arm",
-      "client_id": "FROMSCRIPT",
-      "client_secret": "FROMSCRIPT",
-      "subscription_id": "FROMSCRIPT",
-      "tenant_id": "FROMSCRIPT",
+      "client_id": "",
+      "client_secret": "",
+      "subscription_id": "",
+      "tenant_id": "",
       "managed_image_name": "",
       "managed_image_resource_group_name": "",
       "os_type": "Windows",
@@ -22,7 +22,8 @@
       "winrm_timeout": "3m",
       "winrm_username": "packer",
       "azure_tags": {
-        "Role": "Master image"
+        "Role": "Master image",
+        "Type": "Remote Desktop Services"
       },
       "location": "australiasoutheast",
       "vm_size": "Standard_DS2_v2"
@@ -31,34 +32,28 @@
   "provisioners": [
     {
       "type": "powershell",
-      "scripts": [
-        "New-RdsHost.ps1 -Task RegionalSettings",
-        "New-RdsHost.ps1 -Task Roles"
-      ]
+      "script": "Rds-RegionalRoles.ps1"
     },
     {
       "type": "windows-restart"
     },
     {
       "type": "powershell",
-      "script": "New-RdsHost.ps1 -Task WindowsUpdates"
+      "script": "Rds-Updates.ps1"
     },
     {
       "type": "windows-restart"
     },
     {
       "type": "powershell",
-      "script": "New-RdsHost.ps1 -Task CoreApps"
+      "script": "Rds-CoreApps.ps1"
     },
     {
       "type": "windows-restart"
     },
     {
       "type": "powershell",
-      "scripts": [
-        "New-RdsHost.ps1 -Task LobApps",
-        "New-RdsHost.ps1 -Task Customisations"
-      ]
+      "script": "Rds-LobApps.ps1"
     },
     {
       "type": "windows-restart"
