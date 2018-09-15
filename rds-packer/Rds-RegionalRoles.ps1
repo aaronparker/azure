@@ -14,15 +14,6 @@ Param (
     [string] $Target = "$env:SystemDrive\Apps",
     
     [Parameter(Mandatory = $False)]
-    [string] $User,
-    
-    [Parameter(Mandatory = $False)]
-    [string] $Pass,
-    
-    [Parameter(Mandatory = $False)]
-    [string] $AppShare,
-    
-    [Parameter(Mandatory = $False)]
     [string] $VerbosePreference = "Continue"
 )
 
@@ -37,7 +28,6 @@ Function Set-Repository {
 }
 
 Function Set-RegionalSettings {
-    Set-Repository
     # Regional settings - set to en-AU / Australia
     Import-Module International
     Set-WinHomeLocation -GeoId 12
@@ -71,12 +61,10 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force }
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0 -Force
 
 # Run tasks
+Set-Repository
 Set-RegionalSettings
 Set-Roles
 
 # Stop Logging
 Stop-Transcript
-
-# Replace clear text passwords in the log file
-(Get-Content $Log).replace($Pass, "") | Set-Content $Log
 #endregion

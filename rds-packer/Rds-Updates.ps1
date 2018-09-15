@@ -54,6 +54,7 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force }
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0 -Force
 
 # Run tasks
+Set-Repository
 Install-WindowsUpdates
 
 # Stop Logging
