@@ -1,0 +1,102 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rdshImageSource": {
+            "value": "Gallery"
+        },
+        "vmImageVhdUri": {
+            "value": ""
+        },
+        "rdshGalleryImageSKU": {
+            "value": "Windows-10-Enterprise-1903"
+        },
+        "rdshCustomImageSourceName": {
+            "value": ""
+        },
+        "rdshCustomImageSourceResourceGroup": {
+            "value": ""
+        },
+        "rdshNamePrefix": {
+            "value": "auewvd"
+        },
+        "rdshNumberOfInstances": {
+            "value": 1
+        },
+        "rdshVMDiskType": {
+            "value": "StandardSSD_LRS"
+        },
+        "rdshVmSize": {
+            "value": "Standard_B2ms"
+        },
+        "enableAcceleratedNetworking": {
+            "value": false
+        },
+        "rdshUseManagedDisks": {
+            "value": true
+        },
+        "storageAccountResourceGroupName": {
+            "value": "''"
+        },
+        "domainToJoin": {
+            "value": "insentra.com.au"
+        },
+        "existingDomainUPN": {
+            "value": "aparker-adm@insentra.com.au"
+        },
+        "existingDomainPassword": {
+            "value": null
+        },
+        "ouPath": {
+            "value": ""
+        },
+        "existingVnetName": {
+            "value": "vnet-WVD-AUE"
+        },
+        "newOrExistingVnet": {
+            "value": "existing"
+        },
+        "existingSubnetName": {
+            "value": "Subnet-WVD-AUE"
+        },
+        "virtualNetworkResourceGroupName": {
+            "value": "rg-WVD-AUE"
+        },
+        "rdBrokerURL": {
+            "value": "https://rdbroker.wvd.microsoft.com"
+        },
+        "existingTenantGroupName": {
+            "value": "Default Tenant Group"
+        },
+        "existingTenantName": {
+            "value": "Insentra Pty Ltd"
+        },
+        "hostPoolName": {
+            "value": "Personal"
+        },
+        "serviceMetadataLocation": {
+            "value": "United-States"
+        },
+        "enablePersistentDesktop": {
+            "value": true
+        },
+        "defaultDesktopUsers": {
+            "value": "aaron.parker@insentragroup.com,james.kindon@insentragroup.com"
+        },
+        "tenantAdminUpnOrApplicationId": {
+            "value": "931bb657-3126-48b5-b9f4-ce9ad9fc3d0b"
+        },
+        "tenantAdminPassword": {
+            "value": null
+        },
+        "isServicePrincipal": {
+            "value": true
+        },
+        "aadTenantId": {
+            "value": "671563ba-62bf-48be-9120-17075aaaa1cc"
+        },
+        "location": {
+            "value": "australiaeast"
+        }
+    }
+}
