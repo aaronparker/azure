@@ -1,20 +1,38 @@
-<Configuration>
-    <Add OfficeClientEdition="32" Channel="Targeted" ForceUpgrade="TRUE">
-        <Product ID="O365ProPlusRetail">
-            <Language ID="en-us"/>
-            <ExcludeApp ID="Lync"/>
-            <ExcludeApp ID="Groove"/>
-            <ExcludeApp ID="Access"/>
-            <ExcludeApp ID="Publisher"/>
-        </Product>
-        <Product ID="SkypeforBusinessRetail">
-            <Language ID="en-us"/>
-        </Product>
-    </Add>
-    <Updates Enabled="FALSE"/>
-    <Display Level="None" AcceptEULA="TRUE"/>
-    <Property Name="FORCEAPPSHUTDOWN" Value="TRUE"/>
-    <Property Name="SharedComputerLicensing" Value="1"/>
-    <Property Name="PinIconsToTaskbar" Value="FALSE"/>
-    <Logging Level="Standard" Path="C:\Windows\Temp"/>
+<Configuration ID="e4d97fda-4227-4d32-9816-2b4a60bdf37d">
+  <Add OfficeClientEdition="64" Channel="Targeted">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="MatchOS" />
+      <Language ID="MatchPreviousMSI" />
+      <Language ID="MatchPreviousMSI" />
+      <ExcludeApp ID="Access" />
+      <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Publisher" />
+    </Product>
+    <Product ID="VisioProRetail">
+      <Language ID="MatchOS" />
+      <Language ID="MatchPreviousMSI" />
+      <Language ID="MatchPreviousMSI" />
+      <ExcludeApp ID="Access" />
+      <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Publisher" />
+    </Product>
+    <Product ID="ProjectProRetail">
+      <Language ID="MatchOS" />
+      <Language ID="MatchPreviousMSI" />
+      <Language ID="MatchPreviousMSI" />
+      <ExcludeApp ID="Access" />
+      <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Publisher" />
+    </Product>
+  </Add>
+  <Property Name="SharedComputerLicensing" Value="1" />
+  <Property Name="PinIconsToTaskbar" Value="FALSE" />
+  <Property Name="SCLCacheOverride" Value="0" />
+  <Property Name="AUTOACTIVATE" Value="0" />
+  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+  <Property Name="DeviceBasedLicensing" Value="0" />
+  <Updates Enabled="TRUE" />
+  <RemoveMSI />
+  <Display Level="Full" AcceptEULA="TRUE" />
+  <Logging Level="Standard" Path="C:\Apps" />
 </Configuration>

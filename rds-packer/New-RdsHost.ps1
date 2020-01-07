@@ -31,19 +31,8 @@ Param (
 )
 
 #region Functions
-Function Set-Repository {
-    # Trust the PSGallery for installing modules
-    If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
-        Write-Verbose "Trusting the repository: PSGallery"
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-    }
-}
-
 Function Set-RegionalSettings {
-    Set-Repository
     # Regional settings - set to en-AU / Australia
-    Import-Module International
     Set-WinHomeLocation -GeoId 12
     Set-WinSystemLocale -SystemLocale en-AU
     Set-TimeZone -Id "AUS Eastern Standard Time" -Verbose
@@ -63,45 +52,102 @@ Function Set-Roles {
     Set-Service WSearch -StartupType Automatic
 }
 
-Function Install-CoreApps {
-    # Install the VcRedist module and VcRedists
+Function Install-Modules {
+    # Trust the PSGallery for installing modules
+    If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
+        Write-Verbose "Trusting the repository: PSGallery"
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+    }
+
+    # Install the VcRedist module
     # https://docs.stealthpuppy.com/vcredist/
-    Set-Repository
-    Install-Module VcRedist
+    Install-Module -Name VcRedist -AllowClobber
+
+    # Install the Evergreen module
+    Install-Module -Name Evergreen -AllowClobber
+
+    # Install International module
+    Import-Module -Name International -AllowClobber
+
+    # Windows Update
+    Install-Module PSWindowsUpdate -AllowClobber
+}
+
+Function Install-CoreApps {
+    
+    #region VcRedist
     $Dest = "$Target\VcRedist"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
     $VcList = Get-VcList | Get-VcRedist -Path $Dest
     Install-VcRedist -VcList $VcList -Path $Dest
+    #endregion
 
+    #region FSLogix Apps
+    $Dest = "$Target\FSLogix"
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+
+    $FSLogix = Get-MicrosoftFSLogixApps
+    Start-BitsTransfer -Source $FSLogix.URI -Destination "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)"
+    Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
+    
+    Start-Process -FilePath "$Dest\x64\Release\$(Split-Path -Path $FSLogix.URI -Leaf)" -ArgumentList "/install /quiet /norestart" -Wait
+    #region
+
+
+    #region Edge
+    $Dest = "$Target\Edge"
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+
+    $url = "http://dl.delivery.mp.microsoft.com/filestreamingservice/files/89e511fc-33dd-4869-b781-81b4264b3e1e/MicrosoftEdgeBetaEnterpriseX64.msi"
+    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path -Path $url -Leaf)"
+    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Wait
+    #endregion
+
+
+    #region Office
     # Install Office 365 ProPlus; manage installed options in configurationRDS.xml
     $Dest = "$Target\Office"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office.zip"
-    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
-    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
-    Start-Process -FilePath "$Dest\setup.exe" -ArgumentList "/configure $Dest\configurationRDS.xml" -Wait
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
+    # Get the Office configuration.xml
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office/configurationRDS.xml"
+    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path -Path $url -Leaf)"
+
+    $Office = Get-MicrosoftOffice
+    Start-BitsTransfer -Source $Office[0].URI -Destination "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
+    Start-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Wait
+    #endregion
+
+
+    #region Reader
     # Install Adobe Reader DC
     # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
-    $urlInstall = "http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120058/AcroRdrDC1801120058_en_US.exe"
-    $urlUpdate = "http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120058/AcroRdrDCUpd1801120058.msp"
     $Dest = "$Target\Reader"
-    New-Item -Path $Dest -ItemType Directory
-    Start-BitsTransfer -Source $urlInstall -Destination "$Dest\$(Split-Path $urlInstall -Leaf)"
-    $Arguments = "-sfx_nu /sALL /msi EULA_ACCEPT=YES " + `
-        "ENABLE_CHROMEEXT=0 " + `
-        "DISABLE_BROWSER_INTEGRATION=1 " + `
-        "ENABLE_OPTIMIZATION=YES " + `
-        "ADD_THUMBNAILPREVIEW=0 " + `
-        "DISABLEDESKTOPSHORTCUT=1 " + `
-        "UPDATE_MODE=0 " + `
-        "DISABLE_ARM_SERVICE_INSTALL=1"
-    Start-Process -FilePath "$Dest\$(Split-Path $urlInstall -Leaf)" -ArgumentList $Arguments -Wait
-    Start-BitsTransfer -Source $urlUpdate -Destination "$Dest\$(Split-Path $urlUpdate -Leaf)"
-    Start-Process -FilePath "$env:SystemRoot\System32\msiexec" -ArgumentList "/quiet /update $Dest\$(Split-Path $urlUpdate -Leaf)" -Wait
-    Start-Sleep 20
-    Get-Service -Name AdobeARMservice -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
-    Get-ScheduledTask "Adobe Acrobat Update Task*" | Unregister-ScheduledTask -Confirm:$False
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+
+    # Download Reader installer and updater
+    $Reader = Get-AdobeAcrobatReaderDC | Where-Object { $_.Platform -eq "Windows" -and ($_.Language -eq "English" -or $_.Language -eq "Neutral") }
+    ForEach ($File in $Reader) {
+        Invoke-WebRequest -Uri $File.Uri -OutFile (Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf))
+    }
+
+    # Get resource strings
+    $res = Export-EvergreenFunctionStrings -AppName "AdobeAcrobatReaderDC"
+
+    # Install Adobe Reader
+    $exe = Get-ChildItem -Path $Dest -Filter "*.exe"
+    Start-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments -Wait
+
+    # Run post install actions
+    ForEach ($command in $res.Install.Virtual.PostInstall) {
+        Invoke-Command -ScriptBlock ($executioncontext.invokecommand.NewScriptBlock($command))
+    }
+
+    # Update Adobe Reader
+    $msp = Get-ChildItem -Path $Dest -Filter "*.msp"
+    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet" -Wait
+    #endregion
 }
 
 Function Install-LobApps {
@@ -166,7 +212,6 @@ Function Set-Customisations {
 }
 
 Function Install-WindowsUpdates {
-    Install-Module PSWindowsUpdate
     Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$False
     Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll -Install
 }
@@ -191,16 +236,19 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force }
 # Block the master image from registering with Azure AD; Enable autoWorkplaceJoin after the VMs are provisioned via GPO.
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0 -Force
 
+# Install required modules
+Install-Modules
+
 # Run tasks
 Switch ( $Task ) {
-    'RegionalSettings'  { Set-RegionalSettings }
-    'Roles'             { Set-Roles }
-    'CoreApps'          { Install-CoreApps }
-    'LobApps'           { Install-LobApps }
-    'Customisations'    { Set-Customisations }
-    'WindowsUpdates'    { Install-WindowsUpdates }
-    'SealImage'         { Start-SealImage }
-    Default             { Write-Warning "No task specified." }
+    'RegionalSettings' { Set-RegionalSettings }
+    'Roles' { Set-Roles }
+    'CoreApps' { Install-CoreApps }
+    'LobApps' { Install-LobApps }
+    'Customisations' { Set-Customisations }
+    'WindowsUpdates' { Install-WindowsUpdates }
+    'SealImage' { Start-SealImage }
+    Default { Write-Warning "No task specified." }
 }
 
 # Stop Logging
