@@ -1,6 +1,6 @@
 {
   "variables": {
-    "subnet_id": "Rds-AustraliaSoutheast-subnet",
+    "subnet_id": "Subnet-WVD-AUE",
     "winrmuser": "packer"
   },
   "builders": [
@@ -23,8 +23,9 @@
       "winrm_timeout": "3m",
       "winrm_username": "{{user `winrmuser`}}",
       "azure_tags": {
-        "Role": "Master image",
-        "Type": "Remote Desktop Services"
+        "Function": "Master image",
+        "Type": "Remote Desktop Services",
+        "Environment": "Windows Virtual Desktop"
       },
       "location": "australiaeast",
       "vm_size": "Standard_D2s_v3"

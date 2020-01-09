@@ -1,9 +1,6 @@
 <# 
     .SYNOPSIS
         Customise a Windows Server image for use as an RDS/XenApp VM in Azure.
-        Installs Office 365 ProPlus, Adobe Reader DC, Visual C++ Redistributables. Installs applications from a network path specified in AppShare.
-        Sets regional settings, installs Windows Updates, configures the default profile.
-        Runs Windows Defender quick scan, Citrix Optimizer, BIS-F
 #>
 [CmdletBinding()]
 Param (
@@ -12,16 +9,7 @@ Param (
 
     [Parameter(Mandatory = $False)]
     [string] $Target = "$env:SystemDrive\Apps",
-    
-    [Parameter(Mandatory = $False)]
-    [string] $User,
-    
-    [Parameter(Mandatory = $False)]
-    [string] $Pass,
-    
-    [Parameter(Mandatory = $False)]
-    [string] $AppShare,
-    
+        
     [Parameter(Mandatory = $False)]
     [string] $VerbosePreference = "Continue"
 )
@@ -56,7 +44,4 @@ Set-Customise
 
 # Stop Logging
 Stop-Transcript
-
-# Replace clear text passwords in the log file
-(Get-Content $Log).replace($Pass, "") | Set-Content $Log
 #endregion

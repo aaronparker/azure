@@ -1,9 +1,6 @@
 <# 
     .SYNOPSIS
         Customise a Windows Server image for use as an RDS/XenApp VM in Azure.
-        Installs Office 365 ProPlus, Adobe Reader DC, Visual C++ Redistributables. Installs applications from a network path specified in AppShare.
-        Sets regional settings, installs Windows Updates, configures the default profile.
-        Runs Windows Defender quick scan, Citrix Optimizer, BIS-F
 #>
 [CmdletBinding()]
 Param (
