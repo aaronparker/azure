@@ -6,12 +6,12 @@
   "builders": [
     {
       "type": "azure-arm",
-      "client_id": "",
-      "client_secret": "",
-      "subscription_id": "",
-      "tenant_id": "",
-      "managed_image_name": "",
-      "managed_image_resource_group_name": "",
+      "client_id": "<clientid>",
+      "client_secret": "<clientsecrect>",
+      "subscription_id": "<subscriptionid>",
+      "tenant_id": "<tenantid>",
+      "managed_image_name": "WindowsServer2019RemoteDesktopHost",
+      "managed_image_resource_group_name": "<resourcegroup>",
       "os_type": "Windows",
       "image_publisher": "MicrosoftWindowsServer",
       "image_offer": "WindowsServer",
@@ -35,10 +35,19 @@
       "type": "powershell",
       "elevated_user": "{{user `winrmuser`}}",
       "elevated_password": "{{.WinRMPassword}}",
+      "script": "Install-Modules.ps1"
+    },
+    {
+      "type": "powershell",
+      "elevated_user": "{{user `winrmuser`}}",
+      "elevated_password": "{{.WinRMPassword}}",
       "script": "Rds-RegionalRoles.ps1"
     },
     {
-      "type": "windows-restart"
+      "type": "powershell",
+      "elevated_user": "{{user `winrmuser`}}",
+      "elevated_password": "{{.WinRMPassword}}",
+      "script": "Rds-Customise.ps1"
     },
     {
       "type": "powershell",
@@ -69,7 +78,7 @@
   "post-processors": [
     {
       "type": "manifest",
-      "output": "packer-win2016-rds-manifest.json",
+      "output": "packer-win2019-rds-manifest.json",
       "strip_path": true
     }
   ]

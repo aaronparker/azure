@@ -3,39 +3,30 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $False)]
-    [string] $Location = 'AustraliaSoutheast',
-
-    [Parameter(Mandatory = $False)]
-    [string] $KeyVault = "AusSE-keyvault",
-
-    [Parameter(Mandatory = $False)]
-    [string] $Secret = "packerServicePrincipalPassword",
-
-    [Parameter(Mandatory = $False)]
-    [string] $AppName = "Packer",
-
-    [Parameter(Mandatory = $False)]
-    [string] $SubscriptionID = (Get-AzureRmSubscription).Id
+    [string] $AppName = "HashicorpPackerServicePrincipal"
 )
 
-# Retreive password from the Key Vault
-$securePassword = (Get-AzureKeyVaultSecret -VaultName $KeyVault -Name $Secret).SecretValue
-
-# Create the enterprise application and service principal for Packer
-$app = New-AzureRmADApplication -DisplayName $appName `
-    -HomePage "https://packer.home.stealthpuppy.com" `
-    -IdentifierUris "https://home.stealthpuppy.com/packer" `
-    -Password $securePassword
-$servicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $app.ApplicationId
-
-# Wait while the service principal is created; wait after service principal has been created to be sure
-While (!(Get-AzureRmADServicePrincipal | Where-Object { $_.DisplayName -like "Packer" })) {
-    Start-Sleep 10
+# Find an existing service principal
+$sp = Get-AzADServicePrincipal -DisplayName $AppName -ErrorAction SilentlyContinue
+If ($Null -eq $sp) {
+    # Create the service principal
+    $sp = New-AzADServicePrincipal -DisplayName $AppName
 }
-Start-Sleep 30
 
-# Assign subscription owner to the service principal [! Fix with rights actually needed by Packer]
-$roleAssignment = New-AzureRmRoleAssignment -ApplicationId $servicePrincipal.ApplicationId -RoleDefinitionName Owner -Scope ("/subscriptions/$SubscriptionID") -Verbose
+# Get details
+$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($sp.Secret)
+$plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+
+# Assign roles
+$role = Get-AzRoleAssignment -ServicePrincipalName $sp.ApplicationId
+If ($role.RoleDefinitionName -notcontains "Contributor") {
+    New-AzRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $sp.ApplicationId
+}
+
+$output = @{
+    "Password" = $plainPassword
+    "AppId"    = $sp.ApplicationId
+}
 
 # Return output
-Write-Output $servicePrincipal, $roleAssignment
+Write-Output $output
