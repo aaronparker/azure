@@ -1,0 +1,63 @@
+{
+    "type": "Microsoft.VirtualMachineImages/imageTemplates",
+    "apiVersion": "2019-05-01-preview",
+    "location": "australiaeast",
+    "dependsOn": [],
+    "tags": {
+        "imagebuilderTemplate": "Windows2019"
+    },
+    "properties": {
+        "buildTimeoutInMinutes": 100,
+        "vmProfile": {
+            "vmSize": "Standard_D2s_v3",
+            "osDiskSizeGB": 127
+        },
+        "source": {
+            "type": "PlatformImage",
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2019-Datacenter",
+            "version": "2019.0.20190214"
+        },
+        "customize": [
+            {
+                "type": "PowerShell",
+                "name": "CreateBuildPath",
+                "runElevated": false,
+                "scriptUri": "https://raw.githubusercontent.com/danielsollondon/azvmimagebuilder/master/testPsScript.ps1"
+            },
+            {
+                "type": "WindowsRestart",
+                "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\buildArtifacts\\azureImageBuilderRestart.txt",
+                "restartTimeout": "5m"
+            },
+            {
+                "type": "File",
+                "name": "downloadBuildArtifacts",
+                "sourceUri": "https://raw.githubusercontent.com/danielsollondon/azvmimagebuilder/master/quickquickstarts/exampleArtifacts/buildArtifacts/index.html",
+                "destination": "c:\\buildArtifacts\\index.html"
+            },
+            {
+                "type": "PowerShell",
+                "name": "settingUpMgmtAgtPath",
+                "runElevated": false,
+                "inline": [
+                    "mkdir c:\\buildActions",
+                    "echo Azure-Image-Builder-Was-Here  > c:\\buildActions\\buildActionsOutput.txt"
+                ]
+            }
+        ],
+        "distribute": [
+            {
+                "type": "ManagedImage",
+                "imageId": "/subscriptions/<subscriptionID>/resourceGroups/<rgName>/providers/Microsoft.Compute/images/<imageName>",
+                "location": "<region>",
+                "runOutputName": "<runOutputName>",
+                "artifactTags": {
+                    "source": "azVmImageBuilder",
+                    "baseosimg": "windows2019"
+                }
+            }
+        ]
+    }
+}

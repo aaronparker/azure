@@ -37,44 +37,78 @@ Function Set-Repository {
 }
 
 Function Install-CoreApps {
-    # Install the VcRedist module and VcRedists
-    # https://docs.stealthpuppy.com/vcredist/
-    Set-Repository
-    Install-Module VcRedist
+    #region VcRedist
     $Dest = "$Target\VcRedist"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
     $VcList = Get-VcList | Get-VcRedist -Path $Dest
     Install-VcRedist -VcList $VcList -Path $Dest
+    #endregion
 
+    #region FSLogix Apps
+    $Dest = "$Target\FSLogix"
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+
+    $FSLogix = Get-MicrosoftFSLogixApps
+    Start-BitsTransfer -Source $FSLogix.URI -Destination "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)"
+    Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
+    
+    Start-Process -FilePath "$Dest\x64\Release\$(Split-Path -Path $FSLogix.URI -Leaf)" -ArgumentList "/install /quiet /norestart" -Wait
+    #region
+
+
+    #region Edge
+    $Dest = "$Target\Edge"
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+
+    $url = "http://dl.delivery.mp.microsoft.com/filestreamingservice/files/89e511fc-33dd-4869-b781-81b4264b3e1e/MicrosoftEdgeBetaEnterpriseX64.msi"
+    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path -Path $url -Leaf)"
+    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Wait
+    #endregion
+
+
+    #region Office
     # Install Office 365 ProPlus; manage installed options in configurationRDS.xml
     $Dest = "$Target\Office"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office.zip"
-    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)"
-    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
-    Start-Process -FilePath "$Dest\setup.exe" -ArgumentList "/configure $Dest\configurationRDS.xml" -Wait
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
+    # Get the Office configuration.xml
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office/configurationRDS.xml"
+    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path -Path $url -Leaf)"
+
+    $Office = Get-MicrosoftOffice
+    Start-BitsTransfer -Source $Office[0].URI -Destination "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
+    Start-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Wait
+    #endregion
+
+
+    #region Reader
     # Install Adobe Reader DC
     # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
-    $urlInstall = "http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120058/AcroRdrDC1801120058_en_US.exe"
-    $urlUpdate = "http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1801120058/AcroRdrDCUpd1801120058.msp"
     $Dest = "$Target\Reader"
-    New-Item -Path $Dest -ItemType Directory
-    Start-BitsTransfer -Source $urlInstall -Destination "$Dest\$(Split-Path $urlInstall -Leaf)"
-    $Arguments = "-sfx_nu /sALL /msi EULA_ACCEPT=YES " + `
-        "ENABLE_CHROMEEXT=0 " + `
-        "DISABLE_BROWSER_INTEGRATION=1 " + `
-        "ENABLE_OPTIMIZATION=YES " + `
-        "ADD_THUMBNAILPREVIEW=0 " + `
-        "DISABLEDESKTOPSHORTCUT=1 " + `
-        "UPDATE_MODE=0 " + `
-        "DISABLE_ARM_SERVICE_INSTALL=1"
-    Start-Process -FilePath "$Dest\$(Split-Path $urlInstall -Leaf)" -ArgumentList $Arguments -Wait
-    Invoke-WebRequest -Uri $urlUpdate -OutFile "$Dest\$(Split-Path $urlUpdate -Leaf)"
-    Start-Process -FilePath "$env:SystemRoot\System32\msiexec" -ArgumentList "/quiet /update $Dest\$(Split-Path $urlUpdate -Leaf)" -Wait
-    Start-Sleep 20
-    Get-Service -Name AdobeARMservice -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
-    Get-ScheduledTask "Adobe Acrobat Update Task*" | Unregister-ScheduledTask -Confirm:$False
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+
+    # Download Reader installer and updater
+    $Reader = Get-AdobeAcrobatReaderDC | Where-Object { $_.Platform -eq "Windows" -and ($_.Language -eq "English" -or $_.Language -eq "Neutral") }
+    ForEach ($File in $Reader) {
+        Invoke-WebRequest -Uri $File.Uri -OutFile (Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf))
+    }
+
+    # Get resource strings
+    $res = Export-EvergreenFunctionStrings -AppName "AdobeAcrobatReaderDC"
+
+    # Install Adobe Reader
+    $exe = Get-ChildItem -Path $Dest -Filter "*.exe"
+    Start-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments -Wait
+
+    # Run post install actions
+    ForEach ($command in $res.Install.Virtual.PostInstall) {
+        Invoke-Command -ScriptBlock ($executioncontext.invokecommand.NewScriptBlock($command))
+    }
+
+    # Update Adobe Reader
+    $msp = Get-ChildItem -Path $Dest -Filter "*.msp"
+    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet" -Wait
+    #endregion
 }
 #endregion
 
@@ -83,7 +117,7 @@ Function Install-CoreApps {
 Start-Transcript -Path $Log -Append
 
 # If local path for script doesn't exist, create it
-If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force }
+If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
 # Block the master image from registering with Azure AD; Enable autoWorkplaceJoin after the VMs are provisioned via GPO.
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0 -Force
