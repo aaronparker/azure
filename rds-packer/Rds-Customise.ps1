@@ -27,26 +27,17 @@ Param (
 )
 
 #region Functions
-Function Install-Modules {
-    # Trust the PSGallery for installing modules
-    If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
-        Write-Verbose "Trusting the repository: PSGallery"
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-    }
+Function Set-Customise {
+    $Dest = "$Target\Customise"
 
-    # Install the VcRedist module
-    # https://docs.stealthpuppy.com/vcredist/
-    Install-Module -Name VcRedist -AllowClobber
-
-    # Install the Evergreen module
-    Install-Module -Name Evergreen -AllowClobber
-
-    # Install International module
-    Import-Module -Name International -AllowClobber
-
-    # Windows Update
-    Install-Module PSWindowsUpdate -AllowClobber
+    # Customisation scripts
+    $url = "https://github.com/aaronparker/MDT/archive/master.zip"
+    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)"
+    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
+    
+    Push-Location "$Dest\MDT-master\Customise"
+    . \Invoke-Scripts.ps1
+    Pop-Location
 }
 #endregion
 
@@ -61,7 +52,7 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -E
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0 -Force
 
 # Run tasks
-Install-Modules
+Set-Customise
 
 # Stop Logging
 Stop-Transcript
