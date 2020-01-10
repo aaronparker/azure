@@ -43,7 +43,16 @@
                 "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-RegionalRoles.ps1\" -OutFile \"C:\\Apps\\Rds-RegionalRoles.ps1\" -UseBasicParsing",
                 "& C:\\Apps\\Rds-RegionalRoles.ps1",
                 "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Customise.ps1\" -OutFile \"C:\\Apps\\Rds-Customise.ps1\" -UseBasicParsing",
-                "& C:\\Apps\\Rds-Customise.ps1",
+                "& C:\\Apps\\Rds-Customise.ps1"
+            ]
+        },
+        {
+            "type": "windows-restart"
+        },
+        {
+            "type": "powershell",
+            "inline": [
+                "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Updates.ps1\" -OutFile \"C:\\Apps\\Rds-Updates.ps1\" -UseBasicParsing",
                 "& C:\\Apps\\Rds-Updates.ps1"
             ]
