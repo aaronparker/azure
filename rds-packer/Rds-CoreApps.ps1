@@ -28,7 +28,8 @@ Function Install-CoreApps {
     #region VcRedist
     $Dest = "$Target\VcRedist"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
-    $VcList = Get-VcList | Get-VcRedist -Path $Dest
+    $VcList = Get-VcList
+    Get-VcRedist -Path $Dest -VcList $VcList
     Install-VcRedist -VcList $VcList -Path $Dest
     #endregion
 
@@ -38,10 +39,10 @@ Function Install-CoreApps {
 
     $FSLogix = Get-MicrosoftFSLogixApps
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Url $FSLogix.URI -OutFile "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -UseBasicParsing
+    Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
     
-    Start-Process -FilePath "$Dest\x64\Release\$(Split-Path -Path $FSLogix.URI -Leaf)" -ArgumentList "/install /quiet /norestart" -Wait
+    Start-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Wait
     #region
 
 
@@ -50,7 +51,7 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
     $url = "http://dl.delivery.mp.microsoft.com/filestreamingservice/files/89e511fc-33dd-4869-b781-81b4264b3e1e/MicrosoftEdgeBetaEnterpriseX64.msi"
-    Invoke-WebRequest -Url $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Wait
     #endregion
 
@@ -62,10 +63,10 @@ Function Install-CoreApps {
 
     # Get the Office configuration.xml
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office/configurationRDS.xml"
-    Invoke-WebRequest -Url $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     $Office = Get-MicrosoftOffice
-    Invoke-WebRequest -Url $Office[0].URI -OutFile "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
+    Invoke-WebRequest -Uri $Office[0].URI -OutFile "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
     Start-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Wait
     #endregion
 

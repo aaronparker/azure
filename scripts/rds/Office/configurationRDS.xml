@@ -1,4 +1,4 @@
-<Configuration ID="e4d97fda-4227-4d32-9816-2b4a60bdf37d">
+<Configuration ID="d4f5b34e-4286-41ad-a61c-d360a389e6ba">
   <Add OfficeClientEdition="64" Channel="Targeted">
     <Product ID="O365ProPlusRetail">
       <Language ID="MatchOS" />
@@ -33,6 +33,6 @@
   <Property Name="DeviceBasedLicensing" Value="0" />
   <Updates Enabled="TRUE" />
   <RemoveMSI />
-  <Display Level="Full" AcceptEULA="TRUE" />
+  <Display Level="None" AcceptEULA="TRUE" />
   <Logging Level="Standard" Path="C:\Apps" />
 </Configuration>
