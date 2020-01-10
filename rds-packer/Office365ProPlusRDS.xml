@@ -1,37 +1,37 @@
-<Configuration ID="f35c9bdc-f203-4038-ab08-bc4f9874cfa1">
-  <Add OfficeClientEdition="64" Channel="Targeted">
+<Configuration ID="215de592-9ed9-4a8f-a084-77b9633d64d9">
+  <Add OfficeClientEdition="64" Channel="Monthly" SourcePath="C:\Apps\Office" AllowCdnFallback="TRUE" MigrateArch="TRUE">
     <Product ID="O365ProPlusRetail">
       <Language ID="MatchOS" />
       <Language ID="MatchPreviousMSI" />
-      <Language ID="MatchPreviousMSI" />
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Lync" />
       <ExcludeApp ID="Publisher" />
     </Product>
     <Product ID="VisioProRetail">
       <Language ID="MatchOS" />
       <Language ID="MatchPreviousMSI" />
-      <Language ID="MatchPreviousMSI" />
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Lync" />
       <ExcludeApp ID="Publisher" />
     </Product>
     <Product ID="ProjectProRetail">
       <Language ID="MatchOS" />
       <Language ID="MatchPreviousMSI" />
-      <Language ID="MatchPreviousMSI" />
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Lync" />
       <ExcludeApp ID="Publisher" />
     </Product>
   </Add>
   <Property Name="SharedComputerLicensing" Value="1" />
-  <Property Name="PinIconsToTaskbar" Value="FALSE" />
+  <Property Name="PinIconsToTaskbar" Value="TRUE" />
   <Property Name="SCLCacheOverride" Value="0" />
   <Property Name="AUTOACTIVATE" Value="0" />
   <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
   <Property Name="DeviceBasedLicensing" Value="0" />
-  <Updates Enabled="TRUE" />
+  <Updates Enabled="FALSE" UpdatePath="C:\Apps\Office" />
   <RemoveMSI />
   <AppSettings>
     <User Key="software\microsoft\office\16.0\excel\options" Name="defaultformat" Value="51" Type="REG_DWORD" App="excel16" Id="L_SaveExcelfilesas" />
