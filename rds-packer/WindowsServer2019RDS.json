@@ -33,21 +33,28 @@
         }
     ],
     "provisioners": [
-      {
-        "type": "powershell",
-        "inline": [
-            "Set-MpPreference -DisableRealtimeMonitoring $true"
-        ]
-    },
+        {
+            "type": "powershell",
+            "inline": [
+                "Write-Host \"Disable Windows Defender real time scan\"",
+                "Set-MpPreference -DisableRealtimeMonitoring $true",
+                "New-Item -Path \"$env:SystemDrive\\Apps\" -ItemType Directory -Force -ErrorAction SilentlyContinue",
+                "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
+                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Install-Modules.ps1\" -OutFile \"C:\\Apps\\Install-Modules.ps1\" -UseBasicParsing",
+                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-RegionalRoles.ps1\" -OutFile \"C:\\Apps\\Rds-RegionalRoles.ps1\" -UseBasicParsing",                
+                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Customise.ps1\" -OutFile \"C:\\Apps\\Rds-Customise.ps1\" -UseBasicParsing",
+                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Updates.ps1\" -OutFile \"C:\\Apps\\Rds-Updates.ps1\" -UseBasicParsing"
+            ]
+        },
         {
             "type": "powershell",
             "elevated_user": "{{user `elevateduser`}}",
             "elevated_password": "{{.WinRMPassword}}",
-            "scripts": [
-              "Install-Modules.ps1",
-              "Rds-RegionalRoles.ps1",
-              "Rds-Customise.ps1",
-              "Rds-Updates.ps1"
+            "inline": [
+                "& C:\\Apps\\Install-Modules.ps1",
+                "& C:\\Apps\\Rds-RegionalRoles.ps1",
+                "& C:\\Apps\\Rds-Customise.ps1",
+                "& C:\\Apps\\Rds-Updates.ps1"
             ]
         },
         {
@@ -55,9 +62,18 @@
         },
         {
             "type": "powershell",
+            "inline": [
+                "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
+                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-CoreApps.ps1\" -OutFile \"C:\\Apps\\Rds-CoreApps.ps1\" -UseBasicParsing"
+            ]
+        },
+        {
+            "type": "powershell",
             "elevated_user": "{{user `elevateduser`}}",
             "elevated_password": "{{.WinRMPassword}}",
-            "script": "Rds-CoreApps.ps1"
+            "inline": [
+                "& C:\\Apps\\Rds-CoreApps.ps1"
+            ]
         },
         {
             "type": "windows-restart"
@@ -65,7 +81,9 @@
         {
             "type": "powershell",
             "inline": [
+                "Write-Host \"Enable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $false",
+                "Write-Host \"Sysprep\"",
                 "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
                 "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
             ]

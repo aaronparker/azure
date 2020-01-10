@@ -21,7 +21,7 @@ If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.Installati
 }
 
 # Install the Az module
-Install-Module -Name Az -AllowClobber
+# Install-Module -Name Az -AllowClobber
 
 # Get the subscription
 $sub = Get-AzSubscription
