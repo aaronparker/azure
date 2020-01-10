@@ -62,39 +62,6 @@ Function Install-LobApps {
         }
     }
 }
-
-Function Set-Customisations {
-    #region Customisations
-    # DisableIEEnhancedSecurity 
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}" -Name "IsInstalled" -Type DWORD -Value 0
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}" -Name "IsInstalled" -Type DWORD -Value 0
-
-    # HideServerManagerOnLogin 
-    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Server\ServerManager")) {
-        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Server\ServerManager" -Force
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Server\ServerManager" -Name "DoNotOpenAtLogon" -Type DWORD -Value 1
-
-    # EnableSmartScreen
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableSmartScreen" -Type DWORD -Value 2
-    # Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" -Name "EnabledV9" -Type DWORD -Value 1
-
-    # DisableAutorun
-    If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer")) {
-        New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoDriveTypeAutoRun" -Type DWORD -Value 255
-
-    # Default Profile etc.
-    $Dest = "$Target\Customise"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Customise.zip"
-    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)"
-    Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest" -Force
-    Push-Location $Dest
-    Get-ChildItem -Path $Dest -Filter *.ps1 | ForEach-Object { & $_.FullName }
-    Pop-Location
-}
 #endregion
 
 #region Script logic
@@ -109,7 +76,6 @@ Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -
 
 # Run tasks
 Install-LobApps
-Set-Customisations
 
 # Stop Logging
 Stop-Transcript

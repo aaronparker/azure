@@ -17,14 +17,16 @@ Param (
 #region Functions
 Function Set-Customise {
     $Dest = "$Target\Customise"
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
     # Customisation scripts
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $url = "https://github.com/aaronparker/MDT/archive/master.zip"
-    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)"
+    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
     
     Push-Location "$Dest\MDT-master\Customise"
-    . \Invoke-Scripts.ps1
+    . .\Invoke-Scripts.ps1
     Pop-Location
 }
 #endregion

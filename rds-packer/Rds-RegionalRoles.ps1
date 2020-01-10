@@ -30,8 +30,9 @@ Function Set-RegionalSettings {
     Set-WinHomeLocation -GeoId 12
     Set-WinSystemLocale -SystemLocale en-AU
     Set-TimeZone -Id "AUS Eastern Standard Time" -Verbose
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/common/language.xml"
-    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)"
+    Invoke-WebRequest -Uri $url -OutFile "$Target\$(Split-Path $url -Leaf)"
     & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$Target\language.xml`""
 }
 

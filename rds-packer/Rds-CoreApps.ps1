@@ -37,7 +37,8 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
     $FSLogix = Get-MicrosoftFSLogixApps
-    Start-BitsTransfer -Source $FSLogix.URI -Destination "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)"
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -Url $FSLogix.URI -OutFile "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
     
     Start-Process -FilePath "$Dest\x64\Release\$(Split-Path -Path $FSLogix.URI -Leaf)" -ArgumentList "/install /quiet /norestart" -Wait
@@ -49,7 +50,7 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
     $url = "http://dl.delivery.mp.microsoft.com/filestreamingservice/files/89e511fc-33dd-4869-b781-81b4264b3e1e/MicrosoftEdgeBetaEnterpriseX64.msi"
-    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path -Path $url -Leaf)"
+    Invoke-WebRequest -Url $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Wait
     #endregion
 
@@ -61,10 +62,10 @@ Function Install-CoreApps {
 
     # Get the Office configuration.xml
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/Office/configurationRDS.xml"
-    Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path -Path $url -Leaf)"
+    Invoke-WebRequest -Url $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     $Office = Get-MicrosoftOffice
-    Start-BitsTransfer -Source $Office[0].URI -Destination "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
+    Invoke-WebRequest -Url $Office[0].URI -OutFile "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
     Start-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Wait
     #endregion
 
@@ -78,7 +79,7 @@ Function Install-CoreApps {
     # Download Reader installer and updater
     $Reader = Get-AdobeAcrobatReaderDC | Where-Object { $_.Platform -eq "Windows" -and ($_.Language -eq "English" -or $_.Language -eq "Neutral") }
     ForEach ($File in $Reader) {
-        Invoke-WebRequest -Uri $File.Uri -OutFile (Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf))
+        Invoke-WebRequest -Uri $File.Uri -OutFile (Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf)) -UseBasicParsing
     }
 
     # Get resource strings
