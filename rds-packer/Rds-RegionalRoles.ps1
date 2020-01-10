@@ -50,6 +50,7 @@ Function Set-Roles {
 
 #region Script logic
 # Start logging
+Write-Host "Running: $($MyInvocation.MyCommand)."
 Start-Transcript -Path $Log -Append
 
 # If local path for script doesn't exist, create it
@@ -65,4 +66,5 @@ Set-Roles
 
 # Stop Logging
 Stop-Transcript
+Write-Host "Complete: $($MyInvocation.MyCommand)."
 #endregion

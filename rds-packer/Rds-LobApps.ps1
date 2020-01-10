@@ -66,6 +66,7 @@ Function Install-LobApps {
 
 #region Script logic
 # Start logging
+Write-Host "Running: $($MyInvocation.MyCommand)."
 Start-Transcript -Path $Log -Append
 
 # If local path for script doesn't exist, create it
@@ -79,6 +80,7 @@ Install-LobApps
 
 # Stop Logging
 Stop-Transcript
+Write-Host "Complete: $($MyInvocation.MyCommand)."
 
 # Replace clear text passwords in the log file
 (Get-Content $Log).replace($Pass, "") | Set-Content $Log

@@ -1,7 +1,8 @@
 {
     "variables": {
         "subnet_id": "Subnet-WVD-AUE",
-        "winrmuser": "packer"
+        "winrmuser": "packer",
+        "elevateduser": "administrator"
     },
     "builders": [
         {
@@ -32,42 +33,29 @@
         }
     ],
     "provisioners": [
+      {
+        "type": "powershell",
+        "inline": [
+            "Set-MpPreference -DisableRealtimeMonitoring $true"
+        ]
+    },
         {
             "type": "powershell",
-            "inline": [
-                "Set-MpPreference -DisableRealtimeMonitoring $true"
+            "elevated_user": "{{user `elevateduser`}}",
+            "elevated_password": "{{.WinRMPassword}}",
+            "scripts": [
+              "Install-Modules.ps1",
+              "Rds-RegionalRoles.ps1",
+              "Rds-Customise.ps1",
+              "Rds-Updates.ps1"
             ]
-        },
-        {
-            "type": "powershell",
-            "elevated_user": "{{user `winrmuser`}}",
-            "elevated_password": "{{.WinRMPassword}}",
-            "script": "Install-Modules.ps1"
-        },
-        {
-            "type": "powershell",
-            "elevated_user": "{{user `winrmuser`}}",
-            "elevated_password": "{{.WinRMPassword}}",
-            "script": "Rds-RegionalRoles.ps1"
-        },
-        {
-            "type": "powershell",
-            "elevated_user": "{{user `winrmuser`}}",
-            "elevated_password": "{{.WinRMPassword}}",
-            "script": "Rds-Customise.ps1"
-        },
-        {
-            "type": "powershell",
-            "elevated_user": "{{user `winrmuser`}}",
-            "elevated_password": "{{.WinRMPassword}}",
-            "script": "Rds-Updates.ps1"
         },
         {
             "type": "windows-restart"
         },
         {
             "type": "powershell",
-            "elevated_user": "{{user `winrmuser`}}",
+            "elevated_user": "{{user `elevateduser`}}",
             "elevated_password": "{{.WinRMPassword}}",
             "script": "Rds-CoreApps.ps1"
         },

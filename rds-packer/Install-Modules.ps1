@@ -40,6 +40,7 @@ Function Install-Modules {
 
 #region Script logic
 # Start logging
+Write-Host "Running: $($MyInvocation.MyCommand)."
 Start-Transcript -Path $Log -Append
 
 # If local path for script doesn't exist, create it
@@ -53,4 +54,5 @@ Install-Modules
 
 # Stop Logging
 Stop-Transcript
+Write-Host "Complete: $($MyInvocation.MyCommand)."
 #endregion

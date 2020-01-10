@@ -34,4 +34,4 @@ $sub = Get-AzSubscription
 (Get-Content $Template).replace("<resourcegroup>", $ResourceGroup) | Set-Content $Template
 
 # Run Packer
-Start-Process -FilePath ".\Packer.exe" -ArgumentList "build $Template" -Wait
+#Start-Process -FilePath ".\Packer.exe" -ArgumentList "build $Template" -Wait
