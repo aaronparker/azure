@@ -24,6 +24,70 @@ Function Set-Repository {
     }
 }
 
+Function Invoke-Process {
+    <# 
+    .DESCRIPTION 
+        Invoke-Process is a simple wrapper function that aims to "PowerShellyify" launching typical external processes. There 
+        are lots of ways to invoke processes in PowerShell with Start-Process, Invoke-Expression, & and others but none account 
+        well for the various streams and exit codes that an external process returns. Also, it's hard to write good tests 
+        when launching external proceses. 
+    
+        This function ensures any errors are sent to the error stream, standard output is sent via the Output stream and any 
+        time the process returns an exit code other than 0, treat it as an error. 
+    #>
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [string] $FilePath,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string] $ArgumentList
+    )
+
+    $ErrorActionPreference = 'Stop'
+
+    try {
+        $stdOutTempFile = "$env:TEMP\$((New-Guid).Guid)"
+        $stdErrTempFile = "$env:TEMP\$((New-Guid).Guid)"
+
+        $startProcessParams = @{
+            FilePath               = $FilePath
+            ArgumentList           = $ArgumentList
+            RedirectStandardError  = $stdErrTempFile
+            RedirectStandardOutput = $stdOutTempFile
+            Wait                   = $true;
+            PassThru               = $true;
+            NoNewWindow            = $true;
+        }
+        if ($PSCmdlet.ShouldProcess("Process [$($FilePath)]", "Run with args: [$($ArgumentList)]")) {
+            $cmd = Start-Process @startProcessParams
+            $cmdOutput = Get-Content -Path $stdOutTempFile -Raw
+            $cmdError = Get-Content -Path $stdErrTempFile -Raw
+            if ($cmd.ExitCode -ne 0) {
+                if ($cmdError) {
+                    throw $cmdError.Trim()
+                }
+                if ($cmdOutput) {
+                    throw $cmdOutput.Trim()
+                }
+            }
+            else {
+                if ([string]::IsNullOrEmpty($cmdOutput) -eq $false) {
+                    Write-Output -InputObject $cmdOutput
+                }
+            }
+        }
+    }
+    catch {
+        $PSCmdlet.ThrowTerminatingError($_)
+    }
+    finally {
+        Remove-Item -Path $stdOutTempFile, $stdErrTempFile -Force -ErrorAction Ignore
+    }
+}
+
 Function Install-CoreApps {
     #region VcRedist
     # Install the VcRedist module
@@ -50,7 +114,6 @@ Function Install-CoreApps {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
-    
     Start-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Wait
     #region
 
@@ -66,6 +129,7 @@ Function Install-CoreApps {
 
     Write-Host "=============== Installing Microsoft Edge"
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Wait
+    Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force
     #endregion
 
 
@@ -83,9 +147,9 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $Office[0].URI -OutFile "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
     Push-Location -Path $Dest
     Write-Host "=============== Downloading Microsoft Office"
-    Start-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $url -Leaf)" -Wait
+    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $url -Leaf)" -Wait
     Write-Host "=============== Installing Microsoft Office"
-    # Start-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Wait
+    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)"
     Pop-Location
     #endregion
 
