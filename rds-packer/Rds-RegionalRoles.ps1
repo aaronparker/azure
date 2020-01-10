@@ -15,15 +15,6 @@ Param (
 )
 
 #region Functions
-Function Set-Repository {
-    # Trust the PSGallery for installing modules
-    If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
-        Write-Verbose "Trusting the repository: PSGallery"
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-    }
-}
-
 Function Set-RegionalSettings {
     # Regional settings - set to en-AU / Australia
     Import-Module International
@@ -60,7 +51,6 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -E
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0 -Force
 
 # Run tasks
-Set-Repository
 Set-RegionalSettings
 Set-Roles
 

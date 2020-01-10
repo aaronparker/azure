@@ -26,12 +26,19 @@ Function Set-Repository {
 
 Function Install-CoreApps {
     #region VcRedist
+    # Install the VcRedist module
+    # https://docs.stealthpuppy.com/vcredist/
+    Install-Module -Name VcRedist -AllowClobber
+
     $Dest = "$Target\VcRedist"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
     $VcList = Get-VcList
     Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest
     Install-VcRedist -VcList $VcList -Path $Dest
     #endregion
+
+    # Install the Evergreen module
+    Install-Module -Name Evergreen -AllowClobber
 
     #region FSLogix Apps
     $Dest = "$Target\FSLogix"
@@ -114,6 +121,7 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -E
 Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0 -Force
 
 # Run tasks
+Set-Repository
 Install-CoreApps
 
 # Stop Logging

@@ -25,7 +25,9 @@ Function Set-Repository {
 }
 
 Function Install-WindowsUpdates {
-    Install-Module PSWindowsUpdate
+    # Windows Update
+    Install-Module PSWindowsUpdate -AllowClobber
+    
     Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$False
     Get-WUInstall -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll
     Install-WindowsUpdate -NotTitle "Silverlight" -AcceptAll -IgnoreReboot
