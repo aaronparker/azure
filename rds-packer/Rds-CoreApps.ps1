@@ -33,14 +33,15 @@ Function Install-CoreApps {
     $Dest = "$Target\VcRedist"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
     $VcList = Get-VcList
-    Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest
-    Install-VcRedist -VcList $VcList -Path $Dest
+    Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest -Verbose
+    Install-VcRedist -VcList $VcList -Path $Dest -Verbose
     #endregion
 
     # Install the Evergreen module
     Install-Module -Name Evergreen -AllowClobber
 
     #region FSLogix Apps
+    Write-Host "Installing FSLogix agent"
     $Dest = "$Target\FSLogix"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
@@ -54,6 +55,7 @@ Function Install-CoreApps {
 
 
     #region Edge
+    Write-Host "Installing Microsoft Edge"
     $Dest = "$Target\Edge"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
@@ -64,6 +66,7 @@ Function Install-CoreApps {
 
 
     #region Office
+    Write-Host "Installing Microsoft Office"
     # Install Office 365 ProPlus; manage installed options in configurationRDS.xml
     $Dest = "$Target\Office"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
@@ -81,6 +84,7 @@ Function Install-CoreApps {
     #region Reader
     # Install Adobe Reader DC
     # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
+    Write-Host "Installing Adobe Acrobat Reader DC"
     $Dest = "$Target\Reader"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 

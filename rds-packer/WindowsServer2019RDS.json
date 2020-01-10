@@ -74,6 +74,9 @@
         {
             "type": "powershell",
             "inline": [
+                "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
+                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Get-InstalledSoftware.ps1\" -OutFile \"C:\\Apps\\Get-InstalledSoftware.ps1\" -UseBasicParsing",
+                "& C:\\Apps\\Get-InstalledSoftware.ps1",
                 "Write-Host \"Enable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $false",
                 "Write-Host \"Sysprep\"",
