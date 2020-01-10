@@ -29,7 +29,7 @@ Function Install-CoreApps {
     $Dest = "$Target\VcRedist"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
     $VcList = Get-VcList
-    Get-VcRedist -Path $Dest -VcList $VcList
+    Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest
     Install-VcRedist -VcList $VcList -Path $Dest
     #endregion
 
