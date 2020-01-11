@@ -11,7 +11,7 @@ Param (
 # Start logging; Set $VerbosePreference so full details are sent to the log
 $VerbosePreference = "Continue"
 Start-Transcript -Path $Log
-If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force }
+If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
 
 # Run Windows Defender quick scan; Running via BISF doesn't exit
 Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-SignatureUpdate -MMPC" -Wait
@@ -20,7 +20,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\RemovalTools\MRT" -Name "GUID" 
 
 #region Citrix Optimizer
     $Dest = "$Target\CitrixOptimizer"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/CitrixOptimizer.zip"
     Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
     Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest" -Force
@@ -31,7 +31,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\RemovalTools\MRT" -Name "GUID" 
 
 #region BIS-F
     $Dest = "$Target\BISF"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/scripts/rds/bisf-6.1.0.zip"
     Start-BitsTransfer -Source $url -Destination "$Dest\$(Split-Path $url -Leaf)"
     Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)"  -DestinationPath "$Dest" -Force
