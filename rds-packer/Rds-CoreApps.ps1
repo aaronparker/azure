@@ -69,7 +69,7 @@ Function Install-CoreApps {
     #endregion
 
 
-    #region Office
+    #region Office 365 ProPlus
     Write-Host "========== Microsoft Office"
     # Install Office 365 ProPlus; manage installed options in configurationRDS.xml
     $Dest = "$Target\Office"
@@ -90,7 +90,31 @@ Function Install-CoreApps {
     Pop-Location
     #endregion
 
+    #region Teams
+    $Dest = "$Target\Teams"
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
+    Write-Host "=============== Downloading Microsoft Teams"
+    $url = "https://statics.teams.cdn.office.net/production-windows-x64/1.2.00.32462/Teams_windows_x64.msi"
+    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+
+    Write-Host "=============== Installing Microsoft Teams"
+    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) ALLUSER=1"
+    #endregion
+
+    #region OneDrive
+    $Dest = "$Target\Teams"
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+    
+    Write-Host "=============== Downloading Microsoft Teams"
+    $url = "https://oneclient.sfx.ms/Win/Prod/19.192.0926.0012/OneDriveSetup.exe"
+    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+    
+    Write-Host "=============== Installing Microsoft Teams"
+    Start-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/allusers"
+    #endregion
+
+        
     #region Reader
     # Install Adobe Reader DC
     # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
@@ -134,9 +158,6 @@ Start-Transcript -Path $Log -Append
 
 # If local path for script doesn't exist, create it
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -ErrorAction SilentlyContinue }
-
-# Block the master image from registering with Azure AD; Enable autoWorkplaceJoin after the VMs are provisioned via GPO.
-Set-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\WorkplaceJoin -Name autoWorkplaceJoin -Value 0 -Force
 
 # Run tasks
 Set-Repository
