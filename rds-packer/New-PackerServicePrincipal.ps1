@@ -23,6 +23,7 @@ If ($role.RoleDefinitionName -notcontains "Contributor") {
     New-AzRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $sp.ApplicationId
 }
 
+# TODO: Password here outputs a GUID instead of the password.
 $output = @{
     "Password" = $plainPassword
     "AppId"    = $sp.ApplicationId
