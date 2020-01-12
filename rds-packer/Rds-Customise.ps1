@@ -21,11 +21,11 @@ Function Set-Customise {
 
     # Customisation scripts
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $url = "https://github.com/aaronparker/MDT/archive/master.zip"
+    $url = "https://github.com/aaronparker/build-azure-lab/raw/master/rds-packer/tools/Customise.zip"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
     
-    Push-Location "$Dest\MDT-master\Customise"
+    Push-Location $Dest
     . .\Invoke-Scripts.ps1
     Pop-Location
 }

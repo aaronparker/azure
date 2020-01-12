@@ -50,12 +50,13 @@
             "type": "windows-restart"
         },
         {
-            "type": "powershell",
-            "inline": [
-                "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Updates.ps1\" -OutFile \"C:\\Apps\\Rds-Updates.ps1\" -UseBasicParsing",
-                "& C:\\Apps\\Rds-Updates.ps1"
-            ]
+            "type": "windows-update",
+            "search_criteria": "IsInstalled=0",
+            "filters": [
+                "exclude:$_.Title -like '*Silverlight*'",
+                "include:$true"
+            ],
+            "update_limit": 25
         },
         {
             "type": "windows-restart"
@@ -72,10 +73,13 @@
             "type": "windows-restart"
         },
         {
-            "type": "powershell",
-            "inline": [
-                "& C:\\Apps\\Rds-Updates.ps1"
-            ]
+            "type": "windows-update",
+            "search_criteria": "IsInstalled=0",
+            "filters": [
+                "exclude:$_.Title -like '*Silverlight*'",
+                "include:$true"
+            ],
+            "update_limit": 25
         },
         {
             "type": "windows-restart"

@@ -26,6 +26,11 @@ If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.Installati
 # Install the Az module
 Install-Module -Name Az -AllowClobber
 
+# Install the Windows Update Packer plugin via Chocolatey
+Set-ExecutionPolicy Bypass -Scope Process -Force
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+choco install packer-provisioner-windows-update -yes
+
 # Get the subscription
 $sub = Get-AzSubscription
 
