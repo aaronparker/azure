@@ -159,6 +159,9 @@ Start-Transcript -Path $Log -Append
 # If local path for script doesn't exist, create it
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -ErrorAction SilentlyContinue }
 
+# Set TLS to 1.2
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 # Run tasks
 Set-Repository
 Install-CoreApps
