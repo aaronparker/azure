@@ -17,7 +17,7 @@ Param (
 #region Functions
 Function Set-Customise {
     $Dest = "$Target\Customise"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     # Customisation scripts
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

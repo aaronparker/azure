@@ -35,31 +35,28 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -Error
 #region Citrix Optimizer
 Write-Host "========== Citrix Optimizer"
 $Dest = "$Target\CitrixOptimizer"
-If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
 Write-Host "=============== Downloading Citrix Optimizer"
-$url = "https://github.com/aaronparker/build-azure-lab/raw/master/rds-packer/tools/CitrixOptimizer.zip"
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/CitrixOptimizer.zip"
 Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/WindowsServer2019-Defender-Azure.xml"
 Invoke-WebRequest -Uri $url -OutFile "$Dest\Templates\$(Split-Path $url -Leaf)" -UseBasicParsing
 
-Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
-& "$Dest\CtxOptimizerEngine.ps1" `
-    -Source "$Dest\Templates\$(Split-Path $url -Leaf)" `
-    -Mode execute -OutputHtml "$Dest\CitrixOptimizer.html"
+& "$Dest\CtxOptimizerEngine.ps1" -Source "$Dest\Templates\$(Split-Path $url -Leaf)" -Mode execute -OutputHtml "$Dest\CitrixOptimizer.html"
 #endregion
 
 #region BIS-F
 Write-Host "========== Base Image Script Framework"
 $Dest = "$Target\BISF"
-If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
 Write-Host "=============== Downloading BIS-F"
 Set-Repository
 Install-Module -Name Evergreen -AllowClobber
 $url = (Get-BISF).URI
 Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
-$url = "https://github.com/aaronparker/build-azure-lab/raw/master/rds-packer/tools/BisfConfig.zip"
+$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/BisfConfig.zip"
 Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
 

@@ -25,6 +25,9 @@ Function Set-Repository {
 }
 
 Function Install-CoreApps {
+    # Set TLS to 1.2
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
     #region VcRedist
     # Install the VcRedist module
     # https://docs.stealthpuppy.com/vcredist/
@@ -32,7 +35,7 @@ Function Install-CoreApps {
 
     Write-Host "========== Microsoft Visual C++ Redistributables"
     $Dest = "$Target\VcRedist"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
     $VcList = Get-VcList
     Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest -Verbose
     Install-VcRedist -VcList $VcList -Path $Dest -Verbose
@@ -44,7 +47,7 @@ Function Install-CoreApps {
     #region FSLogix Apps
     Write-Host "========== Microsoft FSLogix agent"
     $Dest = "$Target\FSLogix"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     $FSLogix = Get-MicrosoftFSLogixApps
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -57,7 +60,7 @@ Function Install-CoreApps {
     #region Edge
     Write-Host "========== Microsoft Edge"
     $Dest = "$Target\Edge"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     Write-Host "=============== Downloading Microsoft Edge"
     $url = "http://dl.delivery.mp.microsoft.com/filestreamingservice/files/89e511fc-33dd-4869-b781-81b4264b3e1e/MicrosoftEdgeBetaEnterpriseX64.msi"
@@ -73,7 +76,7 @@ Function Install-CoreApps {
     Write-Host "========== Microsoft Office"
     # Install Office 365 ProPlus; manage installed options in configurationRDS.xml
     $Dest = "$Target\Office"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     # Get the Office configuration.xml
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Office365ProPlusRDS.xml"
@@ -92,7 +95,7 @@ Function Install-CoreApps {
 
     #region Teams
     $Dest = "$Target\Teams"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     Write-Host "=============== Downloading Microsoft Teams"
     $url = "https://statics.teams.cdn.office.net/production-windows-x64/1.2.00.32462/Teams_windows_x64.msi"
@@ -104,7 +107,7 @@ Function Install-CoreApps {
 
     #region OneDrive
     $Dest = "$Target\Teams"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
     
     Write-Host "=============== Downloading Microsoft Teams"
     $url = "https://oneclient.sfx.ms/Win/Prod/19.192.0926.0012/OneDriveSetup.exe"
@@ -120,7 +123,7 @@ Function Install-CoreApps {
     # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
     Write-Host "========== Adobe Acrobat Reader DC"
     $Dest = "$Target\Reader"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue }
+    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     # Download Reader installer and updater
     Write-Host "=============== Downloading Reader"
@@ -158,9 +161,6 @@ Start-Transcript -Path $Log -Append
 
 # If local path for script doesn't exist, create it
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -ErrorAction SilentlyContinue }
-
-# Set TLS to 1.2
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # Run tasks
 Set-Repository
