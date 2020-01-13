@@ -40,12 +40,15 @@ If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -Error
 Write-Host "=============== Downloading Citrix Optimizer"
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/CitrixOptimizer.zip"
 Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
+Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath $Dest -Force
+If (!(Test-Path $Dest)) { New-Item -Path "$Dest\Templates" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/WindowsServer2019-Defender-Azure.xml"
 Invoke-WebRequest -Uri $url -OutFile "$Dest\Templates\$(Split-Path $url -Leaf)" -UseBasicParsing
 
 & "$Dest\CtxOptimizerEngine.ps1" -Source "$Dest\Templates\$(Split-Path $url -Leaf)" -Mode execute -OutputHtml "$Dest\CitrixOptimizer.html"
 #endregion
 
+<#
 #region BIS-F
 Write-Host "========== Base Image Script Framework"
 $Dest = "$Target\BISF"
@@ -61,13 +64,14 @@ Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicP
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
 
 Write-Host "=============== Installing BIS-F"
-Start-Process -FilePath "$Dest\$(Split-Path $url -Leaf)"  -ArgumentList "/SILENT" -Wait
+Start-Process -FilePath "$Dest\$(Split-Path $url -Leaf)" -ArgumentList "/SILENT" -Wait
 Remove-Item -Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Base Image Script Framework (BIS-F).lnk" -Force
 Copy-Item -Path "$Dest\BISFSharedConfig.json" -Destination "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\BISFSharedConfig.json"
 
 Write-Host "=============== Running BIS-F"
 & "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1"
 #endregion
+#>
 
 # Stop Logging
 Stop-Transcript
