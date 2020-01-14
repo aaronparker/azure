@@ -65,12 +65,12 @@ Function Invoke-Process {
             ArgumentList           = $ArgumentList
             RedirectStandardError  = $stdErrTempFile
             RedirectStandardOutput = $stdOutTempFile
-            Wait                   = $true;
-            PassThru               = $true;
-            NoNewWindow            = $true;
+            Wait                   = $true
+            PassThru               = $true
+            NoNewWindow            = $true
         }
         if ($PSCmdlet.ShouldProcess("Process [$($FilePath)]", "Run with args: [$($ArgumentList)]")) {
-            $cmd = Invoke-Process @startProcessParams
+            $cmd = Start-Process @startProcessParams
             $cmdOutput = Get-Content -Path $stdOutTempFile -Raw
             $cmdError = Get-Content -Path $stdErrTempFile -Raw
             if ($cmd.ExitCode -ne 0) {
