@@ -15,7 +15,7 @@ Param (
 )
 
 # Defender
-Write-Host "Disable Windows Defender real time scan"
+Write-Host "---- Disable Windows Defender real time scan"
 Set-MpPreference -DisableRealtimeMonitoring $true
 
 # Local working folder

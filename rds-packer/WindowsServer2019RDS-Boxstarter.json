@@ -36,13 +36,22 @@
         {
             "type": "powershell",
             "inline": [
-                "Write-Host \"Disable Windows Defender real time scan\"",
-                "Set-MpPreference -DisableRealtimeMonitoring $true",
-                "New-Item -Path \"$env:SystemDrive\\Apps\" -ItemType Directory -Force -ErrorAction SilentlyContinue",
+                "Write-Host \"---- Setup deployment environment\"",
                 "Set-ExecutionPolicy Bypass -Scope Process -Force",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))",
-                "choco install Boxstarter -y"
-                
+                "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Setup-Environment.ps1'))"
+            ]
+        },
+        {
+            "type": "powershell",
+            "inline": [
+                "Import-Module Boxstarter.Chocolatey",
+                "Set-ExecutionPolicy Bypass -Scope Process -Force",
+                "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
+                "Write-Host \"---- Configure region and roles\"",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-RegionalRoles.ps1'))",
+                "Write-Host \"---- Customise Windows\"",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Customise.ps1'))"
             ]
         },
         {
@@ -63,9 +72,11 @@
         {
             "type": "powershell",
             "inline": [
+                "Import-Module Boxstarter.Chocolatey",
+                "Set-ExecutionPolicy Bypass -Scope Process -Force",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-CoreApps.ps1\" -OutFile \"C:\\Apps\\Rds-CoreApps.ps1\" -UseBasicParsing",
-                "& C:\\Apps\\Rds-CoreApps.ps1"
+                "Write-Host \"---- Configure core applications\"",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-CoreApps.ps1'))"
             ]
         },
         {
@@ -86,14 +97,19 @@
         {
             "type": "powershell",
             "inline": [
+                "Import-Module Boxstarter.Chocolatey",
+                "Set-ExecutionPolicy Bypass -Scope Process -Force",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Seal-Image.ps1\" -OutFile \"C:\\Apps\\Seal-Image.ps1\" -UseBasicParsing",
-                "& C:\\Apps\\Seal-Image.ps1",
+                "Write-Host \"---- Seal image\"",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Seal-Image.ps1'))",
+                "Write-Host \"---- Uninstall Boxstarter & Chocolatey\"",
+                "choco uninstall boxstarter -y",
+                "Write-Host \"---- Output software\"",
                 "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Get-InstalledSoftware.ps1\" -OutFile \"C:\\Apps\\Get-InstalledSoftware.ps1\" -UseBasicParsing",
                 "& C:\\Apps\\Get-InstalledSoftware.ps1",
-                "Write-Host \"Enable Windows Defender real time scan\"",
+                "Write-Host \"---- Enable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $false",
-                "Write-Host \"Sysprep\"",
+                "Write-Host \"---- Sysprep\"",
                 "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
                 "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
             ]
