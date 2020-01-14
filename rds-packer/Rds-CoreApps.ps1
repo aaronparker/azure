@@ -112,6 +112,7 @@ Function Install-CoreApps {
     $VcList = Get-VcList
     Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest -Verbose
     Install-VcRedist -VcList $VcList -Path $Dest -Verbose
+    Write-Host "========== Done"
     #endregion
 
     # Install the Evergreen module
@@ -126,7 +127,9 @@ Function Install-CoreApps {
     Write-Host "Downloading to: $Dest\$(Split-Path -Path $FSLogix.URI -Leaf)"
     Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
-    Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart"
+    Write-Host "=============== Installing FSLogix agent"
+    Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
+    Write-Host "========== Done"
     #region
 
 
@@ -141,8 +144,9 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     Write-Host "=============== Installing Microsoft Edge"
-    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart"
-    Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force
+    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Verbose
+    Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction SilentlyContinue
+    Write-Host "========== Done"
     #endregion
 
 
@@ -162,13 +166,15 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $Office[0].URI -OutFile "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
     Push-Location -Path $Dest
     Write-Host "=============== Downloading Microsoft Office"
-    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $url -Leaf)"
+    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $url -Leaf)" -Verbose
     
     # Setup fails to exit, so wait 9-10 mins for Office install to complete
     Write-Host "=============== Installing Microsoft Office"
-    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)"
+    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Verbose
+    Write-Host "=============== Sleep 10 mins for Office setup"
     Start-Sleep -Seconds 600
     Pop-Location
+    Write-Host "========== Done"
     #endregion
 
     #region Teams
@@ -183,6 +189,7 @@ Function Install-CoreApps {
 
     Write-Host "=============== Installing Microsoft Teams"
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet ALLUSER=1" -Wait
+    Write-Host "========== Done"
     #endregion
 
     #region OneDrive
@@ -196,7 +203,8 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
     
     Write-Host "=============== Installing Microsoft OneDrive"
-    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/allusers"
+    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/allusers" -Verbose
+    Write-Host "========== Done"
     #endregion
 
         
@@ -222,7 +230,7 @@ Function Install-CoreApps {
     # Install Adobe Reader
     Write-Host "=============== Installing Reader"
     $exe = Get-ChildItem -Path $Dest -Filter "*.exe"
-    Invoke-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments
+    Invoke-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments -Verbose
 
     # Run post install actions
     Write-Host "=============== Post install configuration Reader"
@@ -233,7 +241,8 @@ Function Install-CoreApps {
     # Update Adobe Reader
     Write-Host "=============== Update Reader"
     $msp = Get-ChildItem -Path $Dest -Filter "*.msp"
-    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet"
+    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet" -Verbose
+    Write-Host "========== Done"
     #endregion
 }
 #endregion
