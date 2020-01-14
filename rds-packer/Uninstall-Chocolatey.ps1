@@ -16,7 +16,7 @@ $machinePath = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey('SYSTEM\Curre
   
   Machine PATH:
   $machinePath
-"@ | Out-File "C:\PATH_backups_ChocolateyUninstall.txt" -Encoding UTF8 -Force
+"@ | Out-File "$env:SystemRoot\Temp\PATH_backups_ChocolateyUninstall.txt" -Encoding UTF8 -Force
   
 if ($userPath -like "*$env:ChocolateyInstall*") {
   Write-Output "Chocolatey Install location found in User Path. Removing..."
@@ -46,4 +46,3 @@ Remove-Item -Recurse -Force "$env:ChocolateyInstall"
 [System.Environment]::SetEnvironmentVariable("ChocolateyInstall", $null, 'Machine')
 [System.Environment]::SetEnvironmentVariable("ChocolateyLastPathUpdate", $null, 'User')
 [System.Environment]::SetEnvironmentVariable("ChocolateyLastPathUpdate", $null, 'Machine')
-  

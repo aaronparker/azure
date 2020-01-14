@@ -8,10 +8,7 @@ Param (
     [string] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [string] $Target = "$env:SystemDrive\Apps",
-        
-    [Parameter(Mandatory = $False)]
-    [string] $VerbosePreference = "Continue"
+    [string] $Target = "$env:SystemDrive\Apps"
 )
 
 # Defender
