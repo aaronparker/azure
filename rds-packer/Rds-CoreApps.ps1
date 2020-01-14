@@ -109,7 +109,7 @@ Function Install-CoreApps {
 
     $Dest = "$Target\VcRedist"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
-    $VcList = Get-VcList
+    $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
     Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest -Verbose
     Install-VcRedist -VcList $VcList -Path $Dest -Verbose
     Write-Host "========== Done"
