@@ -104,6 +104,7 @@
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Seal-Image.ps1'))",
                 "Write-Host \"---- Uninstall Boxstarter & Chocolatey\"",
                 "choco uninstall boxstarter -y",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Uninstall-Chocolatey.ps1'))",
                 "Write-Host \"---- Output software\"",
                 "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Get-InstalledSoftware.ps1\" -OutFile \"C:\\Apps\\Get-InstalledSoftware.ps1\" -UseBasicParsing",
                 "& C:\\Apps\\Get-InstalledSoftware.ps1",
