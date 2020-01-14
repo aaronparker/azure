@@ -24,16 +24,17 @@ Function Set-Repository {
     }
 }
 
-<#PSScriptInfo 
+Function Invoke-Process {
+    <#PSScriptInfo 
     .VERSION 1.4 
     .GUID b787dc5d-8d11-45e9-aeef-5cf3a1f690de 
     .AUTHOR Adam Bertram 
     .COMPANYNAME Adam the Automator, LLC 
     .TAGS Processes 
-#>
+    #>
 
-<# 
-.DESCRIPTION 
+    <# 
+    .DESCRIPTION 
     Invoke-Process is a simple wrapper function that aims to "PowerShellyify" launching typical external processes. There 
     are lots of ways to invoke processes in PowerShell with Invoke-Process, Invoke-Expression, & and others but none account 
     well for the various streams and exit codes that an external process returns. Also, it's hard to write good tests 
@@ -41,8 +42,7 @@ Function Set-Repository {
  
     This function ensures any errors are sent to the error stream, standard output is sent via the Output stream and any 
     time the process returns an exit code other than 0, treat it as an error. 
-#> 
-Function Invoke-Process {
+    #> 
     [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory)]
@@ -126,7 +126,7 @@ Function Install-CoreApps {
     Write-Host "Downloading to: $Dest\$(Split-Path -Path $FSLogix.URI -Leaf)"
     Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
-    Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Wait
+    Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart"
     #region
 
 
@@ -141,7 +141,7 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     Write-Host "=============== Installing Microsoft Edge"
-    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Wait
+    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart"
     Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force
     #endregion
 
@@ -162,7 +162,7 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $Office[0].URI -OutFile "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
     Push-Location -Path $Dest
     Write-Host "=============== Downloading Microsoft Office"
-    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $url -Leaf)" -Wait
+    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $url -Leaf)"
     
     # Setup fails to exit, so wait 9-10 mins for Office install to complete
     Write-Host "=============== Installing Microsoft Office"
@@ -222,7 +222,7 @@ Function Install-CoreApps {
     # Install Adobe Reader
     Write-Host "=============== Installing Reader"
     $exe = Get-ChildItem -Path $Dest -Filter "*.exe"
-    Invoke-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments -Wait
+    Invoke-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments
 
     # Run post install actions
     Write-Host "=============== Post install configuration Reader"
@@ -233,7 +233,7 @@ Function Install-CoreApps {
     # Update Adobe Reader
     Write-Host "=============== Update Reader"
     $msp = Get-ChildItem -Path $Dest -Filter "*.msp"
-    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet" -Wait
+    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet"
     #endregion
 }
 #endregion
