@@ -51,7 +51,7 @@
                 "Write-Host \"---- Configure region and roles\"",
                 "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-RegionalRoles.ps1",
                 "Write-Host \"---- Customise Windows\"",
-                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Customise.ps1))"
+                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Customise.ps1"
             ]
         },
         {
