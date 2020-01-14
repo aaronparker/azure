@@ -13,7 +13,10 @@ param(
     [System.String] $Template = ".\WindowsServer2019RDS.json",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $ImageName = "WindowsServer2019RemoteDesktopHost"
+    [System.String] $ImageName = "WindowsServer2019RemoteDesktopHost",
+
+    [Parameter(Mandatory = $False)]
+    [System.String] $KeyVault
 )
 
 # Trust the PSGallery for installing modules
@@ -34,6 +37,10 @@ choco install packer-provisioner-windows-update -yes
 # Get the subscription
 $sub = Get-AzSubscription
 
+# Get values from the Key Vault
+$Secret = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name PackerSecret).SecretValueText
+$AppId = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name PackerAppId).SecretValueText
+
 # Get UTC date/time
 $date = Get-Date
 $dateFormat = "$($date.Day)$($date.Month)$($date.Year)"
@@ -46,5 +53,5 @@ $dateFormat = "$($date.Day)$($date.Month)$($date.Year)"
 (Get-Content $Template).replace("<resourcegroup>", $ResourceGroup) | Set-Content $Template
 (Get-Content $Template).replace("<imagename>", "$ImageName-$dateFormat") | Set-Content $Template
 
-# Run Packer
-#Start-Process -FilePath ".\Packer.exe" -ArgumentList "build $Template" -Wait
+# Validate template
+Start-Process -FilePath ".\Packer.exe" -ArgumentList "validate $Template" -Wait

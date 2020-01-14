@@ -7,7 +7,6 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="OneNote" />
       <ExcludeApp ID="Teams" />
     </Product>
     <Product ID="VisioProRetail">
@@ -17,7 +16,6 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="OneNote" />
       <ExcludeApp ID="Teams" />
     </Product>
     <Product ID="ProjectProRetail">
@@ -27,7 +25,6 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="OneNote" />
       <ExcludeApp ID="Teams" />
     </Product>
   </Add>
