@@ -8,10 +8,7 @@ Param (
     [string] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [string] $Target = "$env:SystemDrive\Apps",
-    
-    [Parameter(Mandatory = $False)]
-    [string] $VerbosePreference = "Continue"
+    [string] $Target = "$env:SystemDrive\Apps"
 )
 
 #region Functions
@@ -95,7 +92,7 @@ Function Invoke-Process {
         Remove-Item -Path $stdOutTempFile, $stdErrTempFile -Force -ErrorAction Ignore
     }
 }
-
+#endregion
 
 Function Install-CoreApps {
     # Set TLS to 1.2
