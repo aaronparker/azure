@@ -136,7 +136,7 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     Write-Host "================ Downloading Microsoft Edge"
-    $url = "http://dl.delivery.mp.microsoft.com/filestreamingservice/files/89e511fc-33dd-4869-b781-81b4264b3e1e/MicrosoftEdgeBetaEnterpriseX64.msi"
+    $url = "http://dl.delivery.mp.microsoft.com/filestreamingservice/files/71919e66-4ee5-4e7c-994b-4a9f1933a15c/MicrosoftEdgeEnterpriseX64.msi"
     Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
