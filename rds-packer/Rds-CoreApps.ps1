@@ -188,9 +188,9 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Installing Microsoft Teams"
-    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
-    # Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Sleep 3 mins for Teams setup"
-    # Start-Sleep -Seconds 180
+    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Sleep 3 mins for Teams setup"
+    Start-Sleep -Seconds 180
     Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Done"
     #endregion
 
