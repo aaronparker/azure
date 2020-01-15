@@ -188,7 +188,7 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     Write-Host "=============== Installing Microsoft Teams"
-    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet ALLUSER=1"
+    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
     # Write-Host "=============== Sleep 3 mins for Teams setup"
     # Start-Sleep -Seconds 180
     Write-Host "========== Done"
@@ -243,7 +243,7 @@ Function Install-CoreApps {
     # Update Adobe Reader
     Write-Host "=============== Update Reader"
     $msp = Get-ChildItem -Path $Dest -Filter "*.msp"
-    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet" -Verbose
+    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet /qn" -Verbose
     Write-Host "========== Done"
     #endregion
 }
