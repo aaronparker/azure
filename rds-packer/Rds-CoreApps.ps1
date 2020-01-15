@@ -167,9 +167,9 @@ Function Install-CoreApps {
     
     # Setup fails to exit, so wait 9-10 mins for Office install to complete
     Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Installing Microsoft Office"
-    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Verbose
-    # Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Sleep 10 mins for Office setup"
-    # Start-Sleep -Seconds 600
+    Start-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Verbose
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Sleep 10 mins for Office setup"
+    Start-Sleep -Seconds 600
     Pop-Location
     Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Done"
     #endregion
