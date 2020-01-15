@@ -102,7 +102,7 @@ Function Install-CoreApps {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
     #region VcRedist
-    Write-Host "========== Microsoft Visual C++ Redistributables"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Microsoft Visual C++ Redistributables"
     # Install the VcRedist module
     # https://docs.stealthpuppy.com/vcredist/
     Install-Module -Name VcRedist -AllowClobber
@@ -112,116 +112,116 @@ Function Install-CoreApps {
     $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
     Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest -Verbose
     Install-VcRedist -VcList $VcList -Path $Dest -Verbose
-    Write-Host "========== Done"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Done"
     #endregion
 
     # Install the Evergreen module
     Install-Module -Name Evergreen -AllowClobber
 
     #region FSLogix Apps
-    Write-Host "========== Microsoft FSLogix agent"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Microsoft FSLogix agent"
     $Dest = "$Target\FSLogix"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     $FSLogix = Get-MicrosoftFSLogixApps
-    Write-Host "Downloading to: $Dest\$(Split-Path -Path $FSLogix.URI -Leaf)"
+    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $FSLogix.URI -Leaf)"
     Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
-    Write-Host "=============== Installing FSLogix agent"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Installing FSLogix agent"
     Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
-    Write-Host "========== Done"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Done"
     #region
 
 
     #region Edge
-    Write-Host "========== Microsoft Edge"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Microsoft Edge"
     $Dest = "$Target\Edge"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
-    Write-Host "=============== Downloading Microsoft Edge"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Downloading Microsoft Edge"
     $url = "http://dl.delivery.mp.microsoft.com/filestreamingservice/files/89e511fc-33dd-4869-b781-81b4264b3e1e/MicrosoftEdgeBetaEnterpriseX64.msi"
-    Write-Host "Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
+    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
-    Write-Host "=============== Installing Microsoft Edge"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Installing Microsoft Edge"
     Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Verbose
     Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction SilentlyContinue
-    Write-Host "========== Done"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Done"
     #endregion
 
 
     #region Office 365 ProPlus
-    Write-Host "========== Microsoft Office"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Microsoft Office"
     # Install Office 365 ProPlus; manage installed options in configurationRDS.xml
     $Dest = "$Target\Office"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     # Get the Office configuration.xml
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Office365ProPlusRDS.xml"
-    Write-Host "Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
+    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     $Office = Get-MicrosoftOffice
-    Write-Host "Downloading to: $Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
+    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
     Invoke-WebRequest -Uri $Office[0].URI -OutFile "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)"
     Push-Location -Path $Dest
-    Write-Host "=============== Downloading Microsoft Office"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Downloading Microsoft Office"
     Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $url -Leaf)" -Verbose
     
     # Setup fails to exit, so wait 9-10 mins for Office install to complete
-    Write-Host "=============== Installing Microsoft Office"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Installing Microsoft Office"
     Invoke-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Verbose
-    # Write-Host "=============== Sleep 10 mins for Office setup"
+    # Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Sleep 10 mins for Office setup"
     # Start-Sleep -Seconds 600
     Pop-Location
-    Write-Host "========== Done"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Done"
     #endregion
 
     #region Teams
-    Write-Host "========== Microsoft Teams"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Microsoft Teams"
     $Dest = "$Target\Teams"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
-    Write-Host "=============== Downloading Microsoft Teams"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Downloading Microsoft Teams"
     $url = "https://statics.teams.cdn.office.net/production-windows-x64/1.2.00.32462/Teams_windows_x64.msi"
-    Write-Host "Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
+    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
-    Write-Host "=============== Installing Microsoft Teams"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Installing Microsoft Teams"
     Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
-    # Write-Host "=============== Sleep 3 mins for Teams setup"
+    # Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Sleep 3 mins for Teams setup"
     # Start-Sleep -Seconds 180
-    Write-Host "========== Done"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Done"
     #endregion
 
     #region OneDrive
-    Write-Host "========== Microsoft OneDrive"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Microsoft OneDrive"
     $Dest = "$Target\OneDrive"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
     
-    Write-Host "=============== Downloading Microsoft OneDrive"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Downloading Microsoft OneDrive"
     $url = "https://oneclient.sfx.ms/Win/Prod/19.192.0926.0012/OneDriveSetup.exe"
-    Write-Host "Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
+    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
     
-    Write-Host "=============== Installing Microsoft OneDrive"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Installing Microsoft OneDrive"
     Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/allusers" -Verbose
-    Write-Host "========== Done"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Done"
     #endregion
 
         
     #region Reader
     # Install Adobe Reader DC
     # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
-    Write-Host "========== Adobe Acrobat Reader DC"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Adobe Acrobat Reader DC"
     $Dest = "$Target\Reader"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     # Download Reader installer and updater
-    Write-Host "=============== Downloading Reader"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Downloading Reader"
     $Reader = Get-AdobeAcrobatReaderDC | Where-Object { $_.Platform -eq "Windows" -and ($_.Language -eq "English" -or $_.Language -eq "Neutral") }
     ForEach ($File in $Reader) {
-        Write-Host "Downloading to: $(Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf))"
+        Write-Host "=========== Downloading to: $(Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf))"
         (New-Object System.Net.WebClient).DownloadFile($File.Uri, $(Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf)))
         #Invoke-WebRequest -Uri $File.Uri -OutFile (Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf)) -UseBasicParsing
     }
@@ -230,28 +230,28 @@ Function Install-CoreApps {
     $res = Export-EvergreenFunctionStrings -AppName "AdobeAcrobatReaderDC"
 
     # Install Adobe Reader
-    Write-Host "=============== Installing Reader"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Installing Reader"
     $exe = Get-ChildItem -Path $Dest -Filter "*.exe"
     Invoke-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments -Verbose
 
     # Run post install actions
-    Write-Host "=============== Post install configuration Reader"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Post install configuration Reader"
     ForEach ($command in $res.Install.Virtual.PostInstall) {
         Invoke-Command -ScriptBlock ($executioncontext.invokecommand.NewScriptBlock($command))
     }
 
     # Update Adobe Reader
-    Write-Host "=============== Update Reader"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] ================ Update Reader"
     $msp = Get-ChildItem -Path $Dest -Filter "*.msp"
     Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet /qn" -Verbose
-    Write-Host "========== Done"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Done"
     #endregion
 }
 #endregion
 
 #region Script logic
 # Start logging
-Write-Host "========== Running: $($MyInvocation.MyCommand)."
+Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Running: $($MyInvocation.MyCommand)."
 Start-Transcript -Path $Log -Append
 
 # If local path for script doesn't exist, create it
@@ -263,5 +263,5 @@ Install-CoreApps
 
 # Stop Logging
 Stop-Transcript
-Write-Host "========== Complete: $($MyInvocation.MyCommand)."
+Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm:ss")] =========== Complete: $($MyInvocation.MyCommand)."
 #endregion
