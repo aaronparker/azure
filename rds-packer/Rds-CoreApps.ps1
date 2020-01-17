@@ -154,7 +154,7 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     # Get the Office configuration.xml
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Office365ProPlusRDS.xml"
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusRDS.xml"
     Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
@@ -185,9 +185,15 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     Write-Host "================ Installing Microsoft Teams"
-    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
-    Write-Host "================ Sleep 3 mins for Teams setup"
-    Start-Sleep -Seconds 180
+    If ((Get-WindowsFeature -Name "RDS-RD-Server").InstallState -eq "Installed") {
+        $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn"
+    }
+    Else {
+        $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
+    }
+    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Wait
+    # Write-Host "================ Sleep 3 mins for Teams setup"
+    # Start-Sleep -Seconds 180
     Write-Host "=========== Done"
     #endregion
 

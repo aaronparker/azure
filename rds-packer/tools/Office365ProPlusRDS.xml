@@ -7,7 +7,6 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="Teams" />
     </Product>
     <Product ID="VisioProRetail">
       <Language ID="MatchOS" />
@@ -16,7 +15,6 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="Teams" />
     </Product>
     <Product ID="ProjectProRetail">
       <Language ID="MatchOS" />
@@ -25,7 +23,6 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="Teams" />
     </Product>
   </Add>
   <Property Name="SharedComputerLicensing" Value="1" />
