@@ -154,7 +154,12 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     # Get the Office configuration.xml
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusRDS.xml"
+    If ((Get-WindowsFeature -Name "RDS-RD-Server").InstallState -eq "Installed") {
+        $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusRDS.xml"
+    }
+    Else {
+        $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusVDI.xml"
+    }
     Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
