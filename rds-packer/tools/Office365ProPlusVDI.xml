@@ -8,6 +8,7 @@
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
       <ExcludeApp ID="Teams" />
+      <ExcludeApp ID="Publisher" />
     </Product>
     <Product ID="VisioProRetail">
       <Language ID="MatchOS" />
@@ -17,6 +18,7 @@
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
       <ExcludeApp ID="Teams" />
+      <ExcludeApp ID="Publisher" />
     </Product>
     <Product ID="ProjectProRetail">
       <Language ID="MatchOS" />
@@ -26,6 +28,7 @@
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
       <ExcludeApp ID="Teams" />
+      <ExcludeApp ID="Publisher" />
     </Product>
   </Add>
   <Property Name="SharedComputerLicensing" Value="1" />
