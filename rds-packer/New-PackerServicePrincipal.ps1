@@ -3,7 +3,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $False)]
-    [string] $AppName = "HashicorpPackerServicePrincipal"
+    [System.String] $AppName = "HashicorpPackerServicePrincipal"
 )
 
 # Find an existing service principal

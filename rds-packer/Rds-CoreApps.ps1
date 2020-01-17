@@ -5,10 +5,10 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $False)]
-    [string] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
+    [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [string] $Target = "$env:SystemDrive\Apps"
+    [System.String] $Target = "$env:SystemDrive\Apps"
 )
 
 #region Functions
@@ -44,11 +44,11 @@ Function Invoke-Process {
     param (
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
-        [string] $FilePath,
+        [System.String] $FilePath,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [string] $ArgumentList
+        [System.String] $ArgumentList
     )
 
     $ErrorActionPreference = 'Stop'
@@ -79,7 +79,7 @@ Function Invoke-Process {
                 }
             }
             else {
-                if ([string]::IsNullOrEmpty($cmdOutput) -eq $false) {
+                if ([System.String]::IsNullOrEmpty($cmdOutput) -eq $false) {
                     Write-Output -InputObject $cmdOutput
                 }
             }

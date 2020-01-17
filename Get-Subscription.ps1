@@ -5,10 +5,10 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $True, Position = 0)]
-    [String] $Username,
+    [System.String] $Username,
 
     [Parameter(Mandatory = $False, Position = 1)]
-    [String] $Password
+    [System.String] $Password
 )
 
 # Check for AzureRM module

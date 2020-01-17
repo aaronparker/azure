@@ -8,22 +8,22 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $False)]
-    [string] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
+    [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [string] $Target = "$env:SystemDrive\Apps",
+    [System.String] $Target = "$env:SystemDrive\Apps",
     
     [Parameter(Mandatory = $False)]
-    [string] $User,
+    [System.String] $User,
     
     [Parameter(Mandatory = $False)]
-    [string] $Pass,
+    [System.String] $Pass,
     
     [Parameter(Mandatory = $False)]
-    [string] $AppShare,
+    [System.String] $AppShare,
     
     [Parameter(Mandatory = $False)]
-    [string] $VerbosePreference = "Continue"
+    [System.String] $VerbosePreference = "Continue"
 )
 
 #region Functions

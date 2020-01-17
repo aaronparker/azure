@@ -5,10 +5,10 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $False)]
-    [string] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
+    [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [string] $Target = "$env:SystemDrive\Apps"
+    [System.String] $Target = "$env:SystemDrive\Apps"
 )
 
 # Local working folder

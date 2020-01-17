@@ -5,13 +5,13 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $False)]
-    [string] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
+    [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [string] $Target = "$env:SystemDrive\Apps",
+    [System.String] $Target = "$env:SystemDrive\Apps",
         
     [Parameter(Mandatory = $False)]
-    [string] $VerbosePreference = "Continue"
+    [System.String] $VerbosePreference = "Continue"
 )
 
 #region Functions
@@ -26,7 +26,7 @@ Function Set-Customise {
     Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
     
     Push-Location $Dest
-    . .\Invoke-Scripts.ps1
+    . .\Invoke-Scripts.ps1 -Verbose
     Pop-Location
 }
 #endregion
