@@ -136,7 +136,8 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     Write-Host "================ Downloading Microsoft Edge"
-    $url = "http://dl.delivery.mp.microsoft.com/filestreamingservice/files/71919e66-4ee5-4e7c-994b-4a9f1933a15c/MicrosoftEdgeEnterpriseX64.msi"
+    $Edge = Get-MicrosoftEdge | Where-Object { $_.Architecture -eq "x64" -and $_.Product -eq "Stable" -and $_.Platform -eq "Windows" }
+    $url = $Edge[0].URI
     Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
@@ -185,7 +186,8 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     Write-Host "================ Downloading Microsoft Teams"
-    $url = "https://statics.teams.cdn.office.net/production-windows-x64/1.2.00.32462/Teams_windows_x64.msi"
+    $Teams = Get-MicrosoftTeams | Where-Object { $_.Architecture -eq "x64" }
+    $url = $Teams.URI
     Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
