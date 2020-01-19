@@ -144,6 +144,11 @@ Function Install-CoreApps {
     Write-Host "================ Installing Microsoft Edge"
     Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Verbose
     Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction SilentlyContinue
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/master_preferences"
+    Invoke-WebRequest -Uri $url -OutFile "${Env:ProgramFiles(x86)}\Microsoft\Edge\Application\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+    $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
+    ForEach ($service in $services) { Set-Service -Name $service -StartupType "Disabled" }
+    ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False }
     Write-Host "=========== Done"
     #endregion
 
