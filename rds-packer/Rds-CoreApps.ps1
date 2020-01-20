@@ -179,8 +179,10 @@ Function Install-CoreApps {
     # Setup fails to exit, so wait 9-10 mins for Office install to complete
     Write-Host "================ Installing Microsoft Office"
     Start-Process -FilePath "$Dest\$(Split-Path -Path $Office[0].URI -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Verbose
-    Write-Host "================ Sleep 10 mins for Office setup"
-    Start-Sleep -Seconds 600
+    For ($i = 0; $i -le 9; $i++) {
+        Write-Host "================ Sleep $(10 - $i) mins for Office setup"
+        Start-Sleep -Seconds 60
+    }
     Pop-Location
     Write-Host "=========== Done"
     #endregion
@@ -203,9 +205,11 @@ Function Install-CoreApps {
     Else {
         $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
     }
-    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Wait
-    # Write-Host "================ Sleep 3 mins for Teams setup"
-    # Start-Sleep -Seconds 180
+    Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList
+    For ($i = 0; $i -le 2; $i++) {
+        Write-Host "================ Sleep $(3 - $i) mins for Teams setup"
+        Start-Sleep -Seconds 60
+    }
     Write-Host "=========== Done"
     #endregion
 
