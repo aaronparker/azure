@@ -1,4 +1,9 @@
 {
+    "homepage": "https://www.office.com",
+    "homepage_is_newtabpage": false,
+    "browser": {
+      "show_home_button": true
+    },
     "distribution": {
         "skip_first_run_ui": true,
         "show_welcome_page": false,
