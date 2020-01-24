@@ -38,7 +38,6 @@ Function Set-Roles {
             Set-Service WSearch -StartupType Automatic
         }
         "Microsoft Windows 10*" {
-
         }
     }
 }

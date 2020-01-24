@@ -92,18 +92,24 @@ Function Invoke-Process {
         Remove-Item -Path $stdOutTempFile, $stdErrTempFile -Force -ErrorAction Ignore
     }
 }
-#endregion
 
 Function Install-CoreApps {
     # Set TLS to 1.2
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-    #region VcRedist
-    Write-Host "=========== Microsoft Visual C++ Redistributables"
+    #region Modules
+    Write-Host "=========== Installing required modules"
+    # Install the Evergreen module
+    # https://github.com/aaronparker/Evergreen
+    Install-Module -Name Evergreen -AllowClobber
     # Install the VcRedist module
     # https://docs.stealthpuppy.com/vcredist/
     Install-Module -Name VcRedist -AllowClobber
+    #endregion
 
+
+    #region VcRedist
+    Write-Host "=========== Microsoft Visual C++ Redistributables"
     $Dest = "$Target\VcRedist"
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
     $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
@@ -112,8 +118,6 @@ Function Install-CoreApps {
     Write-Host "=========== Done"
     #endregion
 
-    # Install the Evergreen module
-    Install-Module -Name Evergreen -AllowClobber
 
     #region FSLogix Apps
     Write-Host "=========== Microsoft FSLogix agent"
@@ -128,7 +132,7 @@ Function Install-CoreApps {
     Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
     Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsRuleEditorSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
     Write-Host "=========== Done"
-    #region
+    #endregion
 
 
     #region Edge
@@ -138,7 +142,8 @@ Function Install-CoreApps {
 
     Write-Host "================ Downloading Microsoft Edge"
     $Edge = Get-MicrosoftEdge | Where-Object { $_.Architecture -eq "x64" -and $_.Product -eq "Stable" -and $_.Platform -eq "Windows" }
-    $url = $Edge[0].URI
+    $Edge = $Edge | Sort-Object -Property Version -Descending | Select-Object -First 1
+    $url = $Edge.URI
     Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
@@ -150,6 +155,7 @@ Function Install-CoreApps {
     $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
     ForEach ($service in $services) { Set-Service -Name $service -StartupType "Disabled" }
     ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
+    Remove-Variable -Name url
     Write-Host "=========== Done"
     #endregion
 
@@ -161,11 +167,16 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
     # Get the Office configuration.xml
-    If ((Get-WindowsFeature -Name "RDS-RD-Server").InstallState -eq "Installed") {
-        $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusRDS.xml"
-    }
-    Else {
-        $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusVDI.xml"
+    Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
+        "Microsoft Windows Server*" {
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusRDS.xml"
+        }
+        "Microsoft Windows 10 Enterprise for Virtual Desktops" {
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusRDS.xml"
+        }
+        "Microsoft Windows 10*" {
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusVDI.xml"
+        }
     }
     Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
@@ -185,8 +196,10 @@ Function Install-CoreApps {
         Start-Sleep -Seconds 60
     }
     Pop-Location
+    Remove-Variable -Name url
     Write-Host "=========== Done"
     #endregion
+
 
     #region Teams
     Write-Host "=========== Microsoft Teams"
@@ -200,19 +213,26 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     Write-Host "================ Installing Microsoft Teams"
-    If ((Get-WindowsFeature -Name "RDS-RD-Server").InstallState -eq "Installed") {
-        $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn"
-    }
-    Else {
-        $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
+    Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
+        "Microsoft Windows Server*" {
+            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn"
+        }
+        "Microsoft Windows 10 Enterprise for Virtual Desktops" {
+            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
+        }
+        "Microsoft Windows 10*" {
+            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
+        }
     }
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList
     For ($i = 0; $i -le 2; $i++) {
         Write-Host "================ Sleep $(3 - $i) mins for Teams setup"
         Start-Sleep -Seconds 60
     }
+    Remove-Variable -Name url
     Write-Host "=========== Done"
     #endregion
+
 
     #region OneDrive
     Write-Host "=========== Microsoft OneDrive"
@@ -226,6 +246,7 @@ Function Install-CoreApps {
     
     Write-Host "================ Installing Microsoft OneDrive"
     Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/allusers" -Verbose
+    Remove-Variable -Name url
     Write-Host "=========== Done"
     #endregion
 
@@ -267,14 +288,17 @@ Function Install-CoreApps {
     Write-Host "=========== Done"
     #endregion
 
+
     #region Default Apps & File Type Associations
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/FileTypeAssociations.xml"
     $output = "$Target\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
     Invoke-Process -FilePath "$env:SystemRoot\System32\dism.exe" -ArgumentList "/Online /Import-DefaultAppAssociations:$output" -Verbose
+    Remove-Variable -Name url
     #endregion
 }
 #endregion
+
 
 #region Script logic
 # Start logging

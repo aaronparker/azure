@@ -41,8 +41,22 @@ Write-Host "=============== Downloading Citrix Optimizer"
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/CitrixOptimizer.zip"
 Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath $Dest -Force
+
+# Download templates
 If (!(Test-Path $Dest)) { New-Item -Path "$Dest\Templates" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
-$url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/WindowsServer2019-Defender-Azure.xml"
+Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
+    "Microsoft Windows Server*" {
+        $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/WindowsServer2019-Defender-Azure.xml"
+    }
+    "Microsoft Windows 10 Enterprise for Virtual Desktops" {
+        $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Windows101903-Defender-Azure.xml"
+    }
+    "Microsoft Windows 10*" {
+        $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Windows101903-Defender-Azure.xml"
+    }
+}
+
+
 Invoke-WebRequest -Uri $url -OutFile "$Dest\Templates\$(Split-Path $url -Leaf)" -UseBasicParsing
 
 & "$Dest\CtxOptimizerEngine.ps1" -Source "$Dest\Templates\$(Split-Path $url -Leaf)" -Mode execute -OutputHtml "$Dest\CitrixOptimizer.html"
