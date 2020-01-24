@@ -56,9 +56,6 @@
             "update_limit": 25
         },
         {
-            "type": "windows-restart"
-        },
-        {
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
@@ -76,9 +73,6 @@
                 "include:$true"
             ],
             "update_limit": 25
-        },
-        {
-            "type": "windows-restart"
         },
         {
             "type": "powershell",
