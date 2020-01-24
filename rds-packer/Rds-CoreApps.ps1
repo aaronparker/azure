@@ -126,6 +126,7 @@ Function Install-CoreApps {
     Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
     Write-Host "================ Installing FSLogix agent"
     Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
+    Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsRuleEditorSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
     Write-Host "=========== Done"
     #region
 
@@ -148,7 +149,7 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $url -OutFile "${Env:ProgramFiles(x86)}\Microsoft\Edge\Application\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
     $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
     ForEach ($service in $services) { Set-Service -Name $service -StartupType "Disabled" }
-    ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False }
+    ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
     Write-Host "=========== Done"
     #endregion
 

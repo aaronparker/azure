@@ -25,14 +25,21 @@ Function Set-RegionalSettings {
 }
 
 Function Set-Roles {
-    # Add / Remove roles (requires reboot at end of deployment)
-    Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
-    Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
-    Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Core
+    Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
+        "Microsoft Windows Server*" {
+            # Add / Remove roles (requires reboot at end of deployment)
+            Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
+            Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
+            Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Core
 
-    # Configure services
-    Set-Service Audiosrv -StartupType Automatic
-    Set-Service WSearch -StartupType Automatic
+            # Configure services
+            Set-Service Audiosrv -StartupType Automatic
+            Set-Service WSearch -StartupType Automatic
+        }
+        "Microsoft Windows 10*" {
+
+        }
+    }
 }
 #endregion
 
