@@ -266,6 +266,13 @@ Function Install-CoreApps {
     Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet /qn" -Verbose
     Write-Host "=========== Done"
     #endregion
+
+    #region Default Apps & File Type Associations
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/FileTypeAssociations.xml"
+    $output = "$Target\$(Split-Path -Path $url -Leaf)"
+    Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
+    Invoke-Process -FilePath "$env:SystemRoot\System32\dism.exe" -ArgumentList "/Online /Import-DefaultAppAssociations:$output" -Verbose
+    #endregion
 }
 #endregion
 

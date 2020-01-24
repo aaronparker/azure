@@ -17,11 +17,12 @@ Function Set-RegionalSettings {
     Import-Module International
     Set-WinHomeLocation -GeoId 12
     Set-WinSystemLocale -SystemLocale en-AU
+    Set-WinUserLanguageList -LanguageList en-AU -Force
     Set-TimeZone -Id "AUS Eastern Standard Time" -Verbose
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/enAU-Language.xml"
     Invoke-WebRequest -Uri $url -OutFile "$Target\$(Split-Path $url -Leaf)"
-    & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$Target\language.xml`""
+    & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$Target\enAU-Language.xml`""
 }
 
 Function Set-Roles {
