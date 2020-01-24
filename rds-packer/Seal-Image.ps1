@@ -27,9 +27,10 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -Error
 # Set TLS to 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-# Run Windows Defender quick scan; Running via BISF doesn't exit
-# Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-SignatureUpdate -MMPC" -Wait
-# Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-Scan -ScanType 1" -Wait
+# Run Windows Defender quick scan
+Write-Host "=============== Running Windows Defender"
+Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-SignatureUpdate -MMPC" -Wait
+Start-Process -FilePath "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -ArgumentList "-Scan -ScanType 1" -Wait
 # Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\RemovalTools\MRT" -Name "GUID" -Value ""
 
 #region Citrix Optimizer
@@ -43,6 +44,7 @@ Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicP
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath $Dest -Force
 
 # Download templates
+Write-Host "=============== Downloading Citrix Optimizer template"
 If (!(Test-Path $Dest)) { New-Item -Path "$Dest\Templates" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
     "Microsoft Windows Server*" {
@@ -55,10 +57,9 @@ Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
         $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Windows101903-Defender-Azure.xml"
     }
 }
-
-
 Invoke-WebRequest -Uri $url -OutFile "$Dest\Templates\$(Split-Path $url -Leaf)" -UseBasicParsing
 
+Write-Host "=============== Running Citrix Optimizer"
 & "$Dest\CtxOptimizerEngine.ps1" -Source "$Dest\Templates\$(Split-Path $url -Leaf)" -Mode execute -OutputHtml "$Dest\CitrixOptimizer.html"
 #endregion
 
