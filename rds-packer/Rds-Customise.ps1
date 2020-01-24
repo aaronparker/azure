@@ -8,10 +8,7 @@ Param (
     [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $Target = "$env:SystemDrive\Apps",
-        
-    [Parameter(Mandatory = $False)]
-    [System.String] $VerbosePreference = "Continue"
+    [System.String] $Target = "$env:SystemDrive\Apps"
 )
 
 #region Functions

@@ -20,10 +20,7 @@ Param (
     [System.String] $Pass,
     
     [Parameter(Mandatory = $False)]
-    [System.String] $AppShare,
-    
-    [Parameter(Mandatory = $False)]
-    [System.String] $VerbosePreference = "Continue"
+    [System.String] $AppShare
 )
 
 #region Functions
