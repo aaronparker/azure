@@ -39,8 +39,8 @@
                 "Write-Host \"====== Disable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $true",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/srv-packer/Srv-RegionalRoles.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/srv-packer/Srv-Customise.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Rds-RegionalRoles.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Rds-Customise.ps1'))"
             ]
         },
         {
@@ -59,7 +59,7 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/srv-packer/Srv-CoreApps.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Rds-CoreApps.ps1'))"
             ]
         },
         {
@@ -78,7 +78,8 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Get-InstalledSoftware.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Seal-Image.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Get-InstalledSoftware.ps1'))",
                 "Write-Host \"====== Enable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $false",
                 "Write-Host \"====== Sysprep\"",

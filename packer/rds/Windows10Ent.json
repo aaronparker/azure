@@ -14,9 +14,9 @@
             "managed_image_name": "<imagename>",
             "managed_image_resource_group_name": "<resourcegroup>",
             "os_type": "Windows",
-            "image_publisher": "MicrosoftWindowsServer",
-            "image_offer": "WindowsServer",
-            "image_sku": "2019-Datacenter",
+            "image_publisher": "MicrosoftWindowsDesktop",
+            "image_offer": "Windows-10",
+            "image_sku": "19h2-ent",
             "image_version": "latest",
             "communicator": "winrm",
             "winrm_use_ssl": true,
@@ -25,7 +25,7 @@
             "winrm_username": "{{user `winrmuser`}}",
             "azure_tags": {
                 "Function": "Master image",
-                "Type": "Remote Desktop Services",
+                "Operating System": "Windows 10 Enterprise 1903",
                 "Environment": "Windows Virtual Desktop"
             },
             "location": "australiaeast",
@@ -39,8 +39,8 @@
                 "Write-Host \"====== Disable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $true",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-RegionalRoles.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Customise.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Rds-RegionalRoles.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Rds-Customise.ps1'))"
             ]
         },
         {
@@ -59,7 +59,7 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-CoreApps.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Rds-CoreApps.ps1'))"
             ]
         },
         {
@@ -78,8 +78,8 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Seal-Image.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Get-InstalledSoftware.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Seal-Image.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/packer/rds/Get-InstalledSoftware.ps1'))",
                 "Write-Host \"====== Enable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $false",
                 "Write-Host \"====== Sysprep\"",
@@ -91,7 +91,7 @@
     "post-processors": [
         {
             "type": "manifest",
-            "output": "packer-win2019-rds-manifest.json",
+            "output": "packer-win10-1903-manifest.json",
             "strip_path": true
         }
     ]
