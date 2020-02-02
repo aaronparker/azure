@@ -1,10 +1,10 @@
-# Build Azure Lab
+# Build Azure
 
-Azure Resource Manager templates used to build an IaaS environment in Azure as a lab for testing etc.
+Azure Resource Manager templates used to build various IaaS components in Azure.
 
 The end goal is to be able to build a virtual network with subnets and deploy VMs including automatically building a hosted Active Directory environment.
 
-Used to learn ARM templates and Azure PowerShell.
+Used to learn ARM templates and Azure PowerShell etc.
 
 ## Get-Subscription.ps1
 
