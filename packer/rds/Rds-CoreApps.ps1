@@ -150,7 +150,7 @@ Function Install-CoreApps {
     Write-Host "================ Installing Microsoft Edge"
     Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Verbose
     Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction SilentlyContinue
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/master_preferences"
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/master_preferences"
     Invoke-WebRequest -Uri $url -OutFile "${Env:ProgramFiles(x86)}\Microsoft\Edge\Application\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
     $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
     ForEach ($service in $services) { Set-Service -Name $service -StartupType "Disabled" }
@@ -169,13 +169,13 @@ Function Install-CoreApps {
     # Get the Office configuration.xml
     Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
         "Microsoft Windows Server*" {
-            $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusRDS.xml"
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
         }
         "Microsoft Windows 10 Enterprise for Virtual Desktops" {
-            $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusRDS.xml"
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
         }
         "Microsoft Windows 10*" {
-            $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/Office365ProPlusVDI.xml"
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusVDI.xml"
         }
     }
     Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
@@ -290,7 +290,7 @@ Function Install-CoreApps {
 
 
     #region Default Apps & File Type Associations
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/tools/FileTypeAssociations.xml"
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/FileTypeAssociations.xml"
     $output = "$Target\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
     Invoke-Process -FilePath "$env:SystemRoot\System32\dism.exe" -ArgumentList "/Online /Import-DefaultAppAssociations:$output" -Verbose

@@ -34,7 +34,7 @@
                 "Write-Host \"---- Setup deployment environment\"",
                 "Set-ExecutionPolicy Bypass -Scope Process -Force",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Setup-Environment.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Setup-Environment.ps1'))"
             ]
         },
         {
@@ -42,9 +42,9 @@
             "inline": [
                 "Import-Module Boxstarter.Chocolatey",
                 "Write-Host \"---- Configure region and roles\"",
-                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-RegionalRoles.ps1",
+                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Rds-RegionalRoles.ps1",
                 "Write-Host \"---- Customise Windows\"",
-                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-Customise.ps1"
+                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Rds-Customise.ps1"
             ]
         },
         {
@@ -67,7 +67,7 @@
             "inline": [
                 "Import-Module Boxstarter.Chocolatey",
                 "Write-Host \"---- Configure core applications\"",
-                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Rds-CoreApps.ps1"
+                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Rds-CoreApps.ps1"
             ]
         },
         {
@@ -92,12 +92,12 @@
                 "Set-ExecutionPolicy Bypass -Scope Process -Force",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Write-Host \"---- Seal image\"",
-                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Seal-Image.ps1",
+                "Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Seal-Image.ps1",
                 "Write-Host \"---- Uninstall Boxstarter & Chocolatey\"",
                 "choco uninstall boxstarter -y",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Uninstall-Chocolatey.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Uninstall-Chocolatey.ps1'))",
                 "Write-Host \"---- Output software\"",
-                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure-lab/master/rds-packer/Get-InstalledSoftware.ps1\" -OutFile \"C:\\Apps\\Get-InstalledSoftware.ps1\" -UseBasicParsing",
+                "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Get-InstalledSoftware.ps1\" -OutFile \"C:\\Apps\\Get-InstalledSoftware.ps1\" -UseBasicParsing",
                 "& C:\\Apps\\Get-InstalledSoftware.ps1",
                 "Write-Host \"---- Enable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $false",

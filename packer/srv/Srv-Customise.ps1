@@ -18,7 +18,7 @@ Function Set-Customise {
 
     # Customisation scripts
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $url = "https://github.com/aaronparker/build-azure-lab/raw/master/rds-packer/tools/Customise.zip"
+    $url = "https://github.com/aaronparker/build-azure/raw/master/tools/srv/Customise.zip"
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
     
