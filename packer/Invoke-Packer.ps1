@@ -1,12 +1,6 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $False)]
-    [System.String] $AppId = "",
-
-    [Parameter(Mandatory = $False)]
-    [System.String] $Secret = "",
-
-    [Parameter(Mandatory = $False)]
     [System.String] $ResourceGroup = "rg-WVD-AUE",
 
     [Parameter(Mandatory = $False)]
@@ -38,16 +32,17 @@ Else {
 }
 
 # Test if logged in and get the subscription
-If ($Null -eq (Get-AzAccount)) { Connect-AzAccount }
-$sub = Get-AzSubscription
+If ($Null -eq (Get-AzSubscription)) {
+    Connect-AzAccount
+    $sub = Get-AzSubscription
+}
+Else {
+    $sub = Get-AzSubscription
+}
 
 # Get values from the Key Vault
-If ($Null -eq $Secret) {
-    $Secret = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name PackerSecret).SecretValueText
-}
-If ($Null -eq $AppId) {
-    $AppId = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name PackerAppId).SecretValueText
-}
+$Secret = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name PackerSecret).SecretValueText
+$AppId = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name PackerAppId).SecretValueText
 
 # Get UTC date/time
 $date = Get-Date
