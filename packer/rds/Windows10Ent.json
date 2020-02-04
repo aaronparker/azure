@@ -79,7 +79,7 @@
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Seal-Image.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Get-InstalledSoftware.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/Get-InstalledSoftware.ps1'))",
                 "Write-Host \"====== Enable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $false",
                 "Write-Host \"====== Sysprep\"",
