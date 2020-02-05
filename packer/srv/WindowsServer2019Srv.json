@@ -1,6 +1,5 @@
 {
     "variables": {
-        "subnet_id": "Subnet-WVD-AUE",
         "winrmuser": "packer",
         "elevateduser": "administrator"
     },
@@ -21,15 +20,14 @@
             "communicator": "winrm",
             "winrm_use_ssl": true,
             "winrm_insecure": true,
-            "winrm_timeout": "3m",
+            "winrm_timeout": "10m",
             "winrm_username": "{{user `winrmuser`}}",
             "azure_tags": {
                 "Function": "Master image",
-                "Type": "Remote Desktop Services",
-                "Environment": "Windows Virtual Desktop"
+                "Type": "Infrastructure server"
             },
             "location": "australiaeast",
-            "vm_size": "Standard_D2s_v3"
+            "vm_size": "Standard_DS2_v2"
         }
     ],
     "provisioners": [

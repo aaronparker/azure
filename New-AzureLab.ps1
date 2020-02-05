@@ -35,7 +35,7 @@ $dmzSubnet = "$($locPrefix)-DMZ-subnet"
 New-AzureRmResourceGroup -Name $resourceGroup -Location $location -Force
 
 # NSG rules
-$rdpRule = New-AzureRmNetworkSecurityRuleConfig -Name rdp-rule -Description "Allow RDP" -Access Allow -Protocol Tcp -Direction Inbound -Priority 100 `
+$rdpRule = New-AzureRmNetworkSecurityRuleConfig -Name "rdp-rule" -Description "Allow RDP" -Access Allow -Protocol Tcp -Direction Inbound -Priority 100 `
     -SourceAddressPrefix "VirtualNetwork" -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 3389
 
 # Network security group
