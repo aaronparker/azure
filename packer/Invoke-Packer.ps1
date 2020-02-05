@@ -45,8 +45,7 @@ $Secret = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name PackerSecret).SecretV
 $AppId = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name PackerAppId).SecretValueText
 
 # Get UTC date/time
-$date = Get-Date
-$dateFormat = "$($date.Day)$($date.Month)$($date.Year)"
+$date = Get-Date -Format "MMddyyyy"
 
 # Install the Windows Update Packer plugin, https://github.com/rgl/packer-provisioner-windows-update
 $url = "https://github.com/rgl/packer-provisioner-windows-update/releases/download/v0.9.0/packer-provisioner-windows-update-windows.zip"
@@ -68,7 +67,7 @@ Else {
 (Get-Content $Template).replace("<subscriptionid>", $sub.Id) | Set-Content $Template
 (Get-Content $Template).replace("<tenantid>", $sub.TenantId) | Set-Content $Template
 (Get-Content $Template).replace("<resourcegroup>", $ResourceGroup) | Set-Content $Template
-(Get-Content $Template).replace("<imagename>", "$ImageName-$dateFormat") | Set-Content $Template
+(Get-Content $Template).replace("<imagename>", "$ImageName-$date") | Set-Content $Template
 
 # Output strings
 Write-Host "AppId: $AppId"
@@ -76,7 +75,7 @@ Write-Host "Secret: $Secret"
 Write-Host "Subscription: $($sub.Id)"
 Write-Host "Subscription: $($sub.TenantId)"
 Write-Host "Resource group: $ResourceGroup"
-Write-Host "Image name: $ImageName-$dateFormat"
+Write-Host "Image name: $ImageName-$date"
 Write-Host "Template: $Template"
 
 # Validate template
