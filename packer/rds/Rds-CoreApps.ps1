@@ -218,10 +218,11 @@ Function Install-CoreApps {
             $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn"
         }
         "Microsoft Windows 10 Enterprise for Virtual Desktops" {
-            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
+            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn"
         }
         "Microsoft Windows 10*" {
-            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
+            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn"
+            #$ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
         }
     }
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList
@@ -290,11 +291,13 @@ Function Install-CoreApps {
 
 
     #region Default Apps & File Type Associations
+    <#
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/FileTypeAssociations.xml"
     $output = "$Target\$(Split-Path -Path $url -Leaf)"
     Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
     Invoke-Process -FilePath "$env:SystemRoot\System32\dism.exe" -ArgumentList "/Online /Import-DefaultAppAssociations:$output" -Verbose
     Remove-Variable -Name url
+    #>
     #endregion
 }
 #endregion
