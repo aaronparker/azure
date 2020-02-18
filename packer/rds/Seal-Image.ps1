@@ -8,6 +8,9 @@ Param (
     [Parameter()] $Target = "$env:SystemDrive\Apps"
 )
 
+# Make Invoke-WebRequest faster
+$ProgressPreference = "SilentlyContinue"
+
 #region Functions
 Function Set-Repository {
     # Trust the PSGallery for installing modules

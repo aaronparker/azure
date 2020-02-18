@@ -23,6 +23,9 @@ Param (
     [System.String] $AppShare
 )
 
+# Make Invoke-WebRequest faster
+$ProgressPreference = "SilentlyContinue"
+
 #region Functions
 Function Set-Repository {
     # Trust the PSGallery for installing modules

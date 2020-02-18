@@ -11,6 +11,9 @@ Param (
     [System.String] $Target = "$env:SystemDrive\Apps"
 )
 
+# Make Invoke-WebRequest faster
+$ProgressPreference = "SilentlyContinue"
+
 #region Functions
 Function Set-RegionalSettings {
     # Regional settings - set to en-AU / Australia
