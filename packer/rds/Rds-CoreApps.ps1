@@ -216,18 +216,9 @@ Function Install-CoreApps {
     Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
 
     Write-Host "================ Installing Microsoft Teams"
-    Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
-        "Microsoft Windows Server*" {
-            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn"
-        }
-        "Microsoft Windows 10 Enterprise for Virtual Desktops" {
-            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn"
-        }
-        "Microsoft Windows 10*" {
-            $ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn"
-            #$ArgumentList = "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1"
-        }
-    }
+    # Create the PortICA key so that Teams install per-machine
+    New-Item -Path "HKLM:SOFTWARE\Citrix\PortICA" -Force | Out-Null
+    $ArgumentList = '/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1 OPTIONS="noAutoStart=true"'
     Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList
     For ($i = 0; $i -le 2; $i++) {
         Write-Host "================ Sleep $(3 - $i) mins for Teams setup"
