@@ -13,25 +13,13 @@ param(
     [System.String] $KeyVault = "insentrawvd"
 )
 
-$Tags = @{
-    Function           = "Master image"
-    "Operating System" = "Windows 10 Enterprise 1903"
-    Environment        = "Windows Virtual Desktop"
-}
-
-# Get the Packer template and convert to an object
-try {
-    $json = Get-Content -Path $Template | ConvertFrom-Json
-}
-catch {
-    Throw "Failed to read and convert $Template"
-    Break
-}
-
 # Get elevation status
 [System.Boolean] $Elevated = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")
 
 If ($Elevated) {
+    # Make Invoke-WebRequest faster
+    $ProgressPreference = "SilentlyContinue"
+
     # Trust the PSGallery for installing modules
     If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
         Write-Verbose "Trusting the repository: PSGallery"
@@ -73,9 +61,6 @@ catch {
     Write-Warning "Expected 'PackerSecret' and 'PackerAppId' in Key Vault $KeyVault."
 }
 
-# Get UTC date/time
-$date = Get-Date -Format "ddMMyyyy"
-
 # Install the Windows Update Packer plugin, https://github.com/rgl/packer-provisioner-windows-update
 $url = "https://github.com/rgl/packer-provisioner-windows-update/releases/download/v0.9.0/packer-provisioner-windows-update-windows.zip"
 $zip = "$env:Temp\packer-provisioner-windows-update-windows.zip"
@@ -92,24 +77,16 @@ Else {
 }
 
 # Replace values
-$json.builders.client_id = $AppId
-$json.builders.client_secret = $Secret
-$json.builders.subscription_id = $sub.id
-$json.builders.tenant_id = $sub.TenantId
-$json.builders.managed_image_name = "$ImageName-$date"
-$json.builders.managed_image_resource_group_name = $ResourceGroup
-$json.builders.os_type = "Windows"
-$json.builders.image_publisher = "MicrosoftWindowsDesktop"
-$json.builders.image_offer = "Windows-10"
-$json.builders.image_sku = "19h2-ent"
-$json.builders.image_version = "latest"
-$json.builders.winrm_timeout = "3m"
-$json.builders.azure_tags = $Tags
-$json.builders.location = "australiaeast"
-$json.builders.vm_size = "Standard_D2s_v3"
-
-# Output new values
-$json | ConvertTo-Json | Set-Content -Path $Template -Force
+$fileName = [System.IO.Path]::GetFileNameWithoutExtension($templateFile)
+$path = [System.IO.Path]::GetDirectoryName($templateFile)
+$newTemplate = "$path\$filename-Temp.json"
+If (Test-Path -Path $newTemplate) { Remove-Item -Path $newTemplate -Force -ErrorAction SilentlyContinue }
+(Get-Content $Template).replace("<clientid>", $AppId) | Set-Content -Path $newTemplate
+(Get-Content $newTemplate).replace("<clientsecrect>", $Secret) | Set-Content -Path $newTemplate
+(Get-Content $newTemplate).replace("<subscriptionid>", $sub.Id) | Set-Content -Path $newTemplate
+(Get-Content $newTemplate).replace("<tenantid>", $sub.TenantId) | Set-Content -Path $newTemplate
+(Get-Content $newTemplate).replace("<resourcegroup>", $ResourceGroup) | Set-Content -Path $newTemplate
+(Get-Content $newTemplate).replace("<imagename>", "$ImageName-$(Get-Date -Format "ddMMyyyy")") | Set-Content -Path $newTemplate
 
 # Output strings
 Write-Host "AppId:          $AppId" -ForegroundColor Green
@@ -117,11 +94,12 @@ Write-Host "Secret:         $Secret" -ForegroundColor Green
 Write-Host "Subscription:   $($sub.Id)" -ForegroundColor Green
 Write-Host "Subscription:   $($sub.TenantId)" -ForegroundColor Green
 Write-Host "Resource group: $ResourceGroup" -ForegroundColor Green
-Write-Host "Image name:     $ImageName-$date" -ForegroundColor Green
-Write-Host "Template:       $Template" -ForegroundColor Green
+Write-Host "Image name:     $ImageName-$(Get-Date -Format "ddMMyyyy")" -ForegroundColor Green
+Write-Host "Template:       $newTemplate" -ForegroundColor Green
 
 # Validate template
-Start-Process -FilePath ".\Packer.exe" -ArgumentList "validate $Template" -Wait -NoNewWindow
+Write-Host "Validating: $newTemplate" -ForegroundColor Cyan
+Start-Process -FilePath ".\Packer.exe" -ArgumentList "validate $newTemplate" -Wait -NoNewWindow
 
 # Run Packer
-# .\packer.exe build -force -on-error=ask -timestamp-ui $Template
+Write-Host "Run: .\packer.exe build -force -on-error=ask -timestamp-ui $newTemplate" -ForegroundColor Cyan
