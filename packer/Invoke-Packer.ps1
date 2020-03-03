@@ -28,7 +28,7 @@ If ($Elevated) {
     }
 
     # Install the Az module
-    Install-Module -Name Az -AllowClobber
+    Find-Module -Name Az -Repository PSGallery | Install-Module -AllowClobber
 }
 Else {
     Write-Host "Not running elevated. Check modules are installed." -ForegroundColor Cyan
