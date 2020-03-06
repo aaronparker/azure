@@ -77,8 +77,8 @@ Else {
 }
 
 # Replace values
-$fileName = [System.IO.Path]::GetFileNameWithoutExtension($templateFile)
-$path = [System.IO.Path]::GetDirectoryName($templateFile)
+$fileName = [System.IO.Path]::GetFileNameWithoutExtension($Template)
+$path = [System.IO.Path]::GetDirectoryName($Template)
 $newTemplate = "$path\$filename-Temp.json"
 If (Test-Path -Path $newTemplate) { Remove-Item -Path $newTemplate -Force -ErrorAction SilentlyContinue }
 (Get-Content $Template).replace("<clientid>", $AppId) | Set-Content -Path $newTemplate
@@ -103,3 +103,4 @@ Start-Process -FilePath ".\Packer.exe" -ArgumentList "validate $newTemplate" -Wa
 
 # Run Packer
 Write-Host "Run: .\packer.exe build -force -on-error=ask -timestamp-ui $newTemplate" -ForegroundColor Cyan
+".\packer.exe build -force -on-error=ask -timestamp-ui $newTemplate" | Set-Clipboard

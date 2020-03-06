@@ -38,6 +38,9 @@
             "inline": [
                 "Write-Output \"====== Disable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $true",
+                "Write-Output \"====== Disable Windows Store updates\"",
+                "reg add HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f",
+                "reg add HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /d 2 /t REG_DWORD /f",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Rds-RegionalRoles.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Rds-Customise.ps1'))"
@@ -82,14 +85,10 @@
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/Get-InstalledSoftware.ps1'))",
                 "Write-Output \"====== Enable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $false",
-                "#Write-Output \"====== Prep for Sysprep\"",
-                "#Set-Service -Name RdAgent -StartupType Disabled; Stop-Service -Name RdAgent -ErrorAction SilentlyContinue",
-                "#Set-Service -Name WindowsAzureTelemetryService -StartupType Disabled; Stop-Service -Name WindowsAzureTelemetryService -ErrorAction SilentlyContinue",
-                "#Set-Service -Name WindowsAzureGuestAgent -StartupType Disabled; Stop-Service -Name WindowsAzureGuestAgent -ErrorAction SilentlyContinue",
-                "#Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\SysPrepExternal\\Generalize' -Name '*'",
-                "Write-Output \"====== Run Sysprep\"",
-                "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
-                "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
+                "Write-Output \"====== Enable Windows Store updates\"",
+                "reg delete HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /f",
+                "reg delete HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /f",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/Sysprep-Image.ps1'))"
             ]
         }
     ],
