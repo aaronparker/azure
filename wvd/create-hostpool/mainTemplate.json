@@ -599,7 +599,7 @@
                 "typeHandlerVersion": "2.73",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "modulesUrl": "[uri(parameters('_artifactsLocation'), concat('dsc/Configuration.zip', parameters('_artifactsLocationSasToken')))]",
+                    "modulesUrl": "[uri(parameters('_artifactsLocation'), concat('Configuration.zip', parameters('_artifactsLocationSasToken')))]",
                     "configurationFunction": "Configuration.ps1\\CreateHostPoolAndRegisterSessionHost",
                     "properties": {
                         "TenantAdminCredentials": {
@@ -650,7 +650,7 @@
                 "typeHandlerVersion": "2.73",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "modulesUrl": "[uri(parameters('_artifactsLocation'), concat('dsc/Configuration.zip', parameters('_artifactsLocationSasToken')))]",
+                    "modulesUrl": "[uri(parameters('_artifactsLocation'), concat('Configuration.zip', parameters('_artifactsLocationSasToken')))]",
                     "configurationFunction": "Configuration.ps1\\RegisterSessionHost",
                     "properties": {
                         "TenantAdminCredentials": {
