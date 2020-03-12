@@ -40,7 +40,13 @@ Function Set-Roles {
             Set-Service Audiosrv -StartupType Automatic
             Set-Service WSearch -StartupType Automatic
         }
+        "Microsoft Windows 10 Enterprise for Virtual Desktops" {   
+        }
+        "Microsoft Windows 10 Enterprise" {
+        }
         "Microsoft Windows 10*" {
+        }
+        Default {
         }
     }
 }

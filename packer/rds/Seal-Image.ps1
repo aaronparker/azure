@@ -66,7 +66,6 @@ Write-Host "=============== Running Citrix Optimizer"
 & "$Dest\CtxOptimizerEngine.ps1" -Source "$Dest\Templates\$(Split-Path $url -Leaf)" -Mode execute -OutputHtml "$Dest\CitrixOptimizer.html"
 #endregion
 
-<#
 #region BIS-F
 Write-Host "========== Base Image Script Framework"
 $Dest = "$Target\BISF"
@@ -75,21 +74,26 @@ If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -Error
 Write-Host "=============== Downloading BIS-F"
 Set-Repository
 Install-Module -Name Evergreen -AllowClobber
-$url = (Get-BISF).URI
+#$url = (Get-BISF).URI
+$url = "https://github.com/EUCweb/BIS-F/archive/master.zip"
 Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
+Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
+
 $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/BisfConfig.zip"
 Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path $url -Leaf)" -UseBasicParsing
 Expand-Archive -Path "$Dest\$(Split-Path $url -Leaf)" -DestinationPath "$Dest" -Force
 
 Write-Host "=============== Installing BIS-F"
-Start-Process -FilePath "$Dest\$(Split-Path $url -Leaf)" -ArgumentList "/SILENT" -Wait
-Remove-Item -Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Base Image Script Framework (BIS-F).lnk" -Force
+#Start-Process -FilePath "$Dest\$(Split-Path $url -Leaf)" -ArgumentList "/SILENT" -Wait
+Remove-Item -Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Base Image Script Framework (BIS-F).lnk" -Force -ErrorAction SilentlyContinue
+New-Item -Path "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
 Copy-Item -Path "$Dest\BISFSharedConfig.json" -Destination "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\BISFSharedConfig.json"
 
 Write-Host "=============== Running BIS-F"
-& "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1"
+& "$Dest\BIS-F-master\Framework\PrepBISF_Start.ps1"
+#& "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1"
 #endregion
-#>
+
 
 # Stop Logging
 Stop-Transcript

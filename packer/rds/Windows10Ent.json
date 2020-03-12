@@ -25,7 +25,7 @@
             "winrm_username": "{{user `winrmuser`}}",
             "azure_tags": {
                 "Function": "Master image",
-                "Operating System": "Windows 10 Enterprise 1903",
+                "Operating System": "Windows 10 Enterprise",
                 "Environment": "Windows Virtual Desktop"
             },
             "location": "australiaeast",
