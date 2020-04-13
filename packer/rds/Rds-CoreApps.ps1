@@ -235,12 +235,12 @@ Function Install-CoreApps {
     If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
     
     Write-Host "================ Downloading Microsoft OneDrive"
-    $url = "https://oneclient.sfx.ms/Win/Prod/19.192.0926.0012/OneDriveSetup.exe"
-    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
-    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+    $OneDrive = Get-MicrosoftOneDrive | Where-Object { $_.Ring -eq "Enterprise" }
+    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $OneDrive.URI -Leaf)"
+    Invoke-WebRequest -Uri $OneDrive.URI -OutFile "$Dest\$(Split-Path -Path $OneDrive.URI -Leaf)" -UseBasicParsing
     
     Write-Host "================ Installing Microsoft OneDrive"
-    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/allusers" -Verbose
+    Invoke-Process -FilePath "$Dest\$(Split-Path -Path $OneDrive.URI -Leaf)" -ArgumentList "/allusers" -Verbose
     Remove-Variable -Name url
     Write-Host "=========== Done"
     #endregion
