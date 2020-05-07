@@ -203,11 +203,11 @@ Function Install-CoreApps {
         Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
         Push-Location -Path $Dest
         Write-Host "================ Downloading Microsoft Office"
-        Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $url -Leaf)" -Verbose
+        Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $xml -Leaf)" -Verbose
     
         # Setup fails to exit, so wait 9-10 mins for Office install to complete
         Write-Host "================ Installing Microsoft Office"
-        Start-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $url -Leaf)" -Verbose
+        Start-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $xml -Leaf)" -Verbose
         For ($i = 0; $i -le 9; $i++) {
             Write-Host "================ Sleep $(10 - $i) mins for Office setup"
             Start-Sleep -Seconds 60
