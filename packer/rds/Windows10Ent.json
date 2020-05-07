@@ -62,7 +62,8 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Rds-CoreApps.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Rds-CoreApps.ps1'))",
+                "#Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Rds-LobApps.ps1'))"
             ]
         },
         {

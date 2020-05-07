@@ -12,15 +12,9 @@ Param (
 
     [Parameter(Mandatory = $False)]
     [System.String] $Target = "$env:SystemDrive\Apps",
-    
+
     [Parameter(Mandatory = $False)]
-    [System.String] $User,
-    
-    [Parameter(Mandatory = $False)]
-    [System.String] $Pass,
-    
-    [Parameter(Mandatory = $False)]
-    [System.String] $AppShare
+    [System.String] $BlobStorage = "https://aaronparker.blob.core.windows.net/folder/"
 )
 
 # Make Invoke-WebRequest faster
@@ -106,29 +100,38 @@ Function Get-AzureBlobItem {
 }
 
 Function Install-LobApps {
-    #region Applications - Source local share
-    # Create credential to authenticate
-    If ($AppShare) {
-    
-        # Create PS drive to apps share (Apps:)
-        $password = ($Pass | ConvertTo-SecureString -AsPlainText -Force)
-        $cred = New-Object System.Management.Automation.PSCredential ($User, $password)
-        $drive = New-PSDrive -Name Apps -PSProvider FileSystem -Root $AppShare -Credential $cred
 
-        If ($drive) {
-            $current = $PWD
-            Push-Location "Apps:\"
+    # Get the list of items from blob storage
+    try {
+        $Items = Get-AzureBlobItems -Uri "$BlobStorage?comp=list"
+    }
+    catch {
+        Write-Host "=========== Failed to retrieve items from: $BlobStorage?comp=list."
+    }
 
-            # Copy each folder locally and install
-            ForEach ($folder in (Get-ChildItem -Path ".\" -Directory)) {
-                Copy-Item -Path $folder.FullName -Destination "$target\$($folder.Name)" -Recurse -Force
-                Push-Location "$target\$($folder.Name)"
-                If (Test-Path "$target\$($folder.Name)\install.cmd") {
-                    Start-Process -FilePath "$env:SystemRoot\System32\cmd.exe" -ArgumentList "/c $target\$($folder.Name)\install.cmd" -Wait
-                }
-            }
-            Push-Location $current
-            Remove-PSDrive Apps
+    ForEach ($item in $Items) {
+        $Dest = Join-Path -Path $Target -ChildPath $item.Name
+        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+
+        Write-Host "=========== Downloading item: $($item.Name)."
+        $OutFile = Join-Path -Path $Dest -ChildPath (Split-Path -Path $item.Url -Leaf)
+        try {
+            Invoke-WebRequest -Uri $item.Uri -OutFile $OutFile -UseBasicParsing
+        }
+        catch {
+            Write-Host "=========== Failed to download: $($item.Uri)."
+            Break
+        }
+        Expand-Archive -Path $OutFile -DestinationPath $Dest -Force
+
+        try {
+            Write-Host "=========== Installing item: $($item.Name)."
+            Push-Location $Dest
+            . .\Install.ps1 -Verbose
+            Pop-Location
+        }
+        catch {
+            Write-Host "=========== Failed installing item: $($item.Name)."
         }
     }
 }
@@ -140,7 +143,7 @@ Write-Host "Running: $($MyInvocation.MyCommand)."
 Start-Transcript -Path $Log -Append
 
 # If local path for script doesn't exist, create it
-If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -ErrorAction SilentlyContinue }
+If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
 Install-LobApps
