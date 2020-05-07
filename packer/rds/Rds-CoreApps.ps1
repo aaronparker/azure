@@ -200,7 +200,7 @@ Function Install-CoreApps {
         If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
         Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
-        Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)"
+        Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
         Push-Location -Path $Dest
         Write-Host "================ Downloading Microsoft Office"
         Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $url -Leaf)" -Verbose

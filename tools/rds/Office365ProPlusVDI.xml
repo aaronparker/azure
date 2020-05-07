@@ -1,4 +1,4 @@
-<Configuration ID="4c991843-6e77-460b-a12d-9ab685587537">
+<Configuration ID="9bef2daa-86ff-42e1-bc58-ed4a258ddc45">
   <Add OfficeClientEdition="64" Channel="Monthly" SourcePath="C:\Apps\Office" AllowCdnFallback="TRUE" MigrateArch="TRUE">
     <Product ID="O365ProPlusRetail">
       <Language ID="MatchOS" />
@@ -7,8 +7,8 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Teams" />
     </Product>
     <Product ID="VisioProRetail">
       <Language ID="MatchOS" />
@@ -17,8 +17,8 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Teams" />
     </Product>
     <Product ID="ProjectProRetail">
       <Language ID="MatchOS" />
@@ -27,8 +27,8 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Teams" />
     </Product>
   </Add>
   <Property Name="SharedComputerLicensing" Value="1" />
@@ -37,7 +37,7 @@
   <Property Name="AUTOACTIVATE" Value="0" />
   <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
   <Property Name="DeviceBasedLicensing" Value="0" />
-  <Updates Enabled="FALSE" UpdatePath="C:\Apps\Office" />
+  <Updates Enabled="TRUE" UpdatePath="C:\Apps\Office" />
   <RemoveMSI />
   <AppSettings>
     <User Key="software\microsoft\office\16.0\excel\options" Name="defaultformat" Value="51" Type="REG_DWORD" App="excel16" Id="L_SaveExcelfilesas" />
