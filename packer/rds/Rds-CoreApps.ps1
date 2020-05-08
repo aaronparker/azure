@@ -127,15 +127,36 @@ Function Install-CoreApps {
     $FSLogix = Get-MicrosoftFSLogixApps
 
     If ($FSLogix) {
+        Write-Host "=========== Microsoft FSLogix: $($FSLogix.Version)"
         $Dest = "$Target\FSLogix"
         If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
-        Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $FSLogix.URI -Leaf)"
-        Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -UseBasicParsing
-        Expand-Archive -Path "$Dest\$(Split-Path -Path $FSLogix.URI -Leaf)" -DestinationPath $Dest -Force
+        # Download
+        $OutFile = $(Split-Path -Path $FSLogix.URI -Leaf)
+        Write-Host "=========== Downloading to: $Dest\$OutFile"
+        try {
+            Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Dest\$OutFile" -UseBasicParsing
+            If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
+        }
+        catch {
+            Throw "Failed to download FSLogix Apps"
+        }
+
+        # Unpack and install
+        Expand-Archive -Path "$Dest\$OutFile" -DestinationPath $Dest -Force
         Write-Host "================ Installing FSLogix agent"
-        Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
-        Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsRuleEditorSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
+        try {
+            Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
+        }
+        catch {
+            Throw "Failed to install the FSlogix Apps agent."
+        }
+        try {
+            Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsRuleEditorSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
+        }
+        catch {
+            Throw "Failed to install the FSlogix Apps Rules Editor."
+        }
         Write-Host "=========== Done"
     }
     Else {
@@ -148,23 +169,39 @@ Function Install-CoreApps {
     Write-Host "=========== Microsoft Edge"
     $Edge = Get-MicrosoftEdge | Where-Object { $_.Architecture -eq "x64" -and $_.Channel -eq "Stable" }
     $Edge = $Edge | Sort-Object -Property Version -Descending | Select-Object -First 1
-    $url = $Edge.URI
 
-    If ($url) {
+    If ($Edge) {
         Write-Host "================ Downloading Microsoft Edge"
         $Dest = "$Target\Edge"
         If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
-        Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
-        Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+        # Download
+        $url = $Edge.URI
+        $OutFile = Join-Path -Path $Dest -ChildPath $(Split-Path -Path $url -Leaf)
+        Write-Host "=========== Downloading to: $OutFile"
+        try {
+            Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
+            If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
+        }
+        catch {
+            Throw "Failed to download Microsoft Edge."
+        }
 
+        # Install
         Write-Host "================ Installing Microsoft Edge"
-        Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart DONOTCREATEDESKTOPSHORTCUT=true" -Verbose
+        try {
+            Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $OutFile /quiet /norestart DONOTCREATEDESKTOPSHORTCUT=true" -Verbose
+        }
+        catch {
+            Throw "Failed to install Microsoft Edge."
+        }
+
+        # Post install configuration
         Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction SilentlyContinue
         $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/master_preferences"
         Invoke-WebRequest -Uri $url -OutFile "${Env:ProgramFiles(x86)}\Microsoft\Edge\Application\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
         $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
-        ForEach ($service in $services) { Set-Service -Name $service -StartupType "Disabled" }
+        ForEach ($service in $services) { Get-Service -Name $service | Set-Service -StartupType "Disabled" }
         ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
         Remove-Variable -Name url
         Write-Host "=========== Done"
@@ -179,7 +216,7 @@ Function Install-CoreApps {
     Write-Host "=========== Microsoft Office"
     # Install Office 365 ProPlus; manage installed options in configurationRDS.xml
     # Get the Office configuration.xml
-    Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
+    <#Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
         "Microsoft Windows Server*" {
             $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
         }
@@ -189,29 +226,48 @@ Function Install-CoreApps {
         "Microsoft Windows 10*" {
             $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusVDI.xml"
         }
-    }
+    }#>
+    $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
     Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $xml -Leaf)"
     Invoke-WebRequest -Uri $xml -OutFile "$Dest\$(Split-Path -Path $xml -Leaf)" -UseBasicParsing
 
+    # Get Office version
     $Office = Get-MicrosoftOffice | Where-Object { $_.Channel -eq "Monthly" }
     $url = $Office.URI
-    If ($url) {
+    
+    If ($Office) {
         $Dest = "$Target\Office"
+        
         If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
-        Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
-        Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+        # Download setup.exe
+        $OutFile = Join-Path -Path $Dest -ChildPath $(Split-Path -Path $url -Leaf)
+        Write-Host "=========== Downloading to: $OutFile"
+        try {
+            Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
+            If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
+        }
+        catch {
+            Throw "Failed to download Microsoft Office setup."
+        }
+
+        # Download Office package
         Push-Location -Path $Dest
-        Write-Host "================ Downloading Microsoft Office"
-        Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $xml -Leaf)" -Verbose
+        <#Write-Host "================ Downloading Microsoft Office"
+        try {
+            Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $xml -Leaf)" -Verbose
+        }
+        catch {
+            Throw "Failed to download the Microsoft Office package."
+        }#>
     
         # Setup fails to exit, so wait 9-10 mins for Office install to complete
         Write-Host "================ Installing Microsoft Office"
-        Start-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/configure $Dest\$(Split-Path -Path $xml -Leaf)" -Verbose
-        For ($i = 0; $i -le 9; $i++) {
+        Invoke-Process -FilePath $OutFile -ArgumentList "/configure $Dest\$(Split-Path -Path $xml -Leaf)" -Verbose
+        <#For ($i = 0; $i -le 9; $i++) {
             Write-Host "================ Sleep $(10 - $i) mins for Office setup"
             Start-Sleep -Seconds 60
-        }
+        }#>
         Pop-Location
         Remove-Variable -Name url
         Write-Host "=========== Done"
@@ -226,25 +282,38 @@ Function Install-CoreApps {
     Write-Host "=========== Microsoft Teams"
     Write-Host "================ Downloading Microsoft Teams"
     $Teams = Get-MicrosoftTeams | Where-Object { $_.Architecture -eq "x64" }
-    $url = $Teams.URI
     
-    If ($url) {
+    If ($Teams) {
         $Dest = "$Target\Teams"
         If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
-        Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
-        Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
-
-        Write-Host "================ Installing Microsoft Teams"
-        # Create the PortICA key so that Teams install per-machine
-        reg add "HKLM\SOFTWARE\Microsoft\Teams" /v "IsWVDEnvironment" /t REG_DWORD /d 1
-        $ArgumentList = '/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /qn ALLUSER=1 ALLUSERS=1 OPTIONS="noAutoStart=true"'
-        Start-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList
-        For ($i = 0; $i -le 2; $i++) {
-            Write-Host "================ Sleep $(3 - $i) mins for Teams setup"
-            Start-Sleep -Seconds 60
+        # Download
+        $url = $Teams.URI
+        $OutFile = Join-Path -Path $Dest -ChildPath $(Split-Path -Path $url -Leaf)
+        Write-Host "=========== Downloading to: $OutFile"
+        try {
+            Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
+            If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
         }
-        Remove-Variable -Name url
+        catch {
+            Throw "Failed to download Microsoft Teams."
+        }
+
+        # Install
+        Write-Host "================ Installing Microsoft Teams"
+        try {
+            reg add "HKLM\SOFTWARE\Microsoft\Teams" /v "IsWVDEnvironment" /t REG_DWORD /d 1
+            $ArgumentList = '/package $OutFile /quiet /qn ALLUSER=1 ALLUSERS=1 OPTIONS="noAutoStart=true"'
+            Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Verbose
+            <#For ($i = 0; $i -le 2; $i++) {
+                Write-Host "================ Sleep $(3 - $i) mins for Teams setup"
+                Start-Sleep -Seconds 60
+            }#>
+            Remove-Variable -Name url
+        }
+        catch {
+            Throw "Failed to install Microsoft Teams."
+        }
         Write-Host "=========== Done"
     }
     Else {
@@ -262,11 +331,26 @@ Function Install-CoreApps {
         $Dest = "$Target\OneDrive"
         If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
-        Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $OneDrive.URI -Leaf)"
-        Invoke-WebRequest -Uri $OneDrive.URI -OutFile "$Dest\$(Split-Path -Path $OneDrive.URI -Leaf)" -UseBasicParsing
+        # Download
+        $url = $OneDrive.URI
+        $OutFile = Join-Path -Path $Dest -ChildPath $(Split-Path -Path $url -Leaf)
+        Write-Host "=========== Downloading to: $OutFile"
+        try {
+            Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
+            If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
+        }
+        catch {
+            Throw "Failed to download Microsoft OneDrive."
+        }
     
+        # Install
         Write-Host "================ Installing Microsoft OneDrive"
-        Invoke-Process -FilePath "$Dest\$(Split-Path -Path $OneDrive.URI -Leaf)" -ArgumentList "/ALLUSERS=1" -Verbose
+        try {
+            Invoke-Process -FilePath $OutFile -ArgumentList "/ALLUSERS=1" -Verbose
+        }
+        catch {
+            Throw "Failed to install Microsoft OneDrive."
+        }
         Remove-Variable -Name url
         Write-Host "=========== Done"
     }
@@ -287,11 +371,20 @@ Function Install-CoreApps {
 
     If ($Reader) {
         $Dest = "$Target\Reader"
-        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
         
+        # Download Adobe Reader
         ForEach ($File in $Reader) {
-            Write-Host "=========== Downloading to: $(Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf))"
-            (New-Object System.Net.WebClient).DownloadFile($File.Uri, $(Join-Path -Path $Dest -ChildPath (Split-Path -Path $File.Uri -Leaf)))
+            $url = $File.Uri
+            $OutFile = Join-Path -Path $Dest -ChildPath (Split-Path -Path $url -Leaf)
+            Write-Host "=========== Downloading to: $OutFile."
+            try {
+                (New-Object System.Net.WebClient).DownloadFile($url, $OutFile)
+                If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
+            }
+            catch {
+                Throw "Failed to download Adobe Reader."
+            }
         }
 
         # Get resource strings
@@ -299,8 +392,15 @@ Function Install-CoreApps {
 
         # Install Adobe Reader
         Write-Host "================ Installing Reader"
-        $exe = Get-ChildItem -Path $Dest -Filter "*.exe"
-        Invoke-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments -Verbose
+        try {
+            $Installers = Get-ChildItem -Path $Dest -Filter "*.exe"
+            ForEach ($exe in $Installers) {
+                Invoke-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments -Verbose
+            }
+        }
+        catch {
+            "Throw failed to install Adobe Reader."
+        }
 
         # Run post install actions
         Write-Host "================ Post install configuration Reader"
@@ -310,8 +410,16 @@ Function Install-CoreApps {
 
         # Update Adobe Reader
         Write-Host "================ Update Reader"
-        $msp = Get-ChildItem -Path $Dest -Filter "*.msp"
-        Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet /qn" -Verbose
+        try {
+            $Updates = Get-ChildItem -Path $Dest -Filter "*.msp"
+            ForEach ($msp in $Updates) {
+                Write-Host "================ Installing update: $($msp.FullName)."
+                Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet /qn" -Verbose
+            }
+        }
+        catch {
+            "Throw failed to update Adobe Reader."
+        }
         Write-Host "=========== Done"
     }
     Else {
