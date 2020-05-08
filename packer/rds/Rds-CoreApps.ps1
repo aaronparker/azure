@@ -214,32 +214,20 @@ Function Install-CoreApps {
 
     #region Office 365 ProPlus
     Write-Host "=========== Microsoft Office"
-    # Install Office 365 ProPlus; manage installed options in configurationRDS.xml
-    # Get the Office configuration.xml
-    <#Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
-        "Microsoft Windows Server*" {
-            $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
-        }
-        "Microsoft Windows 10 Enterprise for Virtual Desktops" {
-            $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
-        }
-        "Microsoft Windows 10*" {
-            $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusVDI.xml"
-        }
-    }#>
-    $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
-    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $xml -Leaf)"
-    Invoke-WebRequest -Uri $xml -OutFile "$Dest\$(Split-Path -Path $xml -Leaf)" -UseBasicParsing
 
     # Get Office version
     $Office = Get-MicrosoftOffice | Where-Object { $_.Channel -eq "Monthly" }
     $url = $Office.URI
     
     If ($Office) {
+
         $Dest = "$Target\Office"
-        
         If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
 
+        $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
+        Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $xml -Leaf)"
+        Invoke-WebRequest -Uri $xml -OutFile "$Dest\$(Split-Path -Path $xml -Leaf)" -UseBasicParsing
+        
         # Download setup.exe
         $OutFile = Join-Path -Path $Dest -ChildPath $(Split-Path -Path $url -Leaf)
         Write-Host "=========== Downloading to: $OutFile"
@@ -251,17 +239,8 @@ Function Install-CoreApps {
             Throw "Failed to download Microsoft Office setup."
         }
 
-        # Download Office package
+        # Download Office package, Setup fails to exit, so wait 9-10 mins for Office install to complete
         Push-Location -Path $Dest
-        <#Write-Host "================ Downloading Microsoft Office"
-        try {
-            Invoke-Process -FilePath "$Dest\$(Split-Path -Path $url -Leaf)" -ArgumentList "/download $Dest\$(Split-Path -Path $xml -Leaf)" -Verbose
-        }
-        catch {
-            Throw "Failed to download the Microsoft Office package."
-        }#>
-    
-        # Setup fails to exit, so wait 9-10 mins for Office install to complete
         Write-Host "================ Installing Microsoft Office"
         Invoke-Process -FilePath $OutFile -ArgumentList "/configure $Dest\$(Split-Path -Path $xml -Leaf)" -Verbose
         <#For ($i = 0; $i -le 9; $i++) {
