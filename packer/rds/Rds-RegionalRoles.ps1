@@ -52,7 +52,7 @@ Function Set-RegionalSettings ($Path, $Locale) {
     try {
         # Download the language file
         $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/$Locale-Language.xml"
-        $Path = "$Path\$(Split-Path $url -Leaf)"
+        $OutFile = "$Path\$(Split-Path $url -Leaf)"
         Invoke-WebRequest -Uri $url -OutFile $OutFile
     }
     catch {
