@@ -1,6 +1,6 @@
 <# 
     .SYNOPSIS
-        Customise a Windows Server image for use as an RDS/XenApp VM in Azure.
+        Install evergreen core applications.
 #>
 [CmdletBinding()]
 Param (
@@ -16,8 +16,8 @@ Function Set-Repository {
     # Trust the PSGallery for modules
     If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
         Write-Verbose "Trusting the repository: PSGallery"
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+        Install-PackageProvider -Name "NuGet" -MinimumVersion 2.8.5.208 -Force
+        Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
     }
 }
 
@@ -93,70 +93,90 @@ Function Invoke-Process {
     }
 }
 
-Function Install-CoreApps {
-    # Set TLS to 1.2
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-    #region Modules
+Function Install-RequiredModules {
     Write-Host "=========== Installing required modules"
-    # Install the Evergreen module
-    # https://github.com/aaronparker/Evergreen
+    # Install the Evergreen module; https://github.com/aaronparker/Evergreen
     Install-Module -Name Evergreen -AllowClobber
-    # Install the VcRedist module
-    # https://docs.stealthpuppy.com/vcredist/
+
+    # Install the VcRedist module; https://docs.stealthpuppy.com/vcredist/
     Install-Module -Name VcRedist -AllowClobber
-    #endregion
-
-
-    #region VcRedist
-    Write-Host "=========== Microsoft Visual C++ Redistributables"
-    $Dest = "$Target\VcRedist"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
-    $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
-    Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest -Verbose
-    Install-VcRedist -VcList $VcList -Path $Dest -Verbose
-    Write-Host "=========== Done"
-    #endregion
-
-    
-    #region Edge
-    Write-Host "=========== Microsoft Edge"
-    $Dest = "$Target\Edge"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
-
-    Write-Host "================ Downloading Microsoft Edge"
-    $Edge = Get-MicrosoftEdge | Where-Object { $_.Architecture -eq "x64" -and $_.Product -eq "Stable" -and $_.Platform -eq "Windows" }
-    $Edge = $Edge | Sort-Object -Property Version -Descending | Select-Object -First 1
-    $url = $Edge.URI
-    Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $url -Leaf)"
-    Invoke-WebRequest -Uri $url -OutFile "$Dest\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
-
-    Write-Host "================ Installing Microsoft Edge"
-    Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $Dest\$(Split-Path -Path $url -Leaf) /quiet /norestart" -Verbose
-    Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction SilentlyContinue
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/srv/master_preferences"
-    Invoke-WebRequest -Uri $url -OutFile "${Env:ProgramFiles(x86)}\Microsoft\Edge\Application\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
-    $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
-    ForEach ($service in $services) { Set-Service -Name $service -StartupType "Disabled" }
-    ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
-    Remove-Variable -Name url
-    Write-Host "=========== Done"
-    #endregion
 }
-#endregion
+
+Function Install-VcRedistributables ($Path) {
+    Write-Host "=========== Microsoft Visual C++ Redistributables"
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+    $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
+
+    Save-VcRedist -Path $Path -VcList $VcList -ForceWebRequest -Verbose
+    Install-VcRedist -VcList $VcList -Path $Path -Verbose
+    Write-Host "=========== Done"
+}
+
+Function Install-MicrosoftEdge ($Path) {
+    Write-Host "=========== Microsoft Edge"
+    $Edge = Get-MicrosoftEdge | Where-Object { $_.Architecture -eq "x64" -and $_.Channel -eq "Stable" }
+    $Edge = $Edge | Sort-Object -Property Version -Descending | Select-Object -First 1
+
+    If ($Edge) {
+        Write-Host "================ Downloading Microsoft Edge"
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+
+        # Download
+        $url = $Edge.URI
+        $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
+        Write-Host "=========== Downloading to: $OutFile"
+        try {
+            Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
+            If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
+        }
+        catch {
+            Throw "Failed to download Microsoft Edge."
+        }
+
+        # Install
+        Write-Host "================ Installing Microsoft Edge"
+        try {
+            Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/package $OutFile /quiet /norestart DONOTCREATEDESKTOPSHORTCUT=true" -Verbose
+        }
+        catch {
+            Throw "Failed to install Microsoft Edge."
+        }
+
+        # Post install configuration
+        Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction SilentlyContinue
+        $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/master_preferences"
+        Invoke-WebRequest -Uri $url -OutFile "${Env:ProgramFiles(x86)}\Microsoft\Edge\Application\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+        $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
+        ForEach ($service in $services) { Get-Service -Name $service | Set-Service -StartupType "Disabled" }
+        ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
+        Remove-Variable -Name url
+        Write-Host "=========== Done"
+    }
+    Else {
+        Write-Host "================ Failed to retreive Microsoft Edge"
+    }
+}
+#endregion Functions
 
 
 #region Script logic
+# Set $VerbosePreference so full details are sent to the log; Make Invoke-WebRequest faster
+$VerbosePreference = "Continue"
+$ProgressPreference = "SilentlyContinue"
+
 # Start logging
-Write-Host "=========== Running: $($MyInvocation.MyCommand)."
-Start-Transcript -Path $Log -Append
+Start-Transcript -Path $Log
+If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
 
-# If local path for script doesn't exist, create it
-If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -ErrorAction SilentlyContinue }
+# Set TLS to 1.2; Create target folder
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
-# Run tasks
+# Run tasks/install apps
 Set-Repository
-Install-CoreApps
+Install-RequiredModules
+Install-VcRedistributables -Path "$Target\VcRedist"
+Install-MicrosoftEdge -Path "$Target\Edge"
 
 # Stop Logging
 Stop-Transcript

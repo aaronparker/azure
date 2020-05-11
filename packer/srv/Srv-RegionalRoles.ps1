@@ -1,6 +1,6 @@
 <# 
     .SYNOPSIS
-        Customise a Windows Server image for use as an RDS/XenApp VM in Azure.
+        Enable/disable Windows roles and features and set language/regional settings.
 #>
 [CmdletBinding()]
 Param (
@@ -8,21 +8,63 @@ Param (
     [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $Target = "$env:SystemDrive\Apps"
+    [System.String] $Target = "$env:SystemDrive\Apps",
+
+    [Parameter(Mandatory = $False)]
+    [System.String] $Locale = "en-AU"
 )
 
 #region Functions
-Function Set-RegionalSettings {
-    # Regional settings - set to en-AU / Australia
-    Import-Module International
-    Set-WinHomeLocation -GeoId 12
-    Set-WinSystemLocale -SystemLocale en-AU
-    Set-WinUserLanguageList -LanguageList en-AU -Force
-    Set-TimeZone -Id "AUS Eastern Standard Time" -Verbose
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/srv/enAU-Language.xml"
-    Invoke-WebRequest -Uri $url -OutFile "$Target\$(Split-Path $url -Leaf)"
-    & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$Target\enAU-Language.xml`""
+Function Set-RegionalSettings ($Path, $Locale) {
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
+
+    # Select the locale
+    Switch ($Locale) {
+        "en-US" {
+            # United States
+            $GeoId = 244
+            $Timezone = "Pacific Standard Time"
+        }
+        "en-GB" {
+            # Great Britain
+            $GeoId = 242
+            $Timezone = "GMT Standard Time"
+        }
+        "en-AU" {
+            # Australia
+            $GeoId = 12
+            $Timezone = "AUS Eastern Standard Time"
+        }
+        Default {
+            # Australia
+            $GeoId = 12
+            $Timezone = "AUS Eastern Standard Time"
+        }
+    }
+
+    # Set regional settings
+    Import-Module -Name "International"
+    Set-WinSystemLocale -SystemLocale $Locale
+    Set-WinUserLanguageList -LanguageList $Locale -Force
+    Set-WinHomeLocation -GeoId $GeoId
+    Set-TimeZone -Id $Timezone -Verbose
+    
+    try {
+        # Download the language file
+        $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/srv/$Locale-Language.xml"
+        $Path = "$Path\$(Split-Path $url -Leaf)"
+        Invoke-WebRequest -Uri $url -OutFile $OutFile
+    }
+    catch {
+        Throw "Failed to download language file."
+        Break
+    }
+    try {
+        & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:$OutFile"
+    }
+    catch {
+        Throw "Failed to set regional settings."
+    }
 }
 
 Function Set-Roles {
@@ -32,15 +74,20 @@ Function Set-Roles {
 #endregion
 
 #region Script logic
-# Start logging
-Write-Host "Running: $($MyInvocation.MyCommand)."
-Start-Transcript -Path $Log -Append
+# Set $VerbosePreference so full details are sent to the log; Make Invoke-WebRequest faster
+$VerbosePreference = "Continue"
+$ProgressPreference = "SilentlyContinue"
 
-# If local path for script doesn't exist, create it
-If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -ErrorAction SilentlyContinue }
+# Start logging
+Start-Transcript -Path $Log
+If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
+
+# Set TLS to 1.2; Create target folder
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
-Set-RegionalSettings
+Set-RegionalSettings -Path $Target -Locale $Locale
 Set-Roles
 
 # Stop Logging
