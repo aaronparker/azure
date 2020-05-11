@@ -1,6 +1,6 @@
 <# 
     .SYNOPSIS
-        Customise a Windows Server image for use as an RDS/XenApp VM in Azure.
+        Install Windows updates.
 #>
 [CmdletBinding()]
 Param (
@@ -10,9 +10,6 @@ Param (
     [Parameter(Mandatory = $False)]
     [System.String] $Target = "$env:SystemDrive\Apps"
 )
-
-# Make Invoke-WebRequest faster
-$ProgressPreference = "SilentlyContinue"
 
 #region Functions
 Function Set-Repository {
@@ -25,9 +22,7 @@ Function Set-Repository {
 }
 
 Function Install-WindowsUpdates {
-    # Windows Update
     Install-Module PSWindowsUpdate -AllowClobber
-    
     Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$False
     Get-WUList -MicrosoftUpdate -Confirm:$False -IgnoreReboot -AcceptAll
     Install-WindowsUpdate -NotTitle "Silverlight" -AcceptAll -IgnoreReboot
@@ -35,12 +30,17 @@ Function Install-WindowsUpdates {
 #endregion
 
 #region Script logic
-# Start logging
-Write-Host "Running: $($MyInvocation.MyCommand)."
-Start-Transcript -Path $Log -Append
+# Set $VerbosePreference so full details are sent to the log; Make Invoke-WebRequest faster
+$VerbosePreference = "Continue"
+$ProgressPreference = "SilentlyContinue"
 
-# If local path for script doesn't exist, create it
-If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -ErrorAction SilentlyContinue }
+# Start logging
+Start-Transcript -Path $Log
+If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
+
+# Set TLS to 1.2; Create target folder
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
 Set-Repository

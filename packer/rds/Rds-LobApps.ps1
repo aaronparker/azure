@@ -1,9 +1,6 @@
 <# 
     .SYNOPSIS
-        Customise a Windows Server image for use as an RDS/XenApp VM in Azure.
-        Installs Office 365 ProPlus, Adobe Reader DC, Visual C++ Redistributables. Installs applications from a network path specified in AppShare.
-        Sets regional settings, installs Windows Updates, configures the default profile.
-        Runs Windows Defender quick scan, Citrix Optimizer, BIS-F
+        Install line-of-business applications.
 #>
 [CmdletBinding()]
 Param (
@@ -16,9 +13,6 @@ Param (
     [Parameter(Mandatory = $False)]
     [System.String] $BlobStorage = "https://aaronparker.blob.core.windows.net/folder/"
 )
-
-# Make Invoke-WebRequest faster
-$ProgressPreference = "SilentlyContinue"
 
 #region Functions
 Function Set-Repository {
@@ -99,8 +93,7 @@ Function Get-AzureBlobItem {
     }
 }
 
-Function Install-LobApps {
-
+Function Install-LobApps ($Path) {
     # Get the list of items from blob storage
     try {
         $Items = Get-AzureBlobItems -Uri "$BlobStorage?comp=list"
@@ -110,11 +103,11 @@ Function Install-LobApps {
     }
 
     ForEach ($item in $Items) {
-        $Dest = Join-Path -Path $Target -ChildPath $item.Name
-        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+        $Path = Join-Path -Path $Target -ChildPath $item.Name
+        If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
         Write-Host "=========== Downloading item: $($item.Name)."
-        $OutFile = Join-Path -Path $Dest -ChildPath (Split-Path -Path $item.Url -Leaf)
+        $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
         try {
             Invoke-WebRequest -Uri $item.Uri -OutFile $OutFile -UseBasicParsing
         }
@@ -122,11 +115,11 @@ Function Install-LobApps {
             Write-Host "=========== Failed to download: $($item.Uri)."
             Break
         }
-        Expand-Archive -Path $OutFile -DestinationPath $Dest -Force
+        Expand-Archive -Path $OutFile -DestinationPath $Path -Force
 
         try {
             Write-Host "=========== Installing item: $($item.Name)."
-            Push-Location $Dest
+            Push-Location $Path
             . .\Install.ps1 -Verbose
             Pop-Location
         }
@@ -138,15 +131,20 @@ Function Install-LobApps {
 #endregion
 
 #region Script logic
-# Start logging
-Write-Host "Running: $($MyInvocation.MyCommand)."
-Start-Transcript -Path $Log -Append
+# Set $VerbosePreference so full details are sent to the log; Make Invoke-WebRequest faster
+$VerbosePreference = "Continue"
+$ProgressPreference = "SilentlyContinue"
 
-# If local path for script doesn't exist, create it
+# Start logging
+Start-Transcript -Path $Log
+If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
+
+# Set TLS to 1.2; Create target folder
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
-Install-LobApps
+Install-LobApps -Path $Target
 
 # Stop Logging
 Stop-Transcript

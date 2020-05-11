@@ -1,6 +1,6 @@
 <# 
     .SYNOPSIS
-        Customise a Windows Server image for use as an RDS/XenApp VM in Azure.
+        Install evergreen core applications.
 #>
 [CmdletBinding()]
 Param (
@@ -11,16 +11,13 @@ Param (
     [System.String] $Target = "$env:SystemDrive\Apps"
 )
 
-# Make Invoke-WebRequest faster
-$ProgressPreference = "SilentlyContinue"
-
 #region Functions
 Function Set-Repository {
     # Trust the PSGallery for modules
     If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
         Write-Verbose "Trusting the repository: PSGallery"
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+        Install-PackageProvider -Name "NuGet" -MinimumVersion 2.8.5.208 -Force
+        Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
     }
 }
 
@@ -96,46 +93,38 @@ Function Invoke-Process {
     }
 }
 
-Function Install-CoreApps {
-    # Set TLS to 1.2
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-    #region Modules
+Function Install-RequiredModules {
     Write-Host "=========== Installing required modules"
-    # Install the Evergreen module
-    # https://github.com/aaronparker/Evergreen
+    # Install the Evergreen module; https://github.com/aaronparker/Evergreen
     Install-Module -Name Evergreen -AllowClobber
-    # Install the VcRedist module
-    # https://docs.stealthpuppy.com/vcredist/
+
+    # Install the VcRedist module; https://docs.stealthpuppy.com/vcredist/
     Install-Module -Name VcRedist -AllowClobber
-    #endregion
+}
 
-
-    #region VcRedist
+Function Install-VcRedistributables ($Path) {
     Write-Host "=========== Microsoft Visual C++ Redistributables"
-    $Dest = "$Target\VcRedist"
-    If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
     $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
-    Save-VcRedist -Path $Dest -VcList $VcList -ForceWebRequest -Verbose
-    Install-VcRedist -VcList $VcList -Path $Dest -Verbose
+
+    Save-VcRedist -Path $Path -VcList $VcList -ForceWebRequest -Verbose
+    Install-VcRedist -VcList $VcList -Path $Path -Verbose
     Write-Host "=========== Done"
-    #endregion
+}
 
-
-    #region FSLogix Apps
+Function Install-FSLogix ($Path) {
     Write-Host "=========== Microsoft FSLogix agent"
     $FSLogix = Get-MicrosoftFSLogixApps
 
     If ($FSLogix) {
         Write-Host "=========== Microsoft FSLogix: $($FSLogix.Version)"
-        $Dest = "$Target\FSLogix"
-        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
 
         # Download
         $OutFile = $(Split-Path -Path $FSLogix.URI -Leaf)
-        Write-Host "=========== Downloading to: $Dest\$OutFile"
+        Write-Host "=========== Downloading to: $Path\$OutFile"
         try {
-            Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Dest\$OutFile" -UseBasicParsing
+            Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Path\$OutFile" -UseBasicParsing
             If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
         }
         catch {
@@ -143,16 +132,16 @@ Function Install-CoreApps {
         }
 
         # Unpack and install
-        Expand-Archive -Path "$Dest\$OutFile" -DestinationPath $Dest -Force
+        Expand-Archive -Path "$Path\$OutFile" -DestinationPath $Path -Force
         Write-Host "================ Installing FSLogix agent"
         try {
-            Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
+            Invoke-Process -FilePath "$Path\x64\Release\FSLogixAppsSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
         }
         catch {
             Throw "Failed to install the FSlogix Apps agent."
         }
         try {
-            Invoke-Process -FilePath "$Dest\x64\Release\FSLogixAppsRuleEditorSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
+            Invoke-Process -FilePath "$Path\x64\Release\FSLogixAppsRuleEditorSetup.exe" -ArgumentList "/install /quiet /norestart" -Verbose
         }
         catch {
             Throw "Failed to install the FSlogix Apps Rules Editor."
@@ -162,22 +151,20 @@ Function Install-CoreApps {
     Else {
         Write-Host "================ Failed to retreive Microsoft FSLogix Apps"
     }
-    #endregion
+}
 
-
-    #region Edge
+Function Install-MicrosoftEdge ($Path) {
     Write-Host "=========== Microsoft Edge"
     $Edge = Get-MicrosoftEdge | Where-Object { $_.Architecture -eq "x64" -and $_.Channel -eq "Stable" }
     $Edge = $Edge | Sort-Object -Property Version -Descending | Select-Object -First 1
 
     If ($Edge) {
         Write-Host "================ Downloading Microsoft Edge"
-        $Dest = "$Target\Edge"
-        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
 
         # Download
         $url = $Edge.URI
-        $OutFile = Join-Path -Path $Dest -ChildPath $(Split-Path -Path $url -Leaf)
+        $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
         Write-Host "=========== Downloading to: $OutFile"
         try {
             Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
@@ -209,27 +196,23 @@ Function Install-CoreApps {
     Else {
         Write-Host "================ Failed to retreive Microsoft Edge"
     }
-    #endregion
+}
 
-
-    #region Office 365 ProPlus
-    Write-Host "=========== Microsoft Office"
-
+Function Install-MicrosoftOffice ($Path) {
     # Get Office version
+    Write-Host "=========== Microsoft Office"
     $Office = Get-MicrosoftOffice | Where-Object { $_.Channel -eq "Monthly" }
     $url = $Office.URI
     
     If ($Office) {
-
-        $Dest = "$Target\Office"
-        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
 
         $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
-        Write-Host "=========== Downloading to: $Dest\$(Split-Path -Path $xml -Leaf)"
-        Invoke-WebRequest -Uri $xml -OutFile "$Dest\$(Split-Path -Path $xml -Leaf)" -UseBasicParsing
+        Write-Host "=========== Downloading to: $Path\$(Split-Path -Path $xml -Leaf)"
+        Invoke-WebRequest -Uri $xml -OutFile "$Path\$(Split-Path -Path $xml -Leaf)" -UseBasicParsing
         
         # Download setup.exe
-        $OutFile = Join-Path -Path $Dest -ChildPath $(Split-Path -Path $url -Leaf)
+        $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
         Write-Host "=========== Downloading to: $OutFile"
         try {
             Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
@@ -240,13 +223,9 @@ Function Install-CoreApps {
         }
 
         # Download Office package, Setup fails to exit, so wait 9-10 mins for Office install to complete
-        Push-Location -Path $Dest
+        Push-Location -Path $Path
         Write-Host "================ Installing Microsoft Office"
-        Invoke-Process -FilePath $OutFile -ArgumentList "/configure $Dest\$(Split-Path -Path $xml -Leaf)" -Verbose
-        <#For ($i = 0; $i -le 9; $i++) {
-            Write-Host "================ Sleep $(10 - $i) mins for Office setup"
-            Start-Sleep -Seconds 60
-        }#>
+        Invoke-Process -FilePath $OutFile -ArgumentList "/configure $Path\$(Split-Path -Path $xml -Leaf)" -Verbose
         Pop-Location
         Remove-Variable -Name url
         Write-Host "=========== Done"
@@ -254,21 +233,19 @@ Function Install-CoreApps {
     Else {
         Write-Host "================ Failed to retreive Microsoft Office"
     }
-    #endregion
+}
 
-
-    #region Teams
+Function Install-MicrosoftTeams ($Path) {
     Write-Host "=========== Microsoft Teams"
     Write-Host "================ Downloading Microsoft Teams"
     $Teams = Get-MicrosoftTeams | Where-Object { $_.Architecture -eq "x64" }
     
     If ($Teams) {
-        $Dest = "$Target\Teams"
-        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
 
         # Download
         $url = $Teams.URI
-        $OutFile = Join-Path -Path $Dest -ChildPath $(Split-Path -Path $url -Leaf)
+        $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
         Write-Host "=========== Downloading to: $OutFile"
         try {
             Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
@@ -284,10 +261,6 @@ Function Install-CoreApps {
             reg add "HKLM\SOFTWARE\Microsoft\Teams" /v "IsWVDEnvironment" /t REG_DWORD /d 1
             $ArgumentList = '/package $OutFile /quiet /qn ALLUSER=1 ALLUSERS=1 OPTIONS="noAutoStart=true"'
             Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Verbose
-            <#For ($i = 0; $i -le 2; $i++) {
-                Write-Host "================ Sleep $(3 - $i) mins for Teams setup"
-                Start-Sleep -Seconds 60
-            }#>
             Remove-Variable -Name url
         }
         catch {
@@ -298,21 +271,19 @@ Function Install-CoreApps {
     Else {
         Write-Host "================ Failed to retreive Microsoft Teams"
     }
-    #endregion
+}
 
-
-    #region OneDrive
+Function Install-MicrosoftOneDrive ($Path) {
     Write-Host "=========== Microsoft OneDrive"    
     Write-Host "================ Downloading Microsoft OneDrive"
     $OneDrive = Get-MicrosoftOneDrive | Where-Object { $_.Ring -eq "Enterprise" }
 
     If ($OneDrive) {
-        $Dest = "$Target\OneDrive"
-        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
 
         # Download
         $url = $OneDrive.URI
-        $OutFile = Join-Path -Path $Dest -ChildPath $(Split-Path -Path $url -Leaf)
+        $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
         Write-Host "=========== Downloading to: $OutFile"
         try {
             Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
@@ -336,26 +307,22 @@ Function Install-CoreApps {
     Else {
         Write-Host "================ Failed to retreive Microsoft OneDrive"
     }
-    #endregion
+}
 
-        
-    #region Reader
-    # Install Adobe Reader DC
+Function Install-AdobeReaderDC ($Path) {
     # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
-    Write-Host "=========== Adobe Acrobat Reader DC"
-
     # Download Reader installer and updater
+    Write-Host "=========== Adobe Acrobat Reader DC"
     Write-Host "================ Downloading Reader"
     $Reader = Get-AdobeAcrobatReaderDC | Where-Object { $_.Platform -eq "Windows" -and ($_.Language -eq "English" -or $_.Language -eq "Neutral") }
 
     If ($Reader) {
-        $Dest = "$Target\Reader"
-        If (!(Test-Path $Dest)) { New-Item -Path $Dest -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
         
         # Download Adobe Reader
         ForEach ($File in $Reader) {
             $url = $File.Uri
-            $OutFile = Join-Path -Path $Dest -ChildPath (Split-Path -Path $url -Leaf)
+            $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $url -Leaf)
             Write-Host "=========== Downloading to: $OutFile."
             try {
                 (New-Object System.Net.WebClient).DownloadFile($url, $OutFile)
@@ -372,7 +339,7 @@ Function Install-CoreApps {
         # Install Adobe Reader
         Write-Host "================ Installing Reader"
         try {
-            $Installers = Get-ChildItem -Path $Dest -Filter "*.exe"
+            $Installers = Get-ChildItem -Path $Path -Filter "*.exe"
             ForEach ($exe in $Installers) {
                 Invoke-Process -FilePath $exe.FullName -ArgumentList $res.Install.Virtual.Arguments -Verbose
             }
@@ -390,7 +357,7 @@ Function Install-CoreApps {
         # Update Adobe Reader
         Write-Host "================ Update Reader"
         try {
-            $Updates = Get-ChildItem -Path $Dest -Filter "*.msp"
+            $Updates = Get-ChildItem -Path $Path -Filter "*.msp"
             ForEach ($msp in $Updates) {
                 Write-Host "================ Installing update: $($msp.FullName)."
                 Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList "/update $($msp.FullName) /quiet /qn" -Verbose
@@ -404,33 +371,54 @@ Function Install-CoreApps {
     Else {
         Write-Host "================ Failed to retreive Adobe Reader"
     }
-    #endregion
-
-
-    #region Default Apps & File Type Associations
-    <#
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/FileTypeAssociations.xml"
-    $output = "$Target\$(Split-Path -Path $url -Leaf)"
-    Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
-    Invoke-Process -FilePath "$env:SystemRoot\System32\dism.exe" -ArgumentList "/Online /Import-DefaultAppAssociations:$output" -Verbose
-    Remove-Variable -Name url
-    #>
-    #endregion
 }
-#endregion
+
+Function Install-ConnectionExperienceIndicator ($Path) {
+
+    # Parameters
+    $Url = "https://bit.ly/2RrQTd3"
+    $OutFile = Join-Path -Path $Path -ChildPath "ConnectionExperienceIndicator.zip"
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+
+    # Download the file
+    try {
+        Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing
+    }
+    catch {
+        Throw "Failed to download Connection Experience Indicator."
+        Break
+    }
+
+    # Extract the zip file
+    Expand-Archive -Path $OutFile -DestinationPath $Path
+}
+#endregion Functions
 
 
 #region Script logic
+# Set $VerbosePreference so full details are sent to the log; Make Invoke-WebRequest faster
+$VerbosePreference = "Continue"
+$ProgressPreference = "SilentlyContinue"
+
 # Start logging
-Write-Host "=========== Running: $($MyInvocation.MyCommand)."
-Start-Transcript -Path $Log -Append
+Start-Transcript -Path $Log
+If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
 
-# If local path for script doesn't exist, create it
-If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType Directory -Force -ErrorAction SilentlyContinue }
+# Set TLS to 1.2; Create target folder
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
-# Run tasks
+# Run tasks/install apps
 Set-Repository
-Install-CoreApps
+Install-RequiredModules
+Install-VcRedistributables -Path "$Target\VcRedist"
+Install-FSLogix -Path "$Target\FSLogix"
+Install-MicrosoftEdge -Path "$Target\Edge"
+Install-MicrosoftOffice -Path "$Target\Office"
+Install-MicrosoftTeams -Path "$Target\Teams"
+Install-MicrosoftOneDrive -Path "$Target\OneDrive"
+Install-AdobeReaderDC -Path "$Target\AdobeReader"
+Install-ConnectionExperienceIndicator -Path "$Target\ConnectionExperienceIndicator"
 
 # Stop Logging
 Stop-Transcript
