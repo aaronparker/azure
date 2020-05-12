@@ -11,7 +11,7 @@ Param (
     [System.String] $Target = "$env:SystemDrive\Apps",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $BlobStorage = "https://aaronparker.blob.core.windows.net/folder/"
+    [System.String] $BlobStorage = "https://insentrawvdaue.blob.core.windows.net/apps/"
 )
 
 #region Functions
@@ -144,7 +144,4 @@ Install-LobApps -Path $Target
 # Stop Logging
 Stop-Transcript
 Write-Host "Complete: $($MyInvocation.MyCommand)."
-
-# Replace clear text passwords in the log file
-(Get-Content $Log).replace($Pass, "") | Set-Content $Log
 #endregion
