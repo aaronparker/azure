@@ -52,10 +52,10 @@ Function Invoke-CitrixOptimizer ($Path) {
             $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/WindowsServer2019-Defender-Azure.xml"
         }
         "Microsoft Windows 10 Enterprise for Virtual Desktops" {
-            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Windows101903-Defender-Azure.xml"
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Windows101909-Defender-Azure.xml"
         }
         "Microsoft Windows 10*" {
-            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Windows101903-Defender-Azure.xml"
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Windows101909-Defender-Azure.xml"
         }
     }
     Invoke-WebRequest -Uri $url -OutFile "$Path\Templates\$(Split-Path $url -Leaf)" -UseBasicParsing
