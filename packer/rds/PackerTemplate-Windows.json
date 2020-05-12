@@ -1,17 +1,17 @@
 {
     "variables": {
         "winrmuser": "packer",
-        "client_id": "<clientid>",
-        "client_secret": "<clientsecrect>",
-        "subscription_id": "<subscriptionid>",
-        "tenant_id": "<tenantid>",
+        "client_id": "",
+        "client_secret": "",
+        "subscription_id": "",
+        "tenant_id": "",
         "image_date": "",
-        "managed_image_resource_group_name": "<resourcegroup>",
+        "managed_image_resource_group_name": "",
         "image_publisher": "MicrosoftWindowsDesktop",
         "image_offer": "Windows-10",
         "image_sku": "19h2-ent",
         "location": "australiaeast",
-        "vm_size": "Standard_D2s_v3",
+        "vm_size": "Standard_D2_v3",
         "WorkingDirectory": "{{env `System_DefaultWorkingDirectory`}}" 
     },
     "builders": [
@@ -51,8 +51,8 @@
                 "reg add HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f",
                 "reg add HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /d 2 /t REG_DWORD /f",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Rds-RegionalRoles.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Rds-Customise.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-RegionalRoles.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-Customise.ps1'))"
             ]
         },
         {
@@ -71,7 +71,7 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Rds-CoreApps.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-CoreApps.ps1'))"
             ]
         },
         {
@@ -81,7 +81,7 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "#Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Rds-LobApps.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-LobApps.ps1'))"
             ]
         },
         {
@@ -100,14 +100,14 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/rds/Seal-Image.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/Get-InstalledSoftware.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Seal-Image.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/Get-InstalledSoftware.ps1'))",
                 "Write-Output \"====== Enable Windows Defender real time scan\"",
                 "Set-MpPreference -DisableRealtimeMonitoring $false",
                 "Write-Output \"====== Enable Windows Store updates\"",
                 "reg delete HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /f",
                 "reg delete HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /f",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/packer/Sysprep-Image.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/Sysprep-Image.ps1'))"
             ]
         }
     ],

@@ -51,7 +51,7 @@ Function Set-RegionalSettings ($Path, $Locale) {
     
     try {
         # Download the language file
-        $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/srv/$Locale-Language.xml"
+        $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/$Locale-Language.xml"
         $OutFile = "$Path\$(Split-Path $url -Leaf)"
         Invoke-WebRequest -Uri $url -OutFile $OutFile
     }
