@@ -1,0 +1,13 @@
+{
+    "winrmuser": "packer",
+    "client_id": "<clientid>",
+    "client_secret": "<clientsecrect>",
+    "subscription_id": "<subscriptionid>",
+    "tenant_id": "<tenantid>",
+    "managed_image_resource_group_name": "<resourcegroup>",
+    "image_publisher": "MicrosoftWindowsServer",
+    "image_offer": "WindowsServer",
+    "image_sku": "2019-Datacenter",
+    "location": "australiaeast",
+    "vm_size": "Standard_D2s_v3"
+}

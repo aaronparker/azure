@@ -90,7 +90,7 @@ If (Test-Path -Path $newVariables) { Remove-Item -Path $newVariables -Force -Err
 (Get-Content $newVariables).replace("<resourcegroup>", $ResourceGroup) | Set-Content -Path $newVariables
 
 # Get date
-$Date = [System.Globalization.CultureInfo]::CurrentUICulture.DateTimeFormat.ShortDatePattern -replace "/", ""
+$Date = Get-Date -Format $([System.Globalization.CultureInfo]::CurrentUICulture.DateTimeFormat.ShortDatePattern -replace "/", "")
 
 # Output strings
 Write-Host "AppId:          $AppId" -ForegroundColor Green
@@ -105,8 +105,9 @@ Write-Host "Variables:      $newVariables" -ForegroundColor Green
 # Validate template
 Write-Host "Validating: $newVariables" -ForegroundColor Cyan
 $Template = Resolve-Path -Path $TemplateFile
-Start-Process -FilePath ".\Packer.exe" -ArgumentList "validate $Template -var-file=$newVariables -var 'image_date=$Date'" -Wait -NoNewWindow
+$Arguments = "-var-file $newVariables -var 'image_date=$($Date)' $Template"
+& packer.exe validate $Arguments
 
 # Run Packer
 Write-Host "Packer command line sent to the clipboard. Paste here to run." -ForegroundColor Cyan
-".\packer.exe build -force -on-error=ask -timestamp-ui $Template -var-file=$newVariables -var 'image_date=$Date'" | Set-Clipboard
+"packer.exe build -force -on-error=ask -timestamp-ui $Arguments" | Set-Clipboard
