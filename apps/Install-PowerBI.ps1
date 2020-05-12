@@ -5,9 +5,6 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $False)]
-    [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
-
-    [Parameter(Mandatory = $False)]
     [System.String] $Target = "$env:SystemDrive\Apps"
 )
 
@@ -91,9 +88,6 @@ Function Invoke-Process {
 $VerbosePreference = "Continue"
 $ProgressPreference = "SilentlyContinue"
 
-# Start logging
-Start-Transcript -Path $Log
-
 # Install application
 $Process = ".\PBIDesktopSetup_x64.exe"
 $Arguments = "-silent -norestart ACCEPT_EULA=1 ENABLECXP=0 INSTALLDESKTOPSHORTCUT=0 DISABLE_UPDATE_NOTIFICATION=1"
@@ -105,7 +99,5 @@ catch {
     Throw "Failed to install Microsoft Power BI."
 }
 
-# Stop Logging
-Stop-Transcript
 Write-Host "=========== Complete: $($MyInvocation.MyCommand)."
 #endregion
