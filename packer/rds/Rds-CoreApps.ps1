@@ -375,6 +375,9 @@ Function Install-AdobeReaderDC ($Path) {
 
 Function Install-ConnectionExperienceIndicator ($Path) {
 
+    Write-Host "=========== Connection Experience Indicator"
+    Write-Host "================ Downloading Connection Experience Indicator"
+
     # Parameters
     $Url = "https://bit.ly/2RrQTd3"
     $OutFile = Join-Path -Path $Path -ChildPath "ConnectionExperienceIndicator.zip"
@@ -391,6 +394,7 @@ Function Install-ConnectionExperienceIndicator ($Path) {
 
     # Extract the zip file
     Expand-Archive -Path $OutFile -DestinationPath $Path
+    Write-Host "=========== Done"
 }
 #endregion Functions
 

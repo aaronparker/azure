@@ -93,7 +93,7 @@ Function Get-AzureBlobItem {
     }
 }
 
-Function Install-LobApps ($Path) {
+Function Install-LobApps ($Path, $BlobStorage) {
     # Get the list of items from blob storage
     try {
         $Items = Get-AzureBlobItems -Uri "$BlobStorage?comp=list"
@@ -103,8 +103,8 @@ Function Install-LobApps ($Path) {
     }
 
     ForEach ($item in $Items) {
-        $Path = Join-Path -Path $Target -ChildPath $item.Name
-        If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
+        $AppPath = Join-Path -Path $Path -ChildPath $item.Name
+        If (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
         Write-Host "=========== Downloading item: $($item.Name)."
         $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
@@ -115,17 +115,12 @@ Function Install-LobApps ($Path) {
             Write-Host "=========== Failed to download: $($item.Uri)."
             Break
         }
-        Expand-Archive -Path $OutFile -DestinationPath $Path -Force
+        Expand-Archive -Path $OutFile -DestinationPath $AppPath -Force
 
-        try {
-            Write-Host "=========== Installing item: $($item.Name)."
-            Push-Location $Path
-            . .\Install.ps1 -Verbose
-            Pop-Location
-        }
-        catch {
-            Write-Host "=========== Failed installing item: $($item.Name)."
-        }
+        Write-Host "=========== Installing item: $($item.Name)."
+        Push-Location $AppPath
+        . .\Install.ps1
+        Pop-Location
     }
 }
 #endregion
