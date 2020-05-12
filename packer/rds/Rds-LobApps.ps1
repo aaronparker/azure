@@ -96,17 +96,18 @@ Function Get-AzureBlobItem {
 Function Install-LobApps ($Path, $BlobStorage) {
     # Get the list of items from blob storage
     try {
-        $Items = Get-AzureBlobItems -Uri "$BlobStorage?comp=list"
+        $Items = Get-AzureBlobItem -Uri "$($BlobStorage)?comp=list" | Where-Object { $_.Name -match "zip?" }
     }
     catch {
         Write-Host "=========== Failed to retrieve items from: $BlobStorage?comp=list."
     }
 
     ForEach ($item in $Items) {
-        $AppPath = Join-Path -Path $Path -ChildPath $item.Name
+        $AppName = $item.Name -replace ".zip"
+        $AppPath = Join-Path -Path $Path -ChildPath $AppName
         If (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
-        Write-Host "=========== Downloading item: $($item.Name)."
+        Write-Host "=========== Downloading item: $($AppName)."
         $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
         try {
             Invoke-WebRequest -Uri $item.Uri -OutFile $OutFile -UseBasicParsing
@@ -117,7 +118,7 @@ Function Install-LobApps ($Path, $BlobStorage) {
         }
         Expand-Archive -Path $OutFile -DestinationPath $AppPath -Force
 
-        Write-Host "=========== Installing item: $($item.Name)."
+        Write-Host "=========== Installing item: $($AppName)."
         Push-Location $AppPath
         . .\Install.ps1
         Pop-Location
