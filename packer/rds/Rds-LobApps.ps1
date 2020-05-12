@@ -105,15 +105,15 @@ Function Install-LobApps ($Path, $BlobStorage) {
     ForEach ($item in $Items) {
         $AppName = $item.Name -replace ".zip"
         $AppPath = Join-Path -Path $Path -ChildPath $AppName
-        If (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
+        If (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
 
-        Write-Host "=========== Downloading item: $($AppName)."
+        Write-Host "=========== Downloading item: [$($AppName)]."
         $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
         try {
-            Invoke-WebRequest -Uri $item.Uri -OutFile $OutFile -UseBasicParsing
+            Invoke-WebRequest -Uri $item.Url -OutFile $OutFile -UseBasicParsing
         }
         catch {
-            Write-Host "=========== Failed to download: $($item.Uri)."
+            Write-Host "=========== Failed to download: $($item.Url)."
             Break
         }
         Expand-Archive -Path $OutFile -DestinationPath $AppPath -Force
