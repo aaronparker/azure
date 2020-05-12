@@ -99,7 +99,7 @@ Function Install-LobApps ($Path, $BlobStorage) {
         $Items = Get-AzureBlobItem -Uri "$($BlobStorage)?comp=list" | Where-Object { $_.Name -match "zip?" }
     }
     catch {
-        Write-Host "=========== Failed to retrieve items from: $BlobStorage?comp=list."
+        Write-Host "=========== Failed to retrieve items from: [$BlobStorage]."
     }
 
     ForEach ($item in $Items) {
@@ -107,7 +107,7 @@ Function Install-LobApps ($Path, $BlobStorage) {
         $AppPath = Join-Path -Path $Path -ChildPath $AppName
         If (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
 
-        Write-Host "=========== Downloading item: [$($AppName)]."
+        Write-Host "=========== Downloading item: [$($item.Url)]."
         $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
         try {
             Invoke-WebRequest -Uri $item.Url -OutFile $OutFile -UseBasicParsing
@@ -117,6 +117,7 @@ Function Install-LobApps ($Path, $BlobStorage) {
             Break
         }
         Expand-Archive -Path $OutFile -DestinationPath $AppPath -Force
+        Remove-Item -Path $OutFile -Force -ErrorAction SilentlyContinue
 
         Write-Host "=========== Installing item: $($AppName)."
         Push-Location $AppPath
@@ -140,7 +141,7 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -Error
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
-Install-LobApps -Path $Target
+Install-LobApps -Path $Target -BlobStorage $BlobStorage
 
 # Stop Logging
 Stop-Transcript

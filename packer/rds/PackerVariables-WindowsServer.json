@@ -4,8 +4,6 @@
     "client_secret": "<clientsecrect>",
     "subscription_id": "<subscriptionid>",
     "tenant_id": "<tenantid>",
-    "managed_image_prefix": "",
-    "managed_image_name": "<imagename>",
     "managed_image_resource_group_name": "<resourcegroup>",
     "image_publisher": "MicrosoftWindowsServer",
     "image_offer": "WindowsServer",

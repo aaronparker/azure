@@ -80,13 +80,17 @@ Else {
 $fileName = [System.IO.Path]::GetFileNameWithoutExtension($(Resolve-Path -Path $VariablesFile))
 $path = [System.IO.Path]::GetDirectoryName($VariablesFile)
 $newVariables = Join-Path -Path $path -ChildPath "$filename-Temp.json"
+Write-Host "Template:  $(Resolve-Path -Path $VariablesFile)."
+Write-Host "Variables: $newVariables."
 If (Test-Path -Path $newVariables) { Remove-Item -Path $newVariables -Force -ErrorAction SilentlyContinue }
 (Get-Content $VariablesFile).replace("<clientid>", $AppId) | Set-Content -Path $newVariables
 (Get-Content $newVariables).replace("<clientsecrect>", $Secret) | Set-Content -Path $newVariables
 (Get-Content $newVariables).replace("<subscriptionid>", $sub.Id) | Set-Content -Path $newVariables
 (Get-Content $newVariables).replace("<tenantid>", $sub.TenantId) | Set-Content -Path $newVariables
 (Get-Content $newVariables).replace("<resourcegroup>", $ResourceGroup) | Set-Content -Path $newVariables
-(Get-Content $newVariables).replace("<imagename>", "$(Get-Date -Format "ddMMyyyy")") | Set-Content -Path $newVariables
+
+# Get date
+$Date = [System.Globalization.CultureInfo]::CurrentUICulture.DateTimeFormat.ShortDatePattern -replace "/", ""
 
 # Output strings
 Write-Host "AppId:          $AppId" -ForegroundColor Green
@@ -94,14 +98,15 @@ Write-Host "Secret:         $Secret" -ForegroundColor Green
 Write-Host "Subscription:   $($sub.Id)" -ForegroundColor Green
 Write-Host "Subscription:   $($sub.TenantId)" -ForegroundColor Green
 Write-Host "Resource group: $ResourceGroup" -ForegroundColor Green
-Write-Host "Image name:     $(Get-Date -Format "ddMMyyyy")" -ForegroundColor Green
+Write-Host "Image date:     $Date" -ForegroundColor Green
 Write-Host "Template:       $TemplateFile" -ForegroundColor Cyan
 Write-Host "Variables:      $newVariables" -ForegroundColor Green
 
 # Validate template
 Write-Host "Validating: $newVariables" -ForegroundColor Cyan
-Start-Process -FilePath ".\Packer.exe" -ArgumentList "validate $(Resolve-Path -Path $TemplateFile) -var-file=$newVariables" -Wait -NoNewWindow
+$Template = Resolve-Path -Path $TemplateFile
+Start-Process -FilePath ".\Packer.exe" -ArgumentList "validate $Template -var-file=$newVariables -var 'image_date=$Date'" -Wait -NoNewWindow
 
 # Run Packer
 Write-Host "Packer command line sent to the clipboard. Paste here to run." -ForegroundColor Cyan
-".\packer.exe build -force -on-error=ask -timestamp-ui $(Resolve-Path -Path $TemplateFile) -var-file=$newVariables" | Set-Clipboard
+".\packer.exe build -force -on-error=ask -timestamp-ui $Template -var-file=$newVariables -var 'image_date=$Date'" | Set-Clipboard
