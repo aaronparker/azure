@@ -1,13 +1,13 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $False)]
-    [System.String] $ResourceGroup = "rg-WVD-AUE",
+    [System.String] $ResourceGroup = "rg-WindowsVirtualDesktopInfrastructure-AustraliaEast",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $Template = ".\WindowsServer2019RDS.json",
+    [System.String] $TemplateFile = ".\PackerTemplate-Windows.json",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $ImageName = "WindowsServer2019RemoteDesktopHost",
+    [System.String] $VariablesFile = ".\PackerVariables-Windows10Multisession.json",
 
     [Parameter(Mandatory = $False)]
     [System.String] $KeyVault = "insentrawvd"
@@ -77,16 +77,16 @@ Else {
 }
 
 # Replace values
-$fileName = [System.IO.Path]::GetFileNameWithoutExtension($Template)
-$path = [System.IO.Path]::GetDirectoryName($Template)
-$newTemplate = "$path\$filename-Temp.json"
-If (Test-Path -Path $newTemplate) { Remove-Item -Path $newTemplate -Force -ErrorAction SilentlyContinue }
-(Get-Content $Template).replace("<clientid>", $AppId) | Set-Content -Path $newTemplate
-(Get-Content $newTemplate).replace("<clientsecrect>", $Secret) | Set-Content -Path $newTemplate
-(Get-Content $newTemplate).replace("<subscriptionid>", $sub.Id) | Set-Content -Path $newTemplate
-(Get-Content $newTemplate).replace("<tenantid>", $sub.TenantId) | Set-Content -Path $newTemplate
-(Get-Content $newTemplate).replace("<resourcegroup>", $ResourceGroup) | Set-Content -Path $newTemplate
-(Get-Content $newTemplate).replace("<imagename>", "$ImageName-$(Get-Date -Format "ddMMyyyy")") | Set-Content -Path $newTemplate
+$fileName = [System.IO.Path]::GetFileNameWithoutExtension($(Resolve-Path -Path $VariablesFile))
+$path = [System.IO.Path]::GetDirectoryName($VariablesFile)
+$newVariables = Join-Path -Path $path -ChildPath "$filename-Temp.json"
+If (Test-Path -Path $newVariables) { Remove-Item -Path $newVariables -Force -ErrorAction SilentlyContinue }
+(Get-Content $VariablesFile).replace("<clientid>", $AppId) | Set-Content -Path $newVariables
+(Get-Content $newVariables).replace("<clientsecrect>", $Secret) | Set-Content -Path $newVariables
+(Get-Content $newVariables).replace("<subscriptionid>", $sub.Id) | Set-Content -Path $newVariables
+(Get-Content $newVariables).replace("<tenantid>", $sub.TenantId) | Set-Content -Path $newVariables
+(Get-Content $newVariables).replace("<resourcegroup>", $ResourceGroup) | Set-Content -Path $newVariables
+(Get-Content $newVariables).replace("<imagename>", "$(Get-Date -Format "ddMMyyyy")") | Set-Content -Path $newVariables
 
 # Output strings
 Write-Host "AppId:          $AppId" -ForegroundColor Green
@@ -94,13 +94,14 @@ Write-Host "Secret:         $Secret" -ForegroundColor Green
 Write-Host "Subscription:   $($sub.Id)" -ForegroundColor Green
 Write-Host "Subscription:   $($sub.TenantId)" -ForegroundColor Green
 Write-Host "Resource group: $ResourceGroup" -ForegroundColor Green
-Write-Host "Image name:     $ImageName-$(Get-Date -Format "ddMMyyyy")" -ForegroundColor Green
-Write-Host "Template:       $newTemplate" -ForegroundColor Green
+Write-Host "Image name:     $(Get-Date -Format "ddMMyyyy")" -ForegroundColor Green
+Write-Host "Template:       $TemplateFile" -ForegroundColor Cyan
+Write-Host "Variables:      $newVariables" -ForegroundColor Green
 
 # Validate template
-Write-Host "Validating: $newTemplate" -ForegroundColor Cyan
-Start-Process -FilePath ".\Packer.exe" -ArgumentList "validate $newTemplate" -Wait -NoNewWindow
+Write-Host "Validating: $newVariables" -ForegroundColor Cyan
+Start-Process -FilePath ".\Packer.exe" -ArgumentList "validate $(Resolve-Path -Path $TemplateFile) -var-file=$newVariables" -Wait -NoNewWindow
 
 # Run Packer
-Write-Host "Run: .\packer.exe build -force -on-error=ask -timestamp-ui $newTemplate" -ForegroundColor Cyan
-".\packer.exe build -force -on-error=ask -timestamp-ui $newTemplate" | Set-Clipboard
+Write-Host "Packer command line sent to the clipboard. Paste here to run." -ForegroundColor Cyan
+".\packer.exe build -force -on-error=ask -timestamp-ui $(Resolve-Path -Path $TemplateFile) -var-file=$newVariables" | Set-Clipboard

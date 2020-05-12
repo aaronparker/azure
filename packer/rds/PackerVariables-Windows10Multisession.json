@@ -1,0 +1,15 @@
+{
+    "winrmuser": "packer",
+    "client_id": "<clientid>",
+    "client_secret": "<clientsecrect>",
+    "subscription_id": "<subscriptionid>",
+    "tenant_id": "<tenantid>",
+    "managed_image_prefix": "",
+    "managed_image_name": "<imagename>",
+    "managed_image_resource_group_name": "<resourcegroup>",
+    "image_publisher": "MicrosoftWindowsDesktop",
+    "image_offer": "Windows-10",
+    "image_sku": "19h2-evd",
+    "location": "australiaeast",
+    "vm_size": "Standard_D2s_v3"
+}
