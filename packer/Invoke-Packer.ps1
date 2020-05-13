@@ -80,7 +80,7 @@ Else {
 }
 
 # Get date, locale
-$Locale = [System.Globalization.CultureInfo]::CurrentUICulture.Name
+$Locale = (Get-WinSystemLocale).Name
 $Date = Get-Date -Format $([System.Globalization.CultureInfo]::CurrentUICulture.DateTimeFormat.ShortDatePattern -replace "/", "")
 
 # Create a copy of the variables file
