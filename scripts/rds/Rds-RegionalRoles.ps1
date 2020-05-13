@@ -102,7 +102,7 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -Error
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
-If ($env:Locale) { $Locale = $env:Locale } Else { $Locale = "en-AU" }
+If (Test-Path -Path $env:Locale) { $Locale = $env:Locale } Else { $Locale = "en-AU" }
 Set-RegionalSettings -Path $Target -Locale $Locale
 Set-Roles
 

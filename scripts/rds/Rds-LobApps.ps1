@@ -139,7 +139,7 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -Error
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
-If ($env:BlobStorage) {
+If (Test-Path -Path $env:BlobStorage) {
     Install-LobApps -Path $Target -BlobStorage $env:BlobStorage
 }
 
