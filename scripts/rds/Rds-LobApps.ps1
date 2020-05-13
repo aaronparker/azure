@@ -8,10 +8,7 @@ Param (
     [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $Target = "$env:SystemDrive\Apps",
-
-    [Parameter(Mandatory = $False, Position = 0)]
-    [System.String] $BlobStorage
+    [System.String] $Target = "$env:SystemDrive\Apps"
 )
 
 #region Functions
@@ -142,8 +139,8 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -Error
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
-If ($BlobStorage.Length -gt 0) {
-    Install-LobApps -Path $Target -BlobStorage $BlobStorage
+If ($env:BlobStorage) {
+    Install-LobApps -Path $Target -BlobStorage $env:BlobStorage
 }
 
 # Stop Logging

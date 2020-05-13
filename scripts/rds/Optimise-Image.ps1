@@ -18,15 +18,6 @@ Function Set-Repository {
     }
 }
 
-Function Install-RequiredModules {
-    Write-Host "=========== Installing required modules"
-    # Install the Evergreen module; https://github.com/aaronparker/Evergreen
-    Install-Module -Name Evergreen -AllowClobber
-
-    # Install the VcRedist module; https://docs.stealthpuppy.com/vcredist/
-    Install-Module -Name VcRedist -AllowClobber
-}
-
 Function Invoke-WindowsDefender {
     # Run Windows Defender quick scan
     Write-Host "=============== Running Windows Defender"
@@ -97,7 +88,6 @@ $ProgressPreference = "SilentlyContinue"
 
 # Start logging
 Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
-If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
 
 # Set TLS to 1.2; Create target folder
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -105,9 +95,8 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force 
 
 # Seal image tasks
 Set-Repository
-Install-RequiredModules
 Invoke-WindowsDefender
-Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
+# Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue

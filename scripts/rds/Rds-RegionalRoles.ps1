@@ -8,10 +8,7 @@ Param (
     [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $Target = "$env:SystemDrive\Apps",
-
-    [Parameter(Mandatory = $False, Position = 0)]
-    [System.String] $Locale = "en-AU"
+    [System.String] $Target = "$env:SystemDrive\Apps"
 )
 
 #region Functions
@@ -105,6 +102,7 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -Error
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
+If ($env:Locale) { $Locale = $env:Locale } Else { $Locale = "en-AU" }
 Set-RegionalSettings -Path $Target -Locale $Locale
 Set-Roles
 

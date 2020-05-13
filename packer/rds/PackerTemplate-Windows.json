@@ -53,9 +53,9 @@
                 "reg add HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f",
                 "reg add HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /d 2 /t REG_DWORD /f",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "#Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-RegionalRoles.ps1'))",
-                "$scriptPath = ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-RegionalRoles.ps1'))",
-                "Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList {{user `Locale`}}",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-RegionalRoles.ps1'))",
+                "#Locale parameter used by Customise.ps1",
+                "$env:Locale = {{user `Locale`}}",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-Customise.ps1'))"
             ]
         },
@@ -85,9 +85,9 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "#Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-LobApps.ps1'))",
-                "$scriptPath = ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-LobApps.ps1'))",
-                "Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList {{user `BlobStorage`}}"
+                "#BlobStorage parameter used by LoBApps.ps1",
+                "$env:Locale = {{user `BlobStorage`}}",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-LobApps.ps1'))"
             ]
         },
         {

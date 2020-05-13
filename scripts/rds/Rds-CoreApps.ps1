@@ -108,7 +108,7 @@ Function Install-VcRedistributables ($Path) {
     $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
 
     Write-Host "================ Downloading Microsoft Visual C++ Redistributables"
-    Save-VcRedist -Path $Path -VcList $VcList -ForceWebRequest > $Null
+    Save-VcRedist -Path $Path -VcList $VcList > $Null
     Write-Host "================ Installing Microsoft Visual C++ Redistributables"
     Install-VcRedist -VcList $VcList -Path $Path
     Write-Host "=========== Done"
