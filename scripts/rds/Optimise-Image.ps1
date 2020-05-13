@@ -79,6 +79,163 @@ Function Invoke-Bisf ($Path) {
     & "$Path\BIS-F-master\Framework\PrepBISF_Start.ps1"
     & "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1"
 }
+
+Function Set-MicrosoftOptimizations {
+<#
+- NOTE:           Original script details here:
+- TITLE:          Microsoft Windows 1909  VDI/WVD Optimization Script
+- AUTHORED BY:    Robert M. Smith and Tim Muessig (Microsoft Premier Services)
+- AUTHORED DATE:  11/19/2019
+- LAST UPDATED:   04/10/2020
+- PURPOSE:        To automatically apply setting referenced in white paper:
+                  "Optimizing Windows 10, Build 1909, for a Virtual Desktop Infrastructure (VDI) role"
+                  URL: TBD
+
+- REFERENCES:
+https://social.technet.microsoft.com/wiki/contents/articles/7703.powershell-running-executables.aspx
+https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/remove-item?view=powershell-6
+https://blogs.technet.microsoft.com/secguide/2016/01/21/lgpo-exe-local-group-policy-object-utility-v1-0/
+https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/set-service?view=powershell-6
+https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/remove-item?view=powershell-6
+https://msdn.microsoft.com/en-us/library/cc422938.aspx
+#>
+
+#Set-Location $PSScriptRoot
+
+#region Disable Scheduled Tasks
+# This section is for disabling scheduled tasks.  If you find a task that should not be disabled
+# comment or delete from the "SchTaskList.txt" file.
+$SchTasksList = @("BgTaskRegistrationMaintenanceTask", "Consolidator", "Diagnostics", "FamilySafetyMonitor",
+"FamilySafetyRefreshTask", "MapsToastTask", "*Compatibility*", "Microsoft-Windows-DiskDiagnosticDataCollector",
+"*MNO*", "NotificationTask", "PerformRemediation", "ProactiveScan", "ProcessMemoryDiagnosticEvents", "Proxy",
+"QueueReporting", "RecommendedTroubleshootingScanner", "ReconcileLanguageResources", "RegIdleBackup",
+"RunFullMemoryDiagnostic", "Scheduled", "ScheduledDefrag", "SilentCleanup", "SpeechModelDownloadTask",
+"Sqm-Tasks", "SR", "StartupAppTask", "SyspartRepair", "UpdateLibrary", "WindowsActionDialog", "WinSAT",
+"XblGameSaveTask")
+If ($SchTasksList.count -gt 0) {
+    $EnabledScheduledTasks = Get-ScheduledTask | Where-Object { $_.State -ne "Disabled" }
+    Foreach ($Item in $SchTasksList) {
+        $Task = (($Item -split ":")[0]).Trim()
+        $EnabledScheduledTasks | Where-Object { $_.TaskName -like "*$Task*" } | Disable-ScheduledTask
+    }
+}
+#endregion
+
+#region Disable Windows Traces
+$DisableAutologgers = @(
+"HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\AppModel\",
+"HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\CloudExperienceHostOOBE\",
+"HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\DiagLog\",
+"HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\ReadyBoot\",
+"HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\WDIContextLog\",
+"HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\WiFiDriverIHVSession\",
+"HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\WiFiSession\",
+"HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\WinPhoneCritical\")
+If ($DisableAutologgers.count -gt 0) {
+    Foreach ($Item in $DisableAutologgers) {
+        Write-Host "Processing $Item"
+        New-ItemProperty -Path "$Item" -Name "Start" -PropertyType "DWORD" -Value "0" -Force
+    }
+}
+#endregion
+
+#region Local Group Policy Settings
+# - This code does not:
+#   * set a lock screen image.
+#   * change the "Root Certificates Update" policy.
+#   * change the "Enable Windows NTP Client" setting.
+#   * set the "Select when Quality Updates are received" policy
+
+if (Test-Path (Join-Path $PSScriptRoot "LGPO\LGPO.exe")) {
+    Start-Process (Join-Path $PSScriptRoot "LGPO\LGPO.exe") -ArgumentList "/g $((Join-Path $PSScriptRoot "LGPO\."))" -Wait
+}
+#endregion
+
+#region Disable Services
+#################### BEGIN: DISABLE SERVICES section ###########################
+$ServicesToDisable = @("autotimesvc", "BcastDVRUserService", "CDPSvc", "CDPUserSvc", "CscService",
+"defragsvc", "DiagSvc", "DiagTrack", "DPS", "DsmSvc", "DusmSvc", "icssvc", "lfsvc", "MapsBroker",
+"MessagingService", "OneSyncSvc", "PimIndexMaintenanceSvc", "Power", "SEMgrSvc", "SmsRouter",
+"SysMain", "TabletInputService", "UsoSvc", "VSS", "WdiSystemHost", "WerSvc", "XblAuthManager",
+"XblGameSave", "XboxGipSvc", "XboxNetApiSvc")
+If ($ServicesToDisable.count -gt 0) {
+    Foreach ($Item in $ServicesToDisable) {
+        Write-Host "Processing $Item"
+        Stop-Service $Item -Force -ErrorAction SilentlyContinue
+        Set-Service $Item -StartupType Disabled 
+        #New-ItemProperty -Path "$Item" -Name "Start" -PropertyType "DWORD" -Value "4" -Force
+    }
+}
+#endregion
+
+#region Disk Cleanup
+# Disk Cleanup Wizard automation (Cleanmgr.exe /SAGESET:11)
+# If you prefer to skip a particular disk cleanup category, edit the "Win10_1909_DiskCleanRegSettings.txt"
+$DiskCleanupSettings = @(
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Active Setup Temp Folders\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\BranchCache\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\D3D Shader Cache\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Diagnostic Data Viewer database files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Downloaded Program Files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Old ChkDsk Files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Previous Installations\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Recycle Bin\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\RetailDemo Offline Content\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Service Pack Cleanup\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Setup Log Files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\System error memory dump files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\System error minidump files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Temporary Files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Temporary Setup Files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Thumbnail Cache\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Update Cleanup\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Upgrade Discarded Files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\User file versions\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Defender\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Error Reporting Files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows ESD installation files\",
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Upgrade Log Files\")
+If ($DiskCleanupSettings.count -gt 0) {
+    Foreach ($Item in $DiskCleanupSettings) {
+        Write-Host "Processing $Item"
+        New-ItemProperty -Path "$Item" -Name "StateFlags0011" -PropertyType "DWORD" -Value "2" -Force
+    }
+}
+Start-Process C:\Windows\System32\Cleanmgr.exe -ArgumentList "SAGERUN:11" -Wait
+#endregion
+
+#region Network Optimization
+# LanManWorkstation optimizations
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DisableBandwidthThrottling" -PropertyType "DWORD" -Value "1" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "FileInfoCacheEntriesMax" -PropertyType "DWORD" -Value "1024" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DirectoryCacheEntriesMax" -PropertyType "DWORD" -Value "1024" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "FileNotFoundCacheEntriesMax" -PropertyType "DWORD" -Value "1024" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DormantFileLimit" -PropertyType "DWORD" -Value "256" -Force
+
+# NIC Advanced Properties performance settings for network biased environments
+# Set-NetAdapterAdvancedProperty -DisplayName "Send Buffer Size" -DisplayValue 4MB
+
+<# Note that the above setting is for a Microsoft Hyper-V VM.  You can adjust these values in your environment...
+by querying in PowerShell using Get-NetAdapterAdvancedProperty, and then adjusting values using the...
+Set-NetAdapterAdvancedProperty command.
+#>
+#endregion
+
+#region
+# ADDITIONAL DISK CLEANUP
+# Delete not in-use files in locations C:\Windows\Temp and %temp%
+# Also sweep and delete *.tmp, *.etl, *.evtx (not in use==not needed)
+
+$FilesToRemove = Get-ChildItem -Path "$env:SystemDrive\" -Include *.tmp, *.etl, *.evtx -Recurse -Force -ErrorAction SilentlyContinue
+$FilesToRemove | Remove-Item -ErrorAction SilentlyContinue
+
+# Delete not in-use anything in the C:\Windows\Temp folder
+Remove-Item -Path $env:windir\Temp\* -Recurse -Force -ErrorAction SilentlyContinue
+
+# Delete not in-use anything in your %temp% folder
+Remove-Item -Path $env:TEMP\* -Recurse -Force -ErrorAction SilentlyContinue
+#endregion
+}
 #endregion
 
 #region Script logic
@@ -97,6 +254,7 @@ New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContin
 Set-Repository
 Invoke-WindowsDefender
 # Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
+Set-MicrosoftOptimizations
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
