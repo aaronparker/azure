@@ -80,7 +80,7 @@ Function Invoke-Bisf ($Path) {
     & "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1"
 }
 
-Function Set-MicrosoftOptimizations {
+Function Invoke-MicrosoftOptimizations {
 <#
 - NOTE:           Original script details here:
 - TITLE:          Microsoft Windows 1909  VDI/WVD Optimization Script
@@ -254,7 +254,7 @@ New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContin
 Set-Repository
 Invoke-WindowsDefender
 # Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
-Set-MicrosoftOptimizations
+Invoke-MicrosoftOptimizations
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue

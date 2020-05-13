@@ -8,10 +8,7 @@ Param (
     [System.String] $Log = "$env:SystemRoot\Logs\AzureArmCustomDeploy.log",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $Target = "$env:SystemDrive\Apps",
-
-    [Parameter(Mandatory = $False)]
-    [System.String] $Locale = "en-AU"
+    [System.String] $Target = "$env:SystemDrive\Apps"
 )
 
 #region Functions
@@ -68,8 +65,30 @@ Function Set-RegionalSettings ($Path, $Locale) {
 }
 
 Function Set-Roles {
-    Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
-    Add-WindowsFeature -Name NET-Framework-Core
+    Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
+        "Microsoft Windows Server*" {
+            # Add / Remove roles (requires reboot at end of deployment)
+            Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
+            Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
+            Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Core
+
+            # Configure services
+            Set-Service Audiosrv -StartupType Automatic
+            Set-Service WSearch -StartupType Automatic
+            Break
+        }
+        "Microsoft Windows 10 Enterprise for Virtual Desktops" {
+            Break
+        }
+        "Microsoft Windows 10 Enterprise" {
+            Break
+        }
+        "Microsoft Windows 10*" {
+            Break
+        }
+        Default {
+        }
+    }
 }
 #endregion
 
@@ -80,17 +99,26 @@ $ProgressPreference = "SilentlyContinue"
 
 # Start logging
 Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
-If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
 
 # Set TLS to 1.2; Create target folder
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
+# Ready image
+Write-Output "====== Disable Windows Defender real time scan"
+Set-MpPreference -DisableRealtimeMonitoring $true
+
 # Run tasks
+If (Test-Path -Path env:Locale) {
+    $Locale = $env:Locale
+}
+Else {
+    Write-Output "====== Can't find passed parameter, setting Locale to en-AU."
+    $Locale = "en-AU"
+}
 Set-RegionalSettings -Path $Target -Locale $Locale
 Set-Roles
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
 Write-Host "Complete: $($MyInvocation.MyCommand)."
-#endregion
