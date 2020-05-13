@@ -95,7 +95,6 @@ try {
     Invoke-Process -FilePath $Process -ArgumentList $Arguments
 }
 catch {
-    Stop-Transcript
     Throw "Failed to install Microsoft Power BI."
 }
 

@@ -79,7 +79,7 @@ $VerbosePreference = "Continue"
 $ProgressPreference = "SilentlyContinue"
 
 # Start logging
-Start-Transcript -Path $Log
+Start-Transcript -Path $Log -Append -UseMinimalHeader -ErrorAction SilentlyContinue
 If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
 
 # Set TLS to 1.2; Create target folder
@@ -91,6 +91,6 @@ Set-RegionalSettings -Path $Target -Locale $Locale
 Set-Roles
 
 # Stop Logging
-Stop-Transcript
+Stop-Transcript -ErrorAction SilentlyContinue
 Write-Host "Complete: $($MyInvocation.MyCommand)."
 #endregion
