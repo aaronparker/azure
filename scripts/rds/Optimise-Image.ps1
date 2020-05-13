@@ -139,18 +139,6 @@ If ($DisableAutologgers.count -gt 0) {
 }
 #endregion
 
-#region Local Group Policy Settings
-# - This code does not:
-#   * set a lock screen image.
-#   * change the "Root Certificates Update" policy.
-#   * change the "Enable Windows NTP Client" setting.
-#   * set the "Select when Quality Updates are received" policy
-
-if (Test-Path (Join-Path $PSScriptRoot "LGPO\LGPO.exe")) {
-    Start-Process (Join-Path $PSScriptRoot "LGPO\LGPO.exe") -ArgumentList "/g $((Join-Path $PSScriptRoot "LGPO\."))" -Wait
-}
-#endregion
-
 #region Disable Services
 #################### BEGIN: DISABLE SERVICES section ###########################
 $ServicesToDisable = @("autotimesvc", "BcastDVRUserService", "CDPSvc", "CDPUserSvc", "CscService",
@@ -166,6 +154,23 @@ If ($ServicesToDisable.count -gt 0) {
         #New-ItemProperty -Path "$Item" -Name "Start" -PropertyType "DWORD" -Value "4" -Force
     }
 }
+#endregion
+
+#region Network Optimization
+# LanManWorkstation optimizations
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DisableBandwidthThrottling" -PropertyType "DWORD" -Value "1" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "FileInfoCacheEntriesMax" -PropertyType "DWORD" -Value "1024" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DirectoryCacheEntriesMax" -PropertyType "DWORD" -Value "1024" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "FileNotFoundCacheEntriesMax" -PropertyType "DWORD" -Value "1024" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DormantFileLimit" -PropertyType "DWORD" -Value "256" -Force
+
+# NIC Advanced Properties performance settings for network biased environments
+# Set-NetAdapterAdvancedProperty -DisplayName "Send Buffer Size" -DisplayValue 4MB
+
+<# Note that the above setting is for a Microsoft Hyper-V VM.  You can adjust these values in your environment...
+by querying in PowerShell using Get-NetAdapterAdvancedProperty, and then adjusting values using the...
+Set-NetAdapterAdvancedProperty command.
+#>
 #endregion
 
 #region Disk Cleanup
@@ -202,23 +207,6 @@ If ($DiskCleanupSettings.count -gt 0) {
     }
 }
 Start-Process C:\Windows\System32\Cleanmgr.exe -ArgumentList "SAGERUN:11" -Wait
-#endregion
-
-#region Network Optimization
-# LanManWorkstation optimizations
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DisableBandwidthThrottling" -PropertyType "DWORD" -Value "1" -Force
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "FileInfoCacheEntriesMax" -PropertyType "DWORD" -Value "1024" -Force
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DirectoryCacheEntriesMax" -PropertyType "DWORD" -Value "1024" -Force
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "FileNotFoundCacheEntriesMax" -PropertyType "DWORD" -Value "1024" -Force
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DormantFileLimit" -PropertyType "DWORD" -Value "256" -Force
-
-# NIC Advanced Properties performance settings for network biased environments
-# Set-NetAdapterAdvancedProperty -DisplayName "Send Buffer Size" -DisplayValue 4MB
-
-<# Note that the above setting is for a Microsoft Hyper-V VM.  You can adjust these values in your environment...
-by querying in PowerShell using Get-NetAdapterAdvancedProperty, and then adjusting values using the...
-Set-NetAdapterAdvancedProperty command.
-#>
 #endregion
 
 #region
