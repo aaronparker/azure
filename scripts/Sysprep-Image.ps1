@@ -9,8 +9,8 @@ Param ()
 Write-Output "====== Enable Windows Defender real time scan"
 Set-MpPreference -DisableRealtimeMonitoring $false
 Write-Output "====== Enable Windows Store updates"
-reg delete HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /f
-reg delete HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /f
+reg delete HKLM\Software\Policies\Microsoft\Windows\CloudContent /v DisableWindowsConsumerFeatures /f
+reg delete HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /f
 
 #Write-Output \"====== Prep for Sysprep\"
 #Set-Service -Name RdAgent -StartupType Disabled; Stop-Service -Name RdAgent -ErrorAction SilentlyContinue"
