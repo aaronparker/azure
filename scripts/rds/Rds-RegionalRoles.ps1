@@ -10,7 +10,7 @@ Param (
     [Parameter(Mandatory = $False)]
     [System.String] $Target = "$env:SystemDrive\Apps",
 
-    [Parameter(Mandatory = $False)]
+    [Parameter(Mandatory = $False, Position = 0)]
     [System.String] $Locale = "en-AU"
 )
 

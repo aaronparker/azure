@@ -10,7 +10,10 @@ param(
     [System.String] $VariablesFile = ".\PackerVariables-Windows10Multisession.json",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $KeyVault = "insentrawvd"
+    [System.String] $KeyVault = "insentrawvd",
+
+    [Parameter(Mandatory = $False)]
+    [System.String] $BlobStorage = "https://insentrawvdaue.blob.core.windows.net/apps/"
 )
 
 # Get elevation status
@@ -76,21 +79,29 @@ Else {
     Remove-Item -Path $zip
 }
 
-# Replace values
+# Get date, locale
+$Locale = [System.Globalization.CultureInfo]::CurrentUICulture.Name
+$Date = Get-Date -Format $([System.Globalization.CultureInfo]::CurrentUICulture.DateTimeFormat.ShortDatePattern -replace "/", "")
+
+# Create a copy of the variables file
 $fileName = [System.IO.Path]::GetFileNameWithoutExtension($(Resolve-Path -Path $VariablesFile))
 $path = [System.IO.Path]::GetDirectoryName($VariablesFile)
-$newVariables = Join-Path -Path $path -ChildPath "$filename-Temp.json"
+$newVariablesFile = Join-Path -Path $path -ChildPath "$filename-Temp.json"
 Write-Host "Template:  $(Resolve-Path -Path $VariablesFile)."
-Write-Host "Variables: $newVariables."
-If (Test-Path -Path $newVariables) { Remove-Item -Path $newVariables -Force -ErrorAction SilentlyContinue }
-(Get-Content $VariablesFile).replace("<clientid>", $AppId) | Set-Content -Path $newVariables
-(Get-Content $newVariables).replace("<clientsecrect>", $Secret) | Set-Content -Path $newVariables
-(Get-Content $newVariables).replace("<subscriptionid>", $sub.Id) | Set-Content -Path $newVariables
-(Get-Content $newVariables).replace("<tenantid>", $sub.TenantId) | Set-Content -Path $newVariables
-(Get-Content $newVariables).replace("<resourcegroup>", $ResourceGroup) | Set-Content -Path $newVariables
+Write-Host "Variables: $newVariablesFile."
 
-# Get date
-$Date = Get-Date -Format $([System.Globalization.CultureInfo]::CurrentUICulture.DateTimeFormat.ShortDatePattern -replace "/", "")
+# Replace values
+$json = Get-Content -Path $VariablesFile | ConvertFrom-Json
+$json.client_id = $AppId
+$json.client_secret = $Secret
+$json.subscription_id = $sub.Id
+$json.tenant_id = $sub.TenantId
+$json.managed_image_resource_group_name = $ResourceGroup
+$json.Locale = $Locale
+If ($BlobStorage.Length -gt 0) { $json.BlobStorage = $BlobStorage }
+
+# Output the new variables file
+$json | ConvertTo-Json | Set-Content -Path $newVariablesFile -Force
 
 # Output strings
 Write-Host "AppId:          $AppId" -ForegroundColor Green
@@ -99,13 +110,15 @@ Write-Host "Subscription:   $($sub.Id)" -ForegroundColor Green
 Write-Host "Subscription:   $($sub.TenantId)" -ForegroundColor Green
 Write-Host "Resource group: $ResourceGroup" -ForegroundColor Green
 Write-Host "Image date:     $Date" -ForegroundColor Green
-Write-Host "Template:       $TemplateFile" -ForegroundColor Cyan
-Write-Host "Variables:      $newVariables" -ForegroundColor Green
+Write-Host "Locale:         $Locale" -ForegroundColor Green
+If ($BlobStorage.Length -gt 0) { Write-Host "Blob storage:   $BlobStorage" -ForegroundColor Green }
+Write-Host "Template file:  $TemplateFile" -ForegroundColor Cyan
+Write-Host "Variables file: $newVariablesFile" -ForegroundColor Green
 
 # Validate template
-Write-Host "Validating: $newVariables" -ForegroundColor Cyan
+Write-Host "Validating: $newVariablesFile" -ForegroundColor Cyan
 $Template = Resolve-Path -Path $TemplateFile
-$Arguments = "-var-file $newVariables -var 'image_date=$($Date)' $Template"
+$Arguments = "-var-file $newVariablesFile -var 'image_date=$($Date)' $Template"
 & packer.exe validate $Arguments
 
 # Run Packer

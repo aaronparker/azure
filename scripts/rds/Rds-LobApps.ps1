@@ -10,8 +10,8 @@ Param (
     [Parameter(Mandatory = $False)]
     [System.String] $Target = "$env:SystemDrive\Apps",
 
-    [Parameter(Mandatory = $False)]
-    [System.String] $BlobStorage = "https://insentrawvdaue.blob.core.windows.net/apps/"
+    [Parameter(Mandatory = $False, Position = 0)]
+    [System.String] $BlobStorage
 )
 
 #region Functions
@@ -100,6 +100,7 @@ Function Install-LobApps ($Path, $BlobStorage) {
     }
     catch {
         Write-Host "=========== Failed to retrieve items from: [$BlobStorage]."
+        Throw "Failed to retrieve items from: [$BlobStorage]."
     }
 
     ForEach ($item in $Items) {
@@ -141,7 +142,9 @@ If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -Error
 If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
 
 # Run tasks
-Install-LobApps -Path $Target -BlobStorage $BlobStorage
+If ($BlobStorage.Length -gt 0) {
+    Install-LobApps -Path $Target -BlobStorage $BlobStorage
+}
 
 # Stop Logging
 Stop-Transcript
