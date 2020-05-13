@@ -48,11 +48,11 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-RegionalRoles.ps1'))",
                 "#Locale parameter used by Customise.ps1",
                 "Write-Output \"====== Setting Locale: {{user `Locale`}}\"",
                 "$env:Locale = {{user `Locale`}}",
                 "[System.Environment]::SetEnvironmentVariable('Locale','{{user `Locale`}}',[System.EnvironmentVariableTarget]::User)",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-RegionalRoles.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-Customise.ps1'))"
             ]
         },

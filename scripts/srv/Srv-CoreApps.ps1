@@ -104,7 +104,7 @@ Function Install-RequiredModules {
 
 Function Install-VcRedistributables ($Path) {
     Write-Host "=========== Microsoft Visual C++ Redistributables"
-    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
     $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
 
     Save-VcRedist -Path $Path -VcList $VcList -ForceWebRequest -Verbose
@@ -119,7 +119,7 @@ Function Install-MicrosoftEdge ($Path) {
 
     If ($Edge) {
         Write-Host "================ Downloading Microsoft Edge"
-        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         # Download
         $url = $Edge.URI

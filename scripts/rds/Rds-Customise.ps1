@@ -13,7 +13,7 @@ Param (
 
 #region Functions
 Function Set-Customise ($Path) {
-    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
     # Customisation scripts
     $url = "https://github.com/aaronparker/build-azure/raw/master/tools/rds/Customise.zip"

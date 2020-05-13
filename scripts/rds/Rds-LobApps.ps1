@@ -82,7 +82,7 @@ Function Get-AzureBlobItem {
                 Size         = ($node | Select-Object -ExpandProperty Size)
                 LastModified = ($node | Select-Object -ExpandProperty LastModified)
             }
-            $fileList.Add($PSObject) | Out-Null
+            $fileList.Add($PSObject) > $Null
         }
         If ($Null -ne $fileList) {
             Write-Output -InputObject $fileList
@@ -103,7 +103,7 @@ Function Install-LobApps ($Path, $BlobStorage) {
     ForEach ($item in $Items) {
         $AppName = $item.Name -replace ".zip"
         $AppPath = Join-Path -Path $Path -ChildPath $AppName
-        If (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+        If (!(Test-Path $AppPath)) { New-Item -Path $AppPath -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         Write-Host "=========== Downloading item: [$($item.Url)]."
         $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $item.Url -Leaf)
@@ -138,8 +138,8 @@ Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
 New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Run tasks
-If (Test-Path -Path $env:BlobStorage) {
-    Install-LobApps -Path $Target -BlobStorage $env:BlobStorage
+If (Test-Path -Path env:BlobStorage) {
+    Install-LobApps -Path $Target -BlobStorage env:BlobStorage
 }
 
 # Stop Logging

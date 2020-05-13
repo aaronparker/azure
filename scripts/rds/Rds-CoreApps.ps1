@@ -104,7 +104,7 @@ Function Install-RequiredModules {
 
 Function Install-VcRedistributables ($Path) {
     Write-Host "=========== Microsoft Visual C++ Redistributables"
-    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
     $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
 
     Write-Host "================ Downloading Microsoft Visual C++ Redistributables"
@@ -120,7 +120,7 @@ Function Install-FSLogix ($Path) {
 
     If ($FSLogix) {
         Write-Host "=========== Microsoft FSLogix: $($FSLogix.Version)"
-        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         # Download
         $OutFile = $(Split-Path -Path $FSLogix.URI -Leaf)
@@ -162,7 +162,7 @@ Function Install-MicrosoftEdge ($Path) {
 
     If ($Edge) {
         Write-Host "================ Downloading Microsoft Edge"
-        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         # Download
         $url = $Edge.URI
@@ -207,7 +207,7 @@ Function Install-MicrosoftOffice ($Path) {
     $url = $Office.URI
     
     If ($Office) {
-        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
         Write-Host "=========== Downloading to: $Path\$(Split-Path -Path $xml -Leaf)"
@@ -243,7 +243,7 @@ Function Install-MicrosoftTeams ($Path) {
     $Teams = Get-MicrosoftTeams | Where-Object { $_.Architecture -eq "x64" }
     
     If ($Teams) {
-        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         # Download
         $url = $Teams.URI
@@ -281,7 +281,7 @@ Function Install-MicrosoftOneDrive ($Path) {
     $OneDrive = Get-MicrosoftOneDrive | Where-Object { $_.Ring -eq "Enterprise" }
 
     If ($OneDrive) {
-        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         # Download
         $url = $OneDrive.URI
@@ -319,7 +319,7 @@ Function Install-AdobeReaderDC ($Path) {
     $Reader = Get-AdobeAcrobatReaderDC | Where-Object { $_.Platform -eq "Windows" -and ($_.Language -eq "English" -or $_.Language -eq "Neutral") }
 
     If ($Reader) {
-        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
         
         # Download Adobe Reader
         ForEach ($File in $Reader) {
@@ -383,7 +383,7 @@ Function Install-ConnectionExperienceIndicator ($Path) {
     # Parameters
     $Url = "https://bit.ly/2RrQTd3"
     $OutFile = Join-Path -Path $Path -ChildPath "ConnectionExperienceIndicator.zip"
-    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" | Out-Null }
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
     # Download the file
     try {

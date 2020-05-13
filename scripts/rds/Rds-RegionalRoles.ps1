@@ -108,7 +108,7 @@ reg add HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWin
 reg add HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /d 2 /t REG_DWORD /f
 
 # Run tasks
-If (Test-Path -Path $env:Locale) { $Locale = $env:Locale } Else { $Locale = "en-AU" }
+If (Test-Path -Path env:Locale) { $Locale = env:Locale } Else { $Locale = "en-AU" }
 Set-RegionalSettings -Path $Target -Locale $Locale
 Set-Roles
 

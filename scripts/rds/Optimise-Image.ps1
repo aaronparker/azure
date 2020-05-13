@@ -28,7 +28,7 @@ Function Invoke-WindowsDefender {
 
 Function Invoke-CitrixOptimizer ($Path) {
     Write-Host "========== Citrix Optimizer"
-    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType Directory -Force -ErrorAction SilentlyContinue > $Null }
 
     Write-Host "=============== Downloading Citrix Optimizer"
     $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/CitrixOptimizer.zip"
@@ -37,7 +37,7 @@ Function Invoke-CitrixOptimizer ($Path) {
 
     # Download templates
     Write-Host "=============== Downloading Citrix Optimizer template"
-    If (!(Test-Path $Path)) { New-Item -Path "$Path\Templates" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+    If (!(Test-Path $Path)) { New-Item -Path "$Path\Templates" -ItemType Directory -Force -ErrorAction SilentlyContinue > $Null }
     Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
         "Microsoft Windows Server*" {
             $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/WindowsServer2019-Defender-Azure.xml"
@@ -57,7 +57,7 @@ Function Invoke-CitrixOptimizer ($Path) {
 
 Function Invoke-Bisf ($Path) {
     Write-Host "========== Base Image Script Framework"
-    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null }
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType Directory -Force -ErrorAction SilentlyContinue > $Null }
 
     Write-Host "=============== Downloading BIS-F"
     #$url = (Get-BISF).URI
@@ -72,7 +72,7 @@ Function Invoke-Bisf ($Path) {
     Write-Host "=============== Installing BIS-F"
     #Start-Process -FilePath "$Path\$(Split-Path $url -Leaf)" -ArgumentList "/SILENT" -Wait
     Remove-Item -Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Base Image Script Framework (BIS-F).lnk" -Force -ErrorAction SilentlyContinue
-    New-Item -Path "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+    New-Item -Path "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)" -ItemType Directory -Force -ErrorAction SilentlyContinue > $Null
     Copy-Item -Path "$Path\BISFSharedConfig.json" -Destination "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\BISFSharedConfig.json"
 
     Write-Host "=============== Running BIS-F"
