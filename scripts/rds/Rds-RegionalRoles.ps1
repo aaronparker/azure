@@ -75,12 +75,16 @@ Function Set-Roles {
             # Configure services
             Set-Service Audiosrv -StartupType Automatic
             Set-Service WSearch -StartupType Automatic
+            Break
         }
-        "Microsoft Windows 10 Enterprise for Virtual Desktops" {   
+        "Microsoft Windows 10 Enterprise for Virtual Desktops" {
+            Break
         }
         "Microsoft Windows 10 Enterprise" {
+            Break
         }
         "Microsoft Windows 10*" {
+            Break
         }
         Default {
         }
@@ -104,15 +108,20 @@ New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContin
 Write-Output "====== Disable Windows Defender real time scan"
 Set-MpPreference -DisableRealtimeMonitoring $true
 Write-Output "====== Disable Windows Store updates"
-reg add HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f
-reg add HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /d 2 /t REG_DWORD /f
+reg add HKLM\Software\Policies\Microsoft\Windows\CloudContent /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f
+reg add HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /d 2 /t REG_DWORD /f
 
 # Run tasks
-If (Test-Path -Path env:Locale) { $Locale = env:Locale } Else { $Locale = "en-AU" }
+If (Test-Path -Path env:Locale) {
+    $Locale = $env:Locale
+}
+Else {
+    Write-Output "====== Can't find passed parameter, setting Locale to en-AU."
+    $Locale = "en-AU"
+}
 Set-RegionalSettings -Path $Target -Locale $Locale
 Set-Roles
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
 Write-Host "Complete: $($MyInvocation.MyCommand)."
-#endregion

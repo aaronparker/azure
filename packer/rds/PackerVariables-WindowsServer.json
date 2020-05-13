@@ -9,7 +9,7 @@
     "image_offer": "WindowsServer",
     "image_sku": "2019-Datacenter",
     "location": "australiaeast",
-    "vm_size": "Standard_D2s_v3",
+    "vm_size": "Standard_D2_v3",
     "Locale": "en-AU",
     "BlobStorage": "<storageaccount>"
 }

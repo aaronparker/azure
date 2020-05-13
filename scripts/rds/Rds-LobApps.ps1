@@ -139,7 +139,7 @@ New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContin
 
 # Run tasks
 If (Test-Path -Path env:BlobStorage) {
-    Install-LobApps -Path $Target -BlobStorage env:BlobStorage
+    Install-LobApps -Path $Target -BlobStorage $env:BlobStorage
 }
 
 # Stop Logging

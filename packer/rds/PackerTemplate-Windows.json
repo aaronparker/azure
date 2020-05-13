@@ -49,8 +49,8 @@
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "#Locale parameter used by Customise.ps1",
-                "Write-Output \"====== Setting Locale: {{user `Locale`}}\"",
-                "$env:Locale = {{user `Locale`}}",
+                "Write-Output \"====== Locale parameter: {{user `Locale`}}\"",
+                "$env:Locale = '{{user `Locale`}}'",
                 "[System.Environment]::SetEnvironmentVariable('Locale','{{user `Locale`}}',[System.EnvironmentVariableTarget]::User)",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-RegionalRoles.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-Customise.ps1'))"
@@ -83,8 +83,8 @@
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "#BlobStorage parameter used by LoBApps.ps1",
-                "Write-Output \"====== Setting BlobStorage: {{user `BlobStorage`}}\"",
-                "$env:BlobStorage = {{user `BlobStorage`}}",
+                "Write-Output \"====== BlobStorage parameter: {{user `BlobStorage`}}\"",
+                "$env:BlobStorage = '{{user `BlobStorage`}}'",
                 "[System.Environment]::SetEnvironmentVariable('BlobStorage','{{user `BlobStorage`}}',[System.EnvironmentVariableTarget]::User)",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-LobApps.ps1'))"
             ]
