@@ -47,15 +47,12 @@
         {
             "type": "powershell",
             "inline": [
-                "Write-Output \"====== Disable Windows Defender real time scan\"",
-                "Set-MpPreference -DisableRealtimeMonitoring $true",
-                "Write-Output \"====== Disable Windows Store updates\"",
-                "reg add HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f",
-                "reg add HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /d 2 /t REG_DWORD /f",
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-RegionalRoles.ps1'))",
                 "#Locale parameter used by Customise.ps1",
+                "Write-Output \"====== Setting Locale: {{user `Locale`}}\"",
                 "$env:Locale = {{user `Locale`}}",
+                "[System.Environment]::SetEnvironmentVariable('Locale','{{user `Locale`}}',[System.EnvironmentVariableTarget]::User)",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-Customise.ps1'))"
             ]
         },
@@ -86,7 +83,9 @@
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "#BlobStorage parameter used by LoBApps.ps1",
-                "$env:Locale = {{user `BlobStorage`}}",
+                "Write-Output \"====== Setting BlobStorage: {{user `BlobStorage`}}\"",
+                "$env:BlobStorage = {{user `BlobStorage`}}",
+                "[System.Environment]::SetEnvironmentVariable('BlobStorage','{{user `BlobStorage`}}',[System.EnvironmentVariableTarget]::User)",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-LobApps.ps1'))"
             ]
         },
@@ -108,11 +107,6 @@
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Optimise-Image.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/Get-InstalledSoftware.ps1'))",
-                "Write-Output \"====== Enable Windows Defender real time scan\"",
-                "Set-MpPreference -DisableRealtimeMonitoring $false",
-                "Write-Output \"====== Enable Windows Store updates\"",
-                "reg delete HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /f",
-                "reg delete HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /f",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/Sysprep-Image.ps1'))"
             ]
         }

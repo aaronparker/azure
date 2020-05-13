@@ -132,11 +132,10 @@ $ProgressPreference = "SilentlyContinue"
 
 # Start logging
 Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
-If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
 
 # Set TLS to 1.2; Create target folder
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
+New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Run tasks
 If (Test-Path -Path $env:BlobStorage) {

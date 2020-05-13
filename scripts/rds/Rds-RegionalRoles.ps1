@@ -95,11 +95,17 @@ $ProgressPreference = "SilentlyContinue"
 
 # Start logging
 Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
-If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
 
 # Set TLS to 1.2; Create target folder
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-If (!(Test-Path $Target)) { New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" }
+New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
+
+# Ready image
+Write-Output "====== Disable Windows Defender real time scan"
+Set-MpPreference -DisableRealtimeMonitoring $true
+Write-Output "====== Disable Windows Store updates"
+reg add HKLM\\Software\\Policies\\Microsoft\\Windows\\CloudContent /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f
+reg add HKLM\\Software\\Policies\\Microsoft\\WindowsStore /v AutoDownload /d 2 /t REG_DWORD /f
 
 # Run tasks
 If (Test-Path -Path $env:Locale) { $Locale = $env:Locale } Else { $Locale = "en-AU" }
