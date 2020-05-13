@@ -407,7 +407,7 @@ $VerbosePreference = "Continue"
 $ProgressPreference = "SilentlyContinue"
 
 # Start logging
-Start-Transcript -Path $Log -Append -UseMinimalHeader -ErrorAction SilentlyContinue
+Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
 If (!(Test-Path $Target)) { New-Item -Path $Target -Type Directory -Force -ErrorAction SilentlyContinue }
 
 # Set TLS to 1.2; Create target folder

@@ -14,7 +14,7 @@ Param ()
 $stampDate = Get-Date
 $scriptName = ([System.IO.Path]::GetFileNameWithoutExtension($(Split-Path $script:MyInvocation.MyCommand.Path -Leaf)))
 $logFile = "$env:SystemRoot\Logs\$scriptName-" + $stampDate.ToFileTimeUtc() + ".log"
-Start-Transcript -Path $Log -Append -UseMinimalHeader -ErrorAction SilentlyContinueFile
+Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinueFile
 
 # Get system properties
 Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
