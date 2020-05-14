@@ -274,16 +274,16 @@ Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
 New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Seal image tasks
-Set-Repository
-Invoke-WindowsDefender
+# Set-Repository
+# Invoke-WindowsDefender
 # Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
-#Disable-ScheduledTasks
-#Disable-WindowsTraces
-#Disable-Services
-#Optimize-Network
+# Disable-ScheduledTasks
+# Disable-WindowsTraces
+# Disable-Services
+# Optimize-Network
 # Invoke-Cleanmgr
 # Remove-TempFiles
-Get-WinEvent -ListLog * | ForEach-Object { Clear-WinEvent $_.LogName -Confirm:$False }
+# Get-WinEvent -ListLog * | ForEach-Object { Clear-WinEvent $_.LogName -Confirm:$False }
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
