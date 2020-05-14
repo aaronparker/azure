@@ -278,9 +278,9 @@ Set-Repository
 Invoke-WindowsDefender
 # Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
 Disable-ScheduledTasks
-Disable-WindowsTraces
-Disable-Services
-#Optimize-Network
+#Disable-WindowsTraces
+#Disable-Services
+Optimize-Network
 # Invoke-Cleanmgr
 # Remove-TempFiles
 Get-WinEvent -ListLog * | ForEach-Object { Clear-WinEvent $_.LogName -Confirm:$False }
