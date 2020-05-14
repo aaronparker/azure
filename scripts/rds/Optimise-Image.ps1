@@ -80,7 +80,7 @@ Function Invoke-Bisf ($Path) {
     & "${env:ProgramFiles(x86)}\Base Image Script Framework (BIS-F)\Framework\PrepBISF_Start.ps1"
 }
 
-Function Invoke-MicrosoftOptimizations {
+Function Disable-ScheduledTasks {
 <#
 - NOTE:           Original script details here:
 - TITLE:          Microsoft Windows 1909  VDI/WVD Optimization Script
@@ -120,7 +120,9 @@ If ($SchTasksList.count -gt 0) {
     }
 }
 #endregion
+}
 
+Function Disable-WindowsTraces {
 #region Disable Windows Traces
 $DisableAutologgers = @(
 "HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\AppModel\",
@@ -138,7 +140,9 @@ If ($DisableAutologgers.count -gt 0) {
     }
 }
 #endregion
+}
 
+Function Disable-Services {
 #region Disable Services
 #################### BEGIN: DISABLE SERVICES section ###########################
 $ServicesToDisable = @("autotimesvc", "BcastDVRUserService", "CDPSvc", "CDPUserSvc", "CscService",
@@ -155,7 +159,9 @@ If ($ServicesToDisable.count -gt 0) {
     }
 }
 #endregion
+}
 
+Function Optimize-Network {
 #region Network Optimization
 # LanManWorkstation optimizations
 New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\" -Name "DisableBandwidthThrottling" -PropertyType "DWORD" -Value "1" -Force
@@ -172,7 +178,9 @@ by querying in PowerShell using Get-NetAdapterAdvancedProperty, and then adjusti
 Set-NetAdapterAdvancedProperty command.
 #>
 #endregion
+}
 
+Function Invoke-Cleanmgr {
 #region Disk Cleanup
 # Disk Cleanup Wizard automation (Cleanmgr.exe /SAGESET:11)
 # If you prefer to skip a particular disk cleanup category, edit the "Win10_1909_DiskCleanRegSettings.txt"
@@ -209,7 +217,9 @@ If ($DiskCleanupSettings.count -gt 0) {
 Write-Host "=============== Running Disk Cleanup"
 Start-Process "$env:SystemRoot\System32\Cleanmgr.exe" -ArgumentList "SAGERUN:11" -Wait
 #endregion
+}
 
+Function Remove-TempFiles {
 #region
 # ADDITIONAL DISK CLEANUP
 # Delete not in-use files in locations C:\Windows\Temp and %temp%
@@ -243,7 +253,12 @@ New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContin
 Set-Repository
 Invoke-WindowsDefender
 # Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
-Invoke-MicrosoftOptimizations
+Disable-ScheduledTasks
+Disable-WindowsTraces
+Disable-Services
+Optimize-Network
+#Invoke-Cleanmgr
+Remove-TempFiles
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
