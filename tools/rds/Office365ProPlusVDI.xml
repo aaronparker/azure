@@ -1,4 +1,4 @@
-<Configuration ID="a46cbfbc-3364-4a6c-bc04-462f7dd42fca">
+<Configuration ID="d1556a66-8ae5-488a-bc0d-cfae064b593d">
   <Add OfficeClientEdition="64" Channel="MonthlyEnterprise" MigrateArch="TRUE">
     <Product ID="O365ProPlusRetail">
       <Language ID="MatchOS" />
@@ -6,6 +6,7 @@
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
+      <ExcludeApp ID="OneDrive" />
       <ExcludeApp ID="Publisher" />
       <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Bing" />
@@ -16,6 +17,7 @@
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
+      <ExcludeApp ID="OneDrive" />
       <ExcludeApp ID="Publisher" />
       <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Bing" />
@@ -26,6 +28,7 @@
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
+      <ExcludeApp ID="OneDrive" />
       <ExcludeApp ID="Publisher" />
       <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Bing" />
