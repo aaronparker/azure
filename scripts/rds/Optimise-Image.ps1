@@ -277,10 +277,10 @@ New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContin
 Set-Repository
 Invoke-WindowsDefender
 # Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
-Disable-ScheduledTasks
+#Disable-ScheduledTasks
 #Disable-WindowsTraces
 #Disable-Services
-Optimize-Network
+#Optimize-Network
 # Invoke-Cleanmgr
 # Remove-TempFiles
 Get-WinEvent -ListLog * | ForEach-Object { Clear-WinEvent $_.LogName -Confirm:$False }
