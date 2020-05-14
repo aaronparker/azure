@@ -206,6 +206,7 @@ If ($DiskCleanupSettings.count -gt 0) {
         New-ItemProperty -Path "$Item" -Name "StateFlags0011" -PropertyType "DWORD" -Value "2" -Force
     }
 }
+Write-Host "=============== Running Disk Cleanup"
 Start-Process C:\Windows\System32\Cleanmgr.exe -ArgumentList "SAGERUN:11" -Wait
 #endregion
 

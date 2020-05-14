@@ -7,6 +7,7 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Bing" />
     </Product>
     <Product ID="VisioProRetail">
@@ -16,6 +17,7 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Bing" />
     </Product>
     <Product ID="ProjectProRetail">
@@ -25,6 +27,7 @@
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
       <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Bing" />
     </Product>
   </Add>
