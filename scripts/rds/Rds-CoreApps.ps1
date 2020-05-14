@@ -292,7 +292,11 @@ Function Install-MicrosoftOneDrive ($Path) {
             If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
         }
         catch {
-            Throw "Failed to download Microsoft OneDrive."
+            Write-Warning "Failed to download Microsoft OneDrive. Falling back to direct URL."
+            $url = "https://oneclient.sfx.ms/Win/Enterprise/19.222.1110.0011/OneDriveSetup.exe"
+            $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
+            Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
+            If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
         }
     
         # Install
