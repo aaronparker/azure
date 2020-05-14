@@ -29,6 +29,10 @@ Function Set-Customise ($Path) {
     Push-Location (Join-Path -Path $Path -ChildPath "image-customise-master")
     . .\Invoke-Scripts.ps1 -Verbose
     Pop-Location
+
+    # Add RDS/WVD specific Start menu layout
+    If (!(Test-Path("$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows"))) { New-Item -Value "$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows" -ItemType Directory }
+    Import-StartLayout -LayoutPath (Join-Path -Path $Path -ChildPath "image-customise-master\WindowsRDSStartMenuLayout.xml.xml") -MountPath "$($env:SystemDrive)\"
 }
 #endregion
 

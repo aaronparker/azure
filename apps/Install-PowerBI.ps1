@@ -98,5 +98,5 @@ catch {
     Throw "Failed to install Microsoft Power BI."
 }
 
-Write-Host "=========== Complete: $($MyInvocation.MyCommand)."
+Write-Host "================ Complete: $($MyInvocation.MyCommand)."
 #endregion

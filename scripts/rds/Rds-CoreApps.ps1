@@ -94,7 +94,7 @@ Function Invoke-Process {
 }
 
 Function Install-RequiredModules {
-    Write-Host "=========== Installing required modules"
+    Write-Host "================ Installing required modules"
     # Install the Evergreen module; https://github.com/aaronparker/Evergreen
     Install-Module -Name Evergreen -AllowClobber
 
@@ -103,7 +103,7 @@ Function Install-RequiredModules {
 }
 
 Function Install-VcRedistributables ($Path) {
-    Write-Host "=========== Microsoft Visual C++ Redistributables"
+    Write-Host "================ Microsoft Visual C++ Redistributables"
     If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
     $VcList = Get-VcList -Release 2010, 2012, 2013, 2019
 
@@ -111,20 +111,20 @@ Function Install-VcRedistributables ($Path) {
     Save-VcRedist -Path $Path -VcList $VcList > $Null
     Write-Host "================ Installing Microsoft Visual C++ Redistributables"
     Install-VcRedist -VcList $VcList -Path $Path
-    Write-Host "=========== Done"
+    Write-Host "================ Done"
 }
 
 Function Install-FSLogix ($Path) {
-    Write-Host "=========== Microsoft FSLogix agent"
+    Write-Host "================ Microsoft FSLogix agent"
     $FSLogix = Get-MicrosoftFSLogixApps
 
     If ($FSLogix) {
-        Write-Host "=========== Microsoft FSLogix: $($FSLogix.Version)"
+        Write-Host "================ Microsoft FSLogix: $($FSLogix.Version)"
         If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         # Download
         $OutFile = $(Split-Path -Path $FSLogix.URI -Leaf)
-        Write-Host "=========== Downloading to: $Path\$OutFile"
+        Write-Host "================ Downloading to: $Path\$OutFile"
         try {
             Invoke-WebRequest -Uri $FSLogix.URI -OutFile "$Path\$OutFile" -UseBasicParsing
             If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
@@ -148,7 +148,7 @@ Function Install-FSLogix ($Path) {
         catch {
             Throw "Failed to install the FSlogix Apps Rules Editor."
         }
-        Write-Host "=========== Done"
+        Write-Host "================ Done"
     }
     Else {
         Write-Host "================ Failed to retreive Microsoft FSLogix Apps"
@@ -156,7 +156,7 @@ Function Install-FSLogix ($Path) {
 }
 
 Function Install-MicrosoftEdge ($Path) {
-    Write-Host "=========== Microsoft Edge"
+    Write-Host "================ Microsoft Edge"
     $Edge = Get-MicrosoftEdge | Where-Object { $_.Architecture -eq "x64" -and $_.Channel -eq "Stable" }
     $Edge = $Edge | Sort-Object -Property Version -Descending | Select-Object -First 1
 
@@ -167,7 +167,7 @@ Function Install-MicrosoftEdge ($Path) {
         # Download
         $url = $Edge.URI
         $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
-        Write-Host "=========== Downloading to: $OutFile"
+        Write-Host "================ Downloading to: $OutFile"
         try {
             Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
             If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
@@ -193,7 +193,7 @@ Function Install-MicrosoftEdge ($Path) {
         ForEach ($service in $services) { Get-Service -Name $service | Set-Service -StartupType "Disabled" }
         ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
         Remove-Variable -Name url
-        Write-Host "=========== Done"
+        Write-Host "================ Done"
     }
     Else {
         Write-Host "================ Failed to retreive Microsoft Edge"
@@ -202,7 +202,7 @@ Function Install-MicrosoftEdge ($Path) {
 
 Function Install-MicrosoftOffice ($Path) {
     # Get Office version
-    Write-Host "=========== Microsoft Office"
+    Write-Host "================ Microsoft Office"
     $Office = Get-MicrosoftOffice | Where-Object { $_.Channel -eq "Monthly" }
     $url = $Office.URI
     
@@ -210,12 +210,12 @@ Function Install-MicrosoftOffice ($Path) {
         If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
         $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
-        Write-Host "=========== Downloading to: $Path\$(Split-Path -Path $xml -Leaf)"
+        Write-Host "================ Downloading to: $Path\$(Split-Path -Path $xml -Leaf)"
         Invoke-WebRequest -Uri $xml -OutFile "$Path\$(Split-Path -Path $xml -Leaf)" -UseBasicParsing
         
         # Download setup.exe
         $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
-        Write-Host "=========== Downloading to: $OutFile"
+        Write-Host "================ Downloading to: $OutFile"
         try {
             Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
             If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
@@ -230,7 +230,7 @@ Function Install-MicrosoftOffice ($Path) {
         Invoke-Process -FilePath $OutFile -ArgumentList "/configure $Path\$(Split-Path -Path $xml -Leaf)" -Verbose
         Pop-Location
         Remove-Variable -Name url
-        Write-Host "=========== Done"
+        Write-Host "================ Done"
     }
     Else {
         Write-Host "================ Failed to retreive Microsoft Office"
@@ -238,7 +238,7 @@ Function Install-MicrosoftOffice ($Path) {
 }
 
 Function Install-MicrosoftTeams ($Path) {
-    Write-Host "=========== Microsoft Teams"
+    Write-Host "================ Microsoft Teams"
     Write-Host "================ Downloading Microsoft Teams"
     $Teams = Get-MicrosoftTeams | Where-Object { $_.Architecture -eq "x64" }
     
@@ -248,7 +248,7 @@ Function Install-MicrosoftTeams ($Path) {
         # Download
         $url = $Teams.URI
         $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
-        Write-Host "=========== Downloading to: $OutFile"
+        Write-Host "================ Downloading to: $OutFile"
         try {
             Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
             If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
@@ -268,7 +268,7 @@ Function Install-MicrosoftTeams ($Path) {
         catch {
             Throw "Failed to install Microsoft Teams."
         }
-        Write-Host "=========== Done"
+        Write-Host "================ Done"
     }
     Else {
         Write-Host "================ Failed to retreive Microsoft Teams"
@@ -276,7 +276,7 @@ Function Install-MicrosoftTeams ($Path) {
 }
 
 Function Install-MicrosoftOneDrive ($Path) {
-    Write-Host "=========== Microsoft OneDrive"    
+    Write-Host "================ Microsoft OneDrive"    
     Write-Host "================ Downloading Microsoft OneDrive"
     $OneDrive = Get-MicrosoftOneDrive | Where-Object { $_.Ring -eq "Enterprise" }
 
@@ -286,7 +286,7 @@ Function Install-MicrosoftOneDrive ($Path) {
         # Download
         $url = $OneDrive.URI
         $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
-        Write-Host "=========== Downloading to: $OutFile"
+        Write-Host "================ Downloading to: $OutFile"
         try {
             Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
             If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
@@ -308,7 +308,7 @@ Function Install-MicrosoftOneDrive ($Path) {
             Throw "Failed to install Microsoft OneDrive."
         }
         Remove-Variable -Name url
-        Write-Host "=========== Done"
+        Write-Host "================ Done"
     }
     Else {
         Write-Host "================ Failed to retreive Microsoft OneDrive"
@@ -318,7 +318,7 @@ Function Install-MicrosoftOneDrive ($Path) {
 Function Install-AdobeReaderDC ($Path) {
     # Enforce settings with GPO: https://www.adobe.com/devnet-docs/acrobatetk/tools/AdminGuide/gpo.html
     # Download Reader installer and updater
-    Write-Host "=========== Adobe Acrobat Reader DC"
+    Write-Host "================ Adobe Acrobat Reader DC"
     Write-Host "================ Downloading Reader"
     $Reader = Get-AdobeAcrobatReaderDC | Where-Object { $_.Platform -eq "Windows" -and ($_.Language -eq "English" -or $_.Language -eq "Neutral") }
 
@@ -329,7 +329,7 @@ Function Install-AdobeReaderDC ($Path) {
         ForEach ($File in $Reader) {
             $url = $File.Uri
             $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $url -Leaf)
-            Write-Host "=========== Downloading to: $OutFile."
+            Write-Host "================ Downloading to: $OutFile."
             try {
                 (New-Object System.Net.WebClient).DownloadFile($url, $OutFile)
                 If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
@@ -372,7 +372,7 @@ Function Install-AdobeReaderDC ($Path) {
         catch {
             "Throw failed to update Adobe Reader."
         }
-        Write-Host "=========== Done"
+        Write-Host "================ Done"
     }
     Else {
         Write-Host "================ Failed to retreive Adobe Reader"
@@ -381,7 +381,7 @@ Function Install-AdobeReaderDC ($Path) {
 
 Function Install-ConnectionExperienceIndicator ($Path) {
 
-    Write-Host "=========== Connection Experience Indicator"
+    Write-Host "================ Connection Experience Indicator"
     Write-Host "================ Downloading Connection Experience Indicator"
 
     # Parameters
@@ -400,7 +400,7 @@ Function Install-ConnectionExperienceIndicator ($Path) {
 
     # Extract the zip file
     Expand-Archive -Path $OutFile -DestinationPath $Path
-    Write-Host "=========== Done"
+    Write-Host "================ Done"
 }
 #endregion Functions
 
@@ -431,5 +431,5 @@ Install-ConnectionExperienceIndicator -Path "$Target\ConnectionExperienceIndicat
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
-Write-Host "=========== Complete: $($MyInvocation.MyCommand)."
+Write-Host "================ Complete: $($MyInvocation.MyCommand)."
 #endregion
