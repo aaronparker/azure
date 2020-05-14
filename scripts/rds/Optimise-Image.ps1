@@ -280,7 +280,7 @@ Invoke-WindowsDefender
 Disable-ScheduledTasks
 Disable-WindowsTraces
 Disable-Services
-Optimize-Network
+#Optimize-Network
 # Invoke-Cleanmgr
 # Remove-TempFiles
 Get-WinEvent -ListLog * | ForEach-Object { Clear-WinEvent $_.LogName -Confirm:$False }
