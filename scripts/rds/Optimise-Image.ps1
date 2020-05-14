@@ -275,15 +275,40 @@ New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContin
 
 # Seal image tasks
 # Set-Repository
-# Invoke-WindowsDefender
+Invoke-WindowsDefender
 # Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
-# Disable-ScheduledTasks
-# Disable-WindowsTraces
-# Disable-Services
-# Optimize-Network
+Disable-ScheduledTasks
+Disable-WindowsTraces
+Disable-Services
+Optimize-Network
 # Invoke-Cleanmgr
 # Remove-TempFiles
-# Get-WinEvent -ListLog * | ForEach-Object { Clear-WinEvent $_.LogName -Confirm:$False }
+Get-WinEvent -ListLog * | ForEach-Object { Clear-WinEvent $_.LogName -Confirm:$False }
+
+<# Prep for Sysprep
+# Try to fix IMAGE_STATE_UNDEPLOYABLE
+Write-Output "====== Set services"
+If (Get-Service -Name RdAgent -ErrorAction "SilentlyContinue") {
+    Set-Service RdAgent -StartupType "Disabled"
+    While ((Get-Service -Name RdAgent).Status -ne "Running") { Start-Sleep -s 5 }
+}
+If (Get-Service -Name WindowsAzureTelemetryService -ErrorAction "SilentlyContinue") {
+    Set-Service WindowsAzureTelemetryService -StartupType "Disabled"
+    While ((Get-Service -Name WindowsAzureTelemetryService).Status -ne "Running") { Start-Sleep -s 5 }
+}
+If (Get-Service -Name WindowsAzureGuestAgent -ErrorAction "SilentlyContinue") {
+    Set-Service WindowsAzureGuestAgent -StartupType "Disabled"
+    While ((Get-Service -Name WindowsAzureGuestAgent).Status -ne "Running") { Start-Sleep -s 5 }
+}
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\SysPrepExternal\Generalize" -Name "*"
+#>
+
+# Re-enable Defender
+Write-Output "====== Enable Windows Defender real time scan"
+Set-MpPreference -DisableRealtimeMonitoring $false
+Write-Output "====== Enable Windows Store updates"
+reg delete HKLM\Software\Policies\Microsoft\Windows\CloudContent /v DisableWindowsConsumerFeatures /f
+reg delete HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /f
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
