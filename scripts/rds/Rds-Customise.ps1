@@ -16,11 +16,17 @@ Function Set-Customise ($Path) {
     If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
     # Customisation scripts
-    $url = "https://github.com/aaronparker/build-azure/raw/master/tools/Customise.zip"
-    Invoke-WebRequest -Uri $url -OutFile "$Path\$(Split-Path $url -Leaf)" -UseBasicParsing
-    Expand-Archive -Path "$Path\$(Split-Path $url -Leaf)" -DestinationPath "$Path" -Force
+    $url = "https://github.com/aaronparker/image-customise/archive/master.zip"
+    $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path $url -Leaf)
+    Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
+    try {
+        Expand-Archive -Path $OutFile -DestinationPath $Path -Force
+        Remove-Item -Path $OutFile
+    }
+    catch { }
     
-    Push-Location $Path
+    # Run scripts
+    Push-Location (Join-Path -Path $Path -ChildPath "image-customise-master")
     . .\Invoke-Scripts.ps1 -Verbose
     Pop-Location
 }
