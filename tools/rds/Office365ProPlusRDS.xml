@@ -6,9 +6,9 @@
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
-      <ExcludeApp ID="OneDrive" />
+<!--  <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="Teams" />-->
       <ExcludeApp ID="Publisher" />
-      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Bing" />
     </Product>
     <Product ID="VisioProRetail">
@@ -17,9 +17,9 @@
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
-      <ExcludeApp ID="OneDrive" />
+<!--  <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="Teams" />-->
       <ExcludeApp ID="Publisher" />
-      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Bing" />
     </Product>
     <Product ID="ProjectProRetail">
@@ -28,9 +28,9 @@
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
-      <ExcludeApp ID="OneDrive" />
+<!--  <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="Teams" />-->
       <ExcludeApp ID="Publisher" />
-      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Bing" />
     </Product>
   </Add>

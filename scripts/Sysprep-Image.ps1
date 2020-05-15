@@ -18,3 +18,5 @@ While ($True) {
         Break
     }
 }
+$imageState = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\State | Select-Object ImageState
+Write-Output $imageState.ImageState
