@@ -32,7 +32,7 @@ Function Set-Customise ($Path) {
 
     # Add RDS/WVD specific Start menu layout
     If (!(Test-Path("$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows"))) { New-Item -Value "$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows" -ItemType Directory }
-    Import-StartLayout -LayoutPath (Join-Path -Path $Path -ChildPath "image-customise-master\WindowsRDSStartMenuLayout.xml.xml") -MountPath "$($env:SystemDrive)\"
+    Import-StartLayout -LayoutPath (Join-Path -Path $Path -ChildPath "image-customise-master\WindowsRDSStartMenuLayout.xml") -MountPath "$($env:SystemDrive)\"
 }
 #endregion
 
