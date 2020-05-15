@@ -14,6 +14,7 @@ Param (
 #region Functions
 Function Set-Customise ($Path) {
     If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
+    $Source = $Path
 
     # Customisation scripts
     $url = "https://github.com/aaronparker/image-customise/archive/master.zip"
@@ -32,7 +33,7 @@ Function Set-Customise ($Path) {
 
     # Add RDS/WVD specific Start menu layout
     If (!(Test-Path("$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows"))) { New-Item -Value "$env:SystemDrive\Users\Default\AppData\Local\Microsoft\Windows" -ItemType Directory }
-    Import-StartLayout -LayoutPath (Join-Path -Path $Path -ChildPath "image-customise-master\WindowsRDSStartMenuLayout.xml") -MountPath "$($env:SystemDrive)\"
+    Import-StartLayout -LayoutPath (Join-Path -Path $Source -ChildPath "image-customise-master\WindowsRDSStartMenuLayout.xml") -MountPath "$($env:SystemDrive)\"
 }
 #endregion
 

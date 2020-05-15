@@ -110,7 +110,7 @@ Function Install-VcRedistributables ($Path) {
     Write-Host "================ Downloading Microsoft Visual C++ Redistributables"
     Save-VcRedist -Path $Path -VcList $VcList > $Null
     Write-Host "================ Installing Microsoft Visual C++ Redistributables"
-    Install-VcRedist -VcList $VcList -Path $Path
+    Install-VcRedist -VcList $VcList -Path $Path -Silent
     Write-Host "================ Done"
 }
 
@@ -261,7 +261,7 @@ Function Install-MicrosoftTeams ($Path) {
         Write-Host "================ Installing Microsoft Teams"
         try {
             reg add "HKLM\SOFTWARE\Microsoft\Teams" /v "IsWVDEnvironment" /t REG_DWORD /d 1
-            $ArgumentList = '/package $OutFile /quiet /qn ALLUSER=1 ALLUSERS=1 OPTIONS="noAutoStart=true"'
+            $ArgumentList = '/package $OutFile ALLUSER=1 ALLUSERS=1 OPTIONS="noAutoStart=true" /quiet'
             Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Verbose
             Remove-Variable -Name url
         }
@@ -275,10 +275,28 @@ Function Install-MicrosoftTeams ($Path) {
     }
 }
 
+Function Uninstall-MicrosoftOneDrive {
+    Stop-Process -Name "OneDrive.exe" -PassThru -ErrorAction SilentlyContinue
+    If (Get-Process -Name "Explorer.exe") { Stop-Process -Name "OneDrive.exe" -PassThru -ErrorAction SilentlyContinue }
+    if (Test-Path "$env:SystemRoot\System32\OneDriveSetup.exe") {
+        Start-Process "$env:SystemRoot\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -Wait 
+    }
+    if (Test-Path "$env:SystemRoot\SysWOW64\OneDriveSetup.exe") {
+        Start-Process "$env:SystemRoot\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -Wait
+    }
+    $Shortcuts = "$env:SystemRoot\ServiceProfiles\LocalService\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk", `
+        "$env:SystemRoot\ServiceProfiles\NetworkService\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+    ForEach ($shortcut in $Shortcuts) { If (Test-Path -Path $shortcut) { Remove-Item -Path $shortcut -Force } }
+    Start-Process $env:SystemRoot\System32\Reg.exe -ArgumentList "Load HKLM\Temp C:\Users\Default\NTUSER.DAT" -Wait
+    Start-Process $env:SystemRoot\System32\Reg.exe -ArgumentList "Delete HKLM\Temp\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v OneDriveSetup /f" -Wait
+    Start-Process $env:SystemRoot\System32\Reg.exe -ArgumentList "Unload HKLM\Temp" -Wait
+    Start-Process -FilePath $env:SystemRoot\Explorer.exe -Wait
+}
+
 Function Install-MicrosoftOneDrive ($Path) {
     Write-Host "================ Microsoft OneDrive"    
     Write-Host "================ Downloading Microsoft OneDrive"
-    $OneDrive = Get-MicrosoftOneDrive | Where-Object { $_.Ring -eq "Enterprise" }
+    $OneDrive = Get-MicrosoftOneDrive | Where-Object { $_.Ring -eq "Production" } | Sort-Object -Property Version | Select-Object -First 1
 
     If ($OneDrive) {
         If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
@@ -293,7 +311,7 @@ Function Install-MicrosoftOneDrive ($Path) {
         }
         catch {
             Write-Warning "Failed to download Microsoft OneDrive. Falling back to direct URL."
-            $url = "https://oneclient.sfx.ms/Win/Enterprise/19.222.1110.0011/OneDriveSetup.exe"
+            $url = "https://oneclient.sfx.ms/Win/Prod/20.052.0311.0011/OneDriveSetup.exe"
             $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
             Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
             If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
@@ -302,7 +320,7 @@ Function Install-MicrosoftOneDrive ($Path) {
         # Install
         Write-Host "================ Installing Microsoft OneDrive"
         try {
-            Invoke-Process -FilePath $OutFile -ArgumentList "/ALLUSERS=1" -Verbose
+            Invoke-Process -FilePath $OutFile -ArgumentList "/ALLUSERS" -Verbose
         }
         catch {
             Throw "Failed to install Microsoft OneDrive."
@@ -425,6 +443,7 @@ Install-FSLogix -Path "$Target\FSLogix"
 Install-MicrosoftEdge -Path "$Target\Edge"
 Install-MicrosoftOffice -Path "$Target\Office"
 Install-MicrosoftTeams -Path "$Target\Teams"
+Uninstall-MicrosoftOneDrive
 Install-MicrosoftOneDrive -Path "$Target\OneDrive"
 Install-AdobeReaderDC -Path "$Target\AdobeReader"
 Install-ConnectionExperienceIndicator -Path "$Target\ConnectionExperienceIndicator"
