@@ -261,6 +261,7 @@ Function Install-MicrosoftTeams ($Path) {
         Write-Host "================ Installing Microsoft Teams"
         try {
             reg add "HKLM\SOFTWARE\Microsoft\Teams" /v "IsWVDEnvironment" /t REG_DWORD /d 1
+            reg add "HKLM\SOFTWARE\Citrix\PortICA" /v "IsWVDEnvironment" /t REG_DWORD /d 1
             $ArgumentList = '/package $OutFile ALLUSER=1 ALLUSERS=1 OPTIONS="noAutoStart=true" /quiet'
             Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Verbose
             Remove-Variable -Name url
@@ -276,8 +277,8 @@ Function Install-MicrosoftTeams ($Path) {
 }
 
 Function Uninstall-MicrosoftOneDrive {
-    Stop-Process -Name "OneDrive.exe" -PassThru -ErrorAction SilentlyContinue
-    If (Get-Process -Name "Explorer.exe") { Stop-Process -Name "OneDrive.exe" -PassThru -ErrorAction SilentlyContinue }
+    If (Get-Process -Name "OneDrive.exe" -ErrorAction SilentlyContinue ) { Stop-Process -Name "OneDrive.exe" -PassThru -ErrorAction SilentlyContinue }
+    If (Get-Process -Name "Explorer.exe" -ErrorAction SilentlyContinue ) { Stop-Process -Name "OneDrive.exe" -PassThru -ErrorAction SilentlyContinue }
     if (Test-Path "$env:SystemRoot\System32\OneDriveSetup.exe") {
         Start-Process "$env:SystemRoot\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -Wait 
     }
