@@ -276,6 +276,21 @@ Function Install-MicrosoftTeams ($Path) {
     }
 }
 
+Function Set-TeamsAutostart {
+    $Path = Join-Path -Path "${env:ProgramFiles(x86)}\Teams Installer" -ChildPath "setup.json"
+
+    # Read the file and convert from JSON
+    try {
+        $Json = Get-Content -Path $Path | ConvertFrom-Json
+        $Json.noAutoStart = $true
+        $Json | ConvertTo-Json | Set-Content -Path $Path -Force
+    }
+    catch {
+        Throw "Failed to set Teams autostart file."
+        Break
+    }
+}
+
 Function Uninstall-MicrosoftOneDrive {
     If (Get-Process -Name "OneDrive.exe" -ErrorAction SilentlyContinue ) { Stop-Process -Name "OneDrive.exe" -PassThru -ErrorAction SilentlyContinue }
     If (Get-Process -Name "Explorer.exe" -ErrorAction SilentlyContinue ) { Stop-Process -Name "OneDrive.exe" -PassThru -ErrorAction SilentlyContinue }
@@ -444,8 +459,9 @@ Install-FSLogix -Path "$Target\FSLogix"
 Install-MicrosoftEdge -Path "$Target\Edge"
 Install-MicrosoftOffice -Path "$Target\Office"
 #Install-MicrosoftTeams -Path "$Target\Teams"
+Set-TeamsAutostart
 #Uninstall-MicrosoftOneDrive
-#Install-MicrosoftOneDrive -Path "$Target\OneDrive"
+Install-MicrosoftOneDrive -Path "$Target\OneDrive"
 Install-AdobeReaderDC -Path "$Target\AdobeReader"
 Install-ConnectionExperienceIndicator -Path "$Target\ConnectionExperienceIndicator"
 
