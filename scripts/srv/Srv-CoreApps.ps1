@@ -142,10 +142,28 @@ Function Install-MicrosoftEdge ($Path) {
             Throw "Failed to install Microsoft Edge."
         }
 
-        # Post install configuration
-        Remove-Item -Path "$env:Public\Desktop\Microsoft Edge*.lnk" -Force -ErrorAction SilentlyContinue
-        $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/master_preferences"
-        Invoke-WebRequest -Uri $url -OutFile "${Env:ProgramFiles(x86)}\Microsoft\Edge\Application\$(Split-Path -Path $url -Leaf)" -UseBasicParsing
+        Write-Host "================ Post-install config"
+        $prefs = @{
+            "homepage"               = "edge://newtab"
+            "homepage_is_newtabpage" = $false
+            "browser"                = @{
+                "show_home_button" = true
+            }
+            "distribution"           = @{
+                "skip_first_run_ui"              = $True
+                "show_welcome_page"              = $False
+                "import_search_engine"           = $False
+                "import_history"                 = $False
+                "do_not_create_any_shortcuts"    = $False
+                "do_not_create_taskbar_shortcut" = $False
+                "do_not_create_desktop_shortcut" = $True
+                "do_not_launch_chrome"           = $True
+                "make_chrome_default"            = $True
+                "make_chrome_default_for_user"   = $True
+                "system_level"                   = $True
+            }
+        }
+        $prefs | ConvertTo-Json | Set-Content -Path "${Env:ProgramFiles(x86)}\Microsoft\Edge\Application\master_preferences" -Force
         $services = "edgeupdate", "edgeupdatem", "MicrosoftEdgeElevationService"
         ForEach ($service in $services) { Get-Service -Name $service | Set-Service -StartupType "Disabled" }
         ForEach ($task in (Get-ScheduledTask -TaskName *Edge*)) { Unregister-ScheduledTask -TaskName $Task -Confirm:$False -ErrorAction SilentlyContinue }
