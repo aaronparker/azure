@@ -72,9 +72,17 @@ Function Set-Roles {
             Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
             Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Core
 
-            # Configure services
-            Set-Service Audiosrv -StartupType Automatic
-            Set-Service WSearch -StartupType Automatic
+            # Enable services
+            If ((Get-WindowsFeature -Name "RDS-RD-Server").InstallState -eq "Installed") {
+                ForEach ($service in "Audiosrv", "WSearch") {
+                    try {
+                        Set-Service $service -StartupType "Automatic"
+                    }
+                    catch {
+                        Throw "Failed to set service properties [$service]."
+                    }
+                }
+            } 
             Break
         }
         "Microsoft Windows 10 Enterprise for Virtual Desktops" {

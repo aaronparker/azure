@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $False)]
-    [System.String] $ResourceGroup = "rg-WindowsVirtualDesktopInfrastructure-AustraliaEast",
+    [System.String] $ResourceGroup = "rg-WindowsVirtualDesktopImages-AustraliaEast",
 
     [Parameter(Mandatory = $False)]
     [System.String] $TemplateFile = ".\PackerTemplate-Windows.json",
@@ -86,9 +86,7 @@ $Date = Get-Date -Format $([System.Globalization.CultureInfo]::CurrentUICulture.
 # Create a copy of the variables file
 $fileName = [System.IO.Path]::GetFileNameWithoutExtension($(Resolve-Path -Path $VariablesFile))
 $path = [System.IO.Path]::GetDirectoryName($VariablesFile)
-$newVariablesFile = Join-Path -Path $path -ChildPath "$filename-Temp.json"
-Write-Host "Template:  $(Resolve-Path -Path $VariablesFile)."
-Write-Host "Variables: $newVariablesFile."
+$newVariablesFile = Join-Path -Path $path -ChildPath "$filename-$Date.json"
 
 # Replace values
 $json = Get-Content -Path $VariablesFile | ConvertFrom-Json
@@ -112,14 +110,15 @@ Write-Host "Resource group: $ResourceGroup" -ForegroundColor Green
 Write-Host "Image date:     $Date" -ForegroundColor Green
 Write-Host "Locale:         $Locale" -ForegroundColor Green
 If ($BlobStorage.Length -gt 0) { Write-Host "Blob storage:   $BlobStorage" -ForegroundColor Green }
-Write-Host "Template file:  $TemplateFile" -ForegroundColor Cyan
+Write-Host "Template file:  $TemplateFile" -ForegroundColor Green
 Write-Host "Variables file: $newVariablesFile" -ForegroundColor Green
 
 # Validate template
-Write-Host "Validating: $newVariablesFile" -ForegroundColor Cyan
 $Template = Resolve-Path -Path $TemplateFile
 $Arguments = "-var-file $newVariablesFile -var 'image_date=$($Date)' $Template"
-& packer.exe validate $Arguments
+$Validate = "& packer.exe validate $Arguments"
+Write-Host "Validate template: 'packer.exe validate $Arguments'." -ForegroundColor Cyan
+Invoke-Expression -Command $Validate
 
 # Run Packer
 Write-Host "Packer command line sent to the clipboard. Paste here to run." -ForegroundColor Cyan

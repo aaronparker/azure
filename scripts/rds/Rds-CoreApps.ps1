@@ -191,7 +191,7 @@ Function Install-MicrosoftEdge ($Path) {
             "homepage"               = "https://www.office.com"
             "homepage_is_newtabpage" = $false
             "browser"                = @{
-                "show_home_button" = true
+                "show_home_button" = $True
             }
             "distribution"           = @{
                 "skip_first_run_ui"              = $True
