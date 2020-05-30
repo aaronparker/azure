@@ -189,7 +189,7 @@ Function Install-MicrosoftEdge ($Path) {
         Write-Host "================ Post-install config"
         $prefs = @{
             "homepage"               = "https://www.office.com"
-            "homepage_is_newtabpage" = $false
+            "homepage_is_newtabpage" = $False
             "browser"                = @{
                 "show_home_button" = $True
             }
