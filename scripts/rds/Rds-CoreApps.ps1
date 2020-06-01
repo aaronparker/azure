@@ -220,19 +220,71 @@ Function Install-MicrosoftEdge ($Path) {
 }
 
 Function Install-MicrosoftOffice ($Path) {
+
+    $OfficeXml = @"
+<Configuration ID="d1556a66-8ae5-488a-bc0d-cfae064b593d">
+  <Add OfficeClientEdition="64" Channel="MonthlyEnterprise" MigrateArch="TRUE">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="MatchOS" />
+      <Language ID="MatchPreviousMSI" />
+      <ExcludeApp ID="Access" />
+      <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Lync" />
+<!--  <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="Teams" />-->
+      <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Bing" />
+    </Product>
+    <Product ID="VisioProRetail">
+      <Language ID="MatchOS" />
+      <Language ID="MatchPreviousMSI" />
+      <ExcludeApp ID="Access" />
+      <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Lync" />
+<!--  <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="Teams" />-->
+      <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Bing" />
+    </Product>
+    <Product ID="ProjectProRetail">
+      <Language ID="MatchOS" />
+      <Language ID="MatchPreviousMSI" />
+      <ExcludeApp ID="Access" />
+      <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Lync" />
+<!--  <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="Teams" />-->
+      <ExcludeApp ID="Publisher" />
+      <ExcludeApp ID="Bing" />
+    </Product>
+  </Add>
+  <Property Name="SharedComputerLicensing" Value="1" />
+  <Property Name="PinIconsToTaskbar" Value="FALSE" />
+  <Property Name="SCLCacheOverride" Value="0" />
+  <Property Name="AUTOACTIVATE" Value="0" />
+  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+  <Property Name="DeviceBasedLicensing" Value="0" />
+  <Updates Enabled="FALSE" />
+  <RemoveMSI />
+  <AppSettings>
+    <User Key="software\microsoft\office\16.0\excel\options" Name="defaultformat" Value="51" Type="REG_DWORD" App="excel16" Id="L_SaveExcelfilesas" />
+    <User Key="software\microsoft\office\16.0\powerpoint\options" Name="defaultformat" Value="27" Type="REG_DWORD" App="ppt16" Id="L_SavePowerPointfilesas" />
+    <User Key="software\microsoft\office\16.0\word\options" Name="defaultformat" Value="" Type="REG_SZ" App="word16" Id="L_SaveWordfilesas" />
+  </AppSettings>
+  <Display Level="None" AcceptEULA="TRUE" />
+  <Logging Level="Standard" Path="C:\Apps" />
+</Configuration>
+"@
+
     # Get Office version
     Write-Host "================ Microsoft Office"
     $Office = Get-MicrosoftOffice | Where-Object { $_.Channel -eq "Monthly" }
-    $url = $Office.URI
     
     If ($Office) {
         If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
-
-        $xml = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Office365ProPlusRDS.xml"
-        Write-Host "================ Downloading to: $Path\$(Split-Path -Path $xml -Leaf)"
-        Invoke-WebRequest -Uri $xml -OutFile "$Path\$(Split-Path -Path $xml -Leaf)" -UseBasicParsing
         
         # Download setup.exe
+        $url = $Office.URI
         $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path -Path $url -Leaf)
         Write-Host "================ Downloading to: $OutFile"
         try {
@@ -244,9 +296,13 @@ Function Install-MicrosoftOffice ($Path) {
         }
 
         # Download Office package, Setup fails to exit, so wait 9-10 mins for Office install to complete
-        Push-Location -Path $Path
         Write-Host "================ Installing Microsoft Office"
-        Invoke-Process -FilePath $OutFile -ArgumentList "/configure $Path\$(Split-Path -Path $xml -Leaf)" -Verbose
+
+        Push-Location -Path $Path
+        $XmlFile = Join-Path -Path $Path -ChildPath "Office.xml"
+        Out-File -FilePath $XmlFile -InputObject $OfficeXml -Encoding ascii
+
+        Invoke-Process -FilePath $OutFile -ArgumentList "/configure $XmlFile" -Verbose
         Pop-Location
         Remove-Variable -Name url
         Write-Host "================ Done"

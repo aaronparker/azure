@@ -81,7 +81,7 @@ Function Set-RegionalSettings ($Path, $Locale) {
     Set-TimeZone -Id $Timezone -Verbose
     
     try {
-        $OutFile = Join-Path -Path $Path -ChiildPath "language.xml"
+        $OutFile = Join-Path -Path $Path -ChildPath "language.xml"
         Out-File -FilePath $OutFile -InputObject $languageXml -Encoding ascii
     }
     catch {

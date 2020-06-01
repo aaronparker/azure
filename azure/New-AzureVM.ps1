@@ -8,7 +8,7 @@ $Tags = @{
     Environment = "Development"
     Function    = "WindowsVirtualDesktop"
 }
-$Image = "Windows-10-19h2-evd-17052020"
+$Image = "Windows-10-20h1-evd-17052020"
 $Size = "Standard_B2ms"
 
 $params = @{
