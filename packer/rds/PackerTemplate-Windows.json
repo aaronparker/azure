@@ -52,6 +52,7 @@
                 "Write-Output \"====== Locale parameter: {{user `Locale`}}\"",
                 "$env:Locale = '{{user `Locale`}}'",
                 "[System.Environment]::SetEnvironmentVariable('Locale','{{user `Locale`}}',[System.EnvironmentVariableTarget]::User)",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-PrepImage.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-RegionalRoles.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/master/scripts/rds/Rds-Customise.ps1'))"
             ]

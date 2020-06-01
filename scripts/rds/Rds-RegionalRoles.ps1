@@ -21,23 +21,57 @@ Function Set-RegionalSettings ($Path, $Locale) {
             # United States
             $GeoId = 244
             $Timezone = "Pacific Standard Time"
+            $LanguageId = "0409:00000409"
         }
         "en-GB" {
             # Great Britain
             $GeoId = 242
             $Timezone = "GMT Standard Time"
+            $LanguageId = "0809:00000809"
         }
         "en-AU" {
             # Australia
             $GeoId = 12
             $Timezone = "AUS Eastern Standard Time"
+            $LanguageId = "0c09:00000409"
         }
         Default {
             # Australia
             $GeoId = 12
             $Timezone = "AUS Eastern Standard Time"
+            $LanguageId = "0c09:00000409"
         }
     }
+
+    #region Variables
+    $languageXml = @"
+<gs:GlobalizationServices 
+    xmlns:gs="urn:longhornGlobalizationUnattend">
+    <!--User List-->
+    <gs:UserList>
+        <gs:User UserID="Current" CopySettingsToDefaultUserAcct="true" CopySettingsToSystemAcct="true"/>
+    </gs:UserList>
+    <!-- user locale -->
+    <gs:UserLocale>
+        <gs:Locale Name="$Locale" SetAsCurrent="true"/>
+    </gs:UserLocale>
+    <!-- system locale -->
+    <gs:SystemLocale Name="$Locale"/>
+    <!-- GeoID -->
+    <gs:LocationPreferences>
+        <gs:GeoID Value="$GeoId"/>
+    </gs:LocationPreferences>
+    <gs:MUILanguagePreferences>
+        <gs:MUILanguage Value="$Locale"/>
+        <gs:MUIFallback Value="en-US"/>
+    </gs:MUILanguagePreferences>
+    <!-- input preferences -->
+    <gs:InputPreferences>
+        <gs:InputLanguageID Action="add" ID="$LanguageId" Default="true"/>
+    </gs:InputPreferences>
+</gs:GlobalizationServices>
+"@
+    #endregion
 
     # Set regional settings
     Import-Module -Name "International"
@@ -47,15 +81,14 @@ Function Set-RegionalSettings ($Path, $Locale) {
     Set-TimeZone -Id $Timezone -Verbose
     
     try {
-        # Download the language file
-        $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/$Locale-Language.xml"
-        $OutFile = "$Path\$(Split-Path $url -Leaf)"
-        Invoke-WebRequest -Uri $url -OutFile $OutFile
+        $OutFile = Join-Path -Path $Path -ChiildPath "language.xml"
+        Out-File -FilePath $OutFile -InputObject $languageXml -Encoding ascii
     }
     catch {
-        Throw "Failed to download language file."
+        Throw "Failed to create language file."
         Break
     }
+
     try {
         & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:$OutFile"
     }
@@ -111,13 +144,6 @@ Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
 # Set TLS to 1.2; Create target folder
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
-
-# Ready image
-Write-Output "====== Disable Windows Defender real time scan"
-Set-MpPreference -DisableRealtimeMonitoring $true
-Write-Output "====== Disable Windows Store updates"
-reg add HKLM\Software\Policies\Microsoft\Windows\CloudContent /v DisableWindowsConsumerFeatures /d 1 /t REG_DWORD /f
-reg add HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /d 2 /t REG_DWORD /f
 
 # Run tasks
 If (Test-Path -Path env:Locale) {
