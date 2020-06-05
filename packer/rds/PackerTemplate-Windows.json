@@ -129,7 +129,7 @@
     "post-processors": [
         {
             "type": "manifest",
-            "output": "packer-windows-manifest.json",
+            "output": "packer-windows-manifest-{{user `image_date`}}.json",
             "strip_path": true
         }
     ]
