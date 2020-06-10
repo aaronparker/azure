@@ -230,8 +230,8 @@ Function Install-MicrosoftOffice ($Path) {
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
-<!--  <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="Teams" />-->
+<!--  <ExcludeApp ID="OneDrive" />-->
+      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Publisher" />
       <ExcludeApp ID="Bing" />
     </Product>
@@ -241,8 +241,8 @@ Function Install-MicrosoftOffice ($Path) {
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
-<!--  <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="Teams" />-->
+<!--  <ExcludeApp ID="OneDrive" />-->
+      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Publisher" />
       <ExcludeApp ID="Bing" />
     </Product>
@@ -252,8 +252,8 @@ Function Install-MicrosoftOffice ($Path) {
       <ExcludeApp ID="Access" />
       <ExcludeApp ID="Groove" />
       <ExcludeApp ID="Lync" />
-<!--  <ExcludeApp ID="OneDrive" />
-      <ExcludeApp ID="Teams" />-->
+<!--  <ExcludeApp ID="OneDrive" />-->
+      <ExcludeApp ID="Teams" />
       <ExcludeApp ID="Publisher" />
       <ExcludeApp ID="Bing" />
     </Product>
