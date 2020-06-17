@@ -352,18 +352,24 @@ Function Install-MicrosoftTeams ($Path) {
 }
 
 Function Set-TeamsAutostart {
-    $Path = Join-Path -Path "${env:ProgramFiles(x86)}\Teams Installer" -ChildPath "setup.json"
+    # Teams JSON files
+    $Paths = @((Join-Path -Path "${env:ProgramFiles(x86)}\Teams Installer" -ChildPath "setup.json"), 
+        (Join-Path -Path "${env:ProgramFiles(x86)}\Microsoft\Teams" -ChildPath "setup.json"))
 
     # Read the file and convert from JSON
-    try {
-        $Json = Get-Content -Path $Path | ConvertFrom-Json
-        $Json.noAutoStart = $true
-        $Json | ConvertTo-Json | Set-Content -Path $Path -Force
+    ForEach ($Path in $Paths) {
+        try {
+            $Json = Get-Content -Path $Path | ConvertFrom-Json
+            $Json.noAutoStart = $true
+            $Json | ConvertTo-Json | Set-Content -Path $Path -Force
+        }
+        catch {
+            Throw "Failed to set Teams autostart file: $Path."
+        }
     }
-    catch {
-        Throw "Failed to set Teams autostart file."
-        Break
-    }
+
+    # Delete the registry auto-start
+    reg delete "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run" /v "Teams" /f
 }
 
 Function Uninstall-MicrosoftOneDrive {
