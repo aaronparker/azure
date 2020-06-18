@@ -541,7 +541,6 @@ Install-MicrosoftEdge -Path "$Target\Edge"
 Install-MicrosoftOffice -Path "$Target\Office"
 Install-MicrosoftTeams -Path "$Target\Teams"
 Set-TeamsAutostart
-#Uninstall-MicrosoftOneDrive
 Install-MicrosoftOneDrive -Path "$Target\OneDrive"
 Install-AdobeReaderDC -Path "$Target\AdobeReader"
 Install-ConnectionExperienceIndicator -Path "$Target\ConnectionExperienceIndicator"
