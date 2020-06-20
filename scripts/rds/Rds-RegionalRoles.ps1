@@ -97,6 +97,41 @@ Function Set-RegionalSettings ($Path, $Locale) {
     }
 }
 
+Function Install-LanguageCapability ($Locale) {
+    Switch ($Locale) {
+        "en-US" {
+            # United States
+            $Language = "en-US"
+        }
+        "en-GB" {
+            # Great Britain
+            $Language = "en-GB"
+        }
+        "en-AU" {
+            # Australia
+            $Language = "en-AU", "en-GB"
+        }
+        Default {
+            # Australia
+            $Language = "en-AU", "en-GB"
+        }
+    }
+
+    # Install Windows capability packages using Windows Update
+    ForEach ($lang in $Language) {
+        Write-Verbose -Message "$($MyInvocation.MyCommand): Adding packages for [$lang]."
+        $Capabilities = Get-WindowsCapability -Online | Where-Object { $_.Name -like "Language*$lang*" }
+        ForEach ($Capability in $Capabilities) {
+            try {
+                Add-WindowsCapability -Online -Name $Capability.Name -LogLevel 2
+            }
+            catch {
+                Throw "Failed to add capability: $($Capability.Name)."
+            }
+        }
+    }
+}
+
 Function Set-Roles {
     Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
         "Microsoft Windows Server*" {
@@ -154,6 +189,7 @@ Else {
     $Locale = "en-AU"
 }
 Set-RegionalSettings -Path $Target -Locale $Locale
+Install-LanguageCapability -Locale $Locale
 Set-Roles
 
 # Stop Logging
