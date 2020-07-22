@@ -14,7 +14,6 @@ Param (
 #region Functions
 Function Set-Customise ($Path) {
     If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
-    $Source = $Path
 
     # Customisation scripts
     $url = "https://github.com/aaronparker/image-customise/archive/master.zip"

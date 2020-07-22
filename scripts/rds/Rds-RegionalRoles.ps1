@@ -189,7 +189,7 @@ Else {
     $Locale = "en-AU"
 }
 Set-RegionalSettings -Path $Target -Locale $Locale
-Install-LanguageCapability -Locale $Locale
+#Install-LanguageCapability -Locale $Locale
 Set-Roles
 
 # Stop Logging
