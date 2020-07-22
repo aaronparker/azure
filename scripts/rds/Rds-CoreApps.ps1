@@ -358,13 +358,15 @@ Function Set-TeamsAutostart {
 
     # Read the file and convert from JSON
     ForEach ($Path in $Paths) {
-        try {
-            $Json = Get-Content -Path $Path | ConvertFrom-Json
-            $Json.noAutoStart = $true
-            $Json | ConvertTo-Json | Set-Content -Path $Path -Force
-        }
-        catch {
-            Throw "Failed to set Teams autostart file: $Path."
+        If (Test-Path -Path $Path) {
+            try {
+                $Json = Get-Content -Path $Path | ConvertFrom-Json
+                $Json.noAutoStart = $true
+                $Json | ConvertTo-Json | Set-Content -Path $Path -Force
+            }
+            catch {
+                Throw "Failed to set Teams autostart file: $Path."
+            }
         }
     }
 
