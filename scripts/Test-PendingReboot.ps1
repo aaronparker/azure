@@ -5,7 +5,7 @@ Function Test-PendingReboot {
 
         .NOTES
             Author: Darwin Sanoy
-            URL: https://github.com/DarwinJS/DevOpsAutomationCode/blob/master/CompactDevOpsRebootWindowsIfNeeded.ps1
+            URL: https://github.com/DarwinJS/DevOpsAutomationCode/blob/main/CompactDevOpsRebootWindowsIfNeeded.ps1
     #>
     [OutputType([Boolean])]
     [CmdletBinding()]

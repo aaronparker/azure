@@ -34,7 +34,7 @@ Function Invoke-CitrixOptimizer ($Path) {
     If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType Directory -Force -ErrorAction SilentlyContinue > $Null }
 
     Write-Host "=============== Downloading Citrix Optimizer"
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/CitrixOptimizer.zip"
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/main/tools/rds/CitrixOptimizer.zip"
     Invoke-WebRequest -Uri $url -OutFile "$Path\$(Split-Path $url -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Path\$(Split-Path $url -Leaf)" -DestinationPath $Path -Force
 
@@ -43,13 +43,13 @@ Function Invoke-CitrixOptimizer ($Path) {
     If (!(Test-Path $Path)) { New-Item -Path "$Path\Templates" -ItemType Directory -Force -ErrorAction SilentlyContinue > $Null }
     Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
         "Microsoft Windows Server*" {
-            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/WindowsServer2019-Defender-Azure.xml"
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/main/tools/rds/WindowsServer2019-Defender-Azure.xml"
         }
         "Microsoft Windows 10 Enterprise for Virtual Desktops" {
-            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Windows101909-Defender-Azure.xml"
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/main/tools/rds/Windows101909-Defender-Azure.xml"
         }
         "Microsoft Windows 10*" {
-            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/Windows101909-Defender-Azure.xml"
+            $url = "https://raw.githubusercontent.com/aaronparker/build-azure/main/tools/rds/Windows101909-Defender-Azure.xml"
         }
     }
     Invoke-WebRequest -Uri $url -OutFile "$Path\Templates\$(Split-Path $url -Leaf)" -UseBasicParsing
@@ -68,7 +68,7 @@ Function Invoke-Bisf ($Path) {
     Invoke-WebRequest -Uri $url -OutFile "$Path\$(Split-Path $url -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Path\$(Split-Path $url -Leaf)" -DestinationPath "$Path" -Force
 
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/BisfConfig.zip"
+    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/main/tools/rds/BisfConfig.zip"
     Invoke-WebRequest -Uri $url -OutFile "$Path\$(Split-Path $url -Leaf)" -UseBasicParsing
     Expand-Archive -Path "$Path\$(Split-Path $url -Leaf)" -DestinationPath "$Path" -Force
 

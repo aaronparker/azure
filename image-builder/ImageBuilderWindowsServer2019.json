@@ -32,25 +32,25 @@
                 "type": "PowerShell",
                 "name": "InstallModules",
                 "runElevated": true,
-                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Install-Modules.ps1"
+                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/main/rds-packer/Install-Modules.ps1"
             },
             {
                 "type": "PowerShell",
                 "name": "RegionRoles",
                 "runElevated": true,
-                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Rds-RegionalRoles.ps1"
+                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/main/rds-packer/Rds-RegionalRoles.ps1"
             },
             {
                 "type": "PowerShell",
                 "name": "Customise",
                 "runElevated": true,
-                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Rds-Customise.ps1"
+                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/main/rds-packer/Rds-Customise.ps1"
             },
             {
                 "type": "PowerShell",
                 "name": "WindowsUpdates",
                 "runElevated": true,
-                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Rds-Updates.ps1"
+                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/main/rds-packer/Rds-Updates.ps1"
             },
             {
                 "type": "WindowsRestart",
@@ -61,7 +61,7 @@
                 "type": "PowerShell",
                 "name": "CoreApps",
                 "runElevated": true,
-                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/master/rds-packer/Rds-CoreApps.ps1"
+                "scriptUri": "https://raw.githubusercontent.com/aaronparker/build-azure/main/rds-packer/Rds-CoreApps.ps1"
             },
             {
                 "type": "WindowsRestart",
