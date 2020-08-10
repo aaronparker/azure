@@ -36,7 +36,7 @@
             "winrm_timeout": "5m",
             "winrm_username": "{{user `winrmuser`}}",
             "azure_tags": {
-                "Function": "Master image",
+                "Function": "Gold image",
                 "Operating System": "{{user `image_publisher`}}-{{user `image_offer`}}-{{user `image_sku`}}"
             },
             "location": "{{user `location`}}",
