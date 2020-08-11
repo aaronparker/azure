@@ -74,7 +74,7 @@
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-CoreApps.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Wvd-Agents.ps1'))"
+                "#Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Wvd-Agents.ps1'))"
             ]
         },
         {
