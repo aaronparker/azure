@@ -28,31 +28,31 @@ Function New-AzureVirtualNetwork {
     $rdsSubnet = "Rds-$($location)-subnet"
 
     # New Resource Group
-    New-AzureRmResourceGroup -Name $resourceGroup -Location $location
+    New-AzResourceGroup -Name $resourceGroup -Location $location
 
     # NSG rules
-    $rdpRule = New-AzureRmNetworkSecurityRuleConfig -Name rdp-rule -Description "Allow RDP" -Access Allow -Protocol Tcp -Direction Inbound -Priority 100 `
+    $rdpRule = New-AzNetworkSecurityRuleConfig -Name rdp-rule -Description "Allow RDP" -Access Allow -Protocol Tcp -Direction Inbound -Priority 100 `
         -SourceAddressPrefix "VirtualNetwork" -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 3389
 
     # Network security group
-    $appNsg = New-AzureRmNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($appSubnet)-nsg"
-    $authNsg = New-AzureRmNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($authSubnet)-nsg"
-    $dataNsg = New-AzureRmNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($dataSubnet)-nsg"
-    $dmzNsg = New-AzureRmNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($dmzSubnet)-nsg"
-    $rdsNsg = New-AzureRmNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($rdsSubnet)-nsg"
-    $jumpNsg = New-AzureRmNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($jumpSubnet)-nsg" -SecurityRules $rdpRule
+    $appNsg = New-AzNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($appSubnet)-nsg"
+    $authNsg = New-AzNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($authSubnet)-nsg"
+    $dataNsg = New-AzNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($dataSubnet)-nsg"
+    $dmzNsg = New-AzNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($dmzSubnet)-nsg"
+    $rdsNsg = New-AzNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($rdsSubnet)-nsg"
+    $jumpNsg = New-AzNetworkSecurityGroup -ResourceGroupName $resourceGroup -Location $location -Name "$($jumpSubnet)-nsg" -SecurityRules $rdpRule
 
     # Subnets
-    $gatewaySubnetCfg = New-AzureRmVirtualNetworkSubnetConfig -Name $gateway -AddressPrefix $gatewayAddress
-    $appSubnetCfg = New-AzureRmVirtualNetworkSubnetConfig -Name $appSubnet -AddressPrefix $appAddress -NetworkSecurityGroup $appNsg
-    $authSubnetCfg = New-AzureRmVirtualNetworkSubnetConfig -Name $authSubnet -AddressPrefix $authAddress -NetworkSecurityGroup $authNsg
-    $dataSubnetCfg = New-AzureRmVirtualNetworkSubnetConfig -Name $dataSubnet -AddressPrefix $dataAddress -NetworkSecurityGroup $dataNsg
-    $dmzSubnetCfg = New-AzureRmVirtualNetworkSubnetConfig -Name $dmzSubnet -AddressPrefix $dmzAddress -NetworkSecurityGroup $dmzNsg
-    $jumpSubnetCfg = New-AzureRmVirtualNetworkSubnetConfig -Name $jumpSubnet -AddressPrefix $jumpAddress -NetworkSecurityGroup $jumpNsg
-    $rdsSubnetCfg = New-AzureRmVirtualNetworkSubnetConfig -Name $rdsSubnet -AddressPrefix $rdsAddress -NetworkSecurityGroup $rdsNsg
+    $gatewaySubnetCfg = New-AzVirtualNetworkSubnetConfig -Name $gateway -AddressPrefix $gatewayAddress
+    $appSubnetCfg = New-AzVirtualNetworkSubnetConfig -Name $appSubnet -AddressPrefix $appAddress -NetworkSecurityGroup $appNsg
+    $authSubnetCfg = New-AzVirtualNetworkSubnetConfig -Name $authSubnet -AddressPrefix $authAddress -NetworkSecurityGroup $authNsg
+    $dataSubnetCfg = New-AzVirtualNetworkSubnetConfig -Name $dataSubnet -AddressPrefix $dataAddress -NetworkSecurityGroup $dataNsg
+    $dmzSubnetCfg = New-AzVirtualNetworkSubnetConfig -Name $dmzSubnet -AddressPrefix $dmzAddress -NetworkSecurityGroup $dmzNsg
+    $jumpSubnetCfg = New-AzVirtualNetworkSubnetConfig -Name $jumpSubnet -AddressPrefix $jumpAddress -NetworkSecurityGroup $jumpNsg
+    $rdsSubnetCfg = New-AzVirtualNetworkSubnetConfig -Name $rdsSubnet -AddressPrefix $rdsAddress -NetworkSecurityGroup $rdsNsg
 
     # Virtual network
-    $vnet = New-AzureRmVirtualNetwork -Name $virtualNetwork -ResourceGroupName $resourceGroup -Location $location -AddressPrefix $addressSpace `
+    $vnet = New-AzVirtualNetwork -Name $virtualNetwork -ResourceGroupName $resourceGroup -Location $location -AddressPrefix $addressSpace `
         -Subnet $gatewaySubnetCfg, $appSubnetCfg, $authSubnetCfg, $dataSubnetCfg, $dmzSubnetCfg, $jumpSubnetCfg, $rdsSubnetCfg
 
     $output += $vnet
@@ -89,11 +89,11 @@ $network2 = @{
 $sharedKey = (Get-AzureKeyVaultSecret -VaultName $keyVaultName -Name vnetGatewaySharedKey).SecretValueText
 
 # Virtual network gateway connections
-$localNetworkGateway = New-AzureRmLocalNetworkGateway -Name $localNetName -ResourceGroupName $resourceGroup -Location $location `
+$localNetworkGateway = New-AzLocalNetworkGateway -Name $localNetName -ResourceGroupName $resourceGroup -Location $location `
     -GatewayIpAddress $GatewayIpAddress -AddressPrefix $addressPrefix
 
-$virtualNetworkGateway = Get-AzureRmVirtualNetworkGateway -ResourceGroupName $resourceGroup -Name "$locPrefix-vnetgateway"
+$virtualNetworkGateway = Get-AzVirtualNetworkGateway -ResourceGroupName $resourceGroup -Name "$locPrefix-vnetgateway"
 
-New-AzureRmVirtualNetworkGatewayConnection -Name $connectionName -ConnectionType IPsec -ResourceGroupName $resourceGroup `
+New-AzVirtualNetworkGatewayConnection -Name $connectionName -ConnectionType IPsec -ResourceGroupName $resourceGroup `
     -Location $location -VirtualNetworkGateway1 $virtualNetworkGateway -LocalNetworkGateway2 $localNetworkGateway `
     -RoutingWeight $routingWeight -SharedKey $sharedKey

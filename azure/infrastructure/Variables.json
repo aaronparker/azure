@@ -1,0 +1,42 @@
+{
+	"SubscriptionName": "Visual Studio Enterprise Subscription",
+	"OrgName": "stealthpuppy",
+	"Location": "AustraliaSoutheast",
+	"ShortLocation": "ause",
+	"LongName": "WindowsVirtualDesktop",
+	"ShortName": "wvd",
+	"Tags": {
+		"Environment": "Development",
+		"Function": "WindowsVirtualDesktop"
+	},
+	"ResourceGroups": {
+		"rg-Infrastucture-AustraliaSoutheast": {
+			"Network": {
+				"Name": "vnet-Hub-AustraliaSoutheast",
+				"AddressSpace": "10.0.0.0/16",
+				"Subnets": {
+					"GatewaySubnet": "10.0.0.0/24",
+					"subnet-Firewall": "10.0.1.0/24",
+					"subnet-Identity": "10.0.2.0/24",
+					"subnet-Storage": "10.0.2.0/24"
+                },
+                "NetworkSecurityGroups": {
+					"subnet-Firewall": "nsg-Firewall",
+					"subnet-Identity": "nsg-Identity",
+					"subnet-Storage": "nsg-Storage"
+                }
+			}
+		},
+		"rg-VirtualDesktops-AustraliaSoutheast": {
+			"Network": {
+				"Name": "vnet-VirtualDesktops-AustraliaSoutheast",
+				"AddressSpace": "10.1.0.0/16",
+				"Subnets": {
+					"Storage": "10.1.0.0/24",
+					"Pooled": "10.1.1.0/24",
+					"Personal": "10.1.2.0/24"
+				}
+			}
+		}
+	}
+}
