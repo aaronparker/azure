@@ -10,10 +10,10 @@ param(
     [System.String] $VariablesFile = ".\PackerVariables-Windows10Multisession.json",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $KeyVault = "insentrawvd",
+    [System.String] $KeyVault = "stealthpuppyhub",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $BlobStorage = "https://insentrawvdaue.blob.core.windows.net/apps/"
+    [System.String] $BlobStorage = "https://stealthpuppycore.blob.core.windows.net/apps/"
 )
 
 # Get elevation status
