@@ -258,7 +258,7 @@ Function Install-MicrosoftOffice ($Path) {
       <ExcludeApp ID="Bing" />
     </Product>
   </Add>
-  <Property Name="SharedComputerLicensing" Value="1" />
+  <Property Name="SharedComputerLicensing" Value="0" />
   <Property Name="PinIconsToTaskbar" Value="FALSE" />
   <Property Name="SCLCacheOverride" Value="0" />
   <Property Name="AUTOACTIVATE" Value="0" />
