@@ -222,58 +222,55 @@ Function Install-MicrosoftEdge ($Path) {
 Function Install-MicrosoftOffice ($Path) {
 
     $OfficeXml = @"
-<Configuration ID="d1556a66-8ae5-488a-bc0d-cfae064b593d">
-  <Add OfficeClientEdition="64" Channel="MonthlyEnterprise" MigrateArch="TRUE">
-    <Product ID="O365ProPlusRetail">
-      <Language ID="MatchOS" />
-      <Language ID="MatchPreviousMSI" />
-      <ExcludeApp ID="Access" />
-      <ExcludeApp ID="Groove" />
-      <ExcludeApp ID="Lync" />
-<!--  <ExcludeApp ID="OneDrive" />-->
-      <ExcludeApp ID="Teams" />
-      <ExcludeApp ID="Publisher" />
-      <ExcludeApp ID="Bing" />
-    </Product>
-    <Product ID="VisioProRetail">
-      <Language ID="MatchOS" />
-      <Language ID="MatchPreviousMSI" />
-      <ExcludeApp ID="Access" />
-      <ExcludeApp ID="Groove" />
-      <ExcludeApp ID="Lync" />
-<!--  <ExcludeApp ID="OneDrive" />-->
-      <ExcludeApp ID="Teams" />
-      <ExcludeApp ID="Publisher" />
-      <ExcludeApp ID="Bing" />
-    </Product>
-    <Product ID="ProjectProRetail">
-      <Language ID="MatchOS" />
-      <Language ID="MatchPreviousMSI" />
-      <ExcludeApp ID="Access" />
-      <ExcludeApp ID="Groove" />
-      <ExcludeApp ID="Lync" />
-<!--  <ExcludeApp ID="OneDrive" />-->
-      <ExcludeApp ID="Teams" />
-      <ExcludeApp ID="Publisher" />
-      <ExcludeApp ID="Bing" />
-    </Product>
-  </Add>
-  <Property Name="SharedComputerLicensing" Value="0" />
-  <Property Name="PinIconsToTaskbar" Value="FALSE" />
-  <Property Name="SCLCacheOverride" Value="0" />
-  <Property Name="AUTOACTIVATE" Value="0" />
-  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
-  <Property Name="DeviceBasedLicensing" Value="0" />
-  <Updates Enabled="FALSE" />
-  <RemoveMSI />
-  <AppSettings>
-    <User Key="software\microsoft\office\16.0\excel\options" Name="defaultformat" Value="51" Type="REG_DWORD" App="excel16" Id="L_SaveExcelfilesas" />
-    <User Key="software\microsoft\office\16.0\powerpoint\options" Name="defaultformat" Value="27" Type="REG_DWORD" App="ppt16" Id="L_SavePowerPointfilesas" />
-    <User Key="software\microsoft\office\16.0\word\options" Name="defaultformat" Value="" Type="REG_SZ" App="word16" Id="L_SaveWordfilesas" />
-  </AppSettings>
-  <Display Level="None" AcceptEULA="TRUE" />
-  <Logging Level="Standard" Path="C:\Apps" />
-</Configuration>
+    <Configuration ID="a39b1c70-558d-463b-b3d4-9156ddbcbb05">
+    <Add OfficeClientEdition="64" Channel="MonthlyEnterprise" MigrateArch="TRUE">
+      <Product ID="O365ProPlusRetail">
+        <Language ID="MatchOS" />
+        <Language ID="MatchPreviousMSI" />
+        <ExcludeApp ID="Access" />
+        <ExcludeApp ID="Groove" />
+        <ExcludeApp ID="Lync" />
+        <ExcludeApp ID="Publisher" />
+        <ExcludeApp ID="Bing" />
+      </Product>
+      <Product ID="VisioProRetail">
+        <Language ID="MatchOS" />
+        <Language ID="MatchPreviousMSI" />
+        <ExcludeApp ID="Access" />
+        <ExcludeApp ID="Groove" />
+        <ExcludeApp ID="Lync" />
+        <ExcludeApp ID="Publisher" />
+        <ExcludeApp ID="Bing" />
+      </Product>
+      <Product ID="ProjectProRetail">
+        <Language ID="MatchOS" />
+        <Language ID="MatchPreviousMSI" />
+        <ExcludeApp ID="Access" />
+        <ExcludeApp ID="Groove" />
+        <ExcludeApp ID="Lync" />
+        <ExcludeApp ID="Publisher" />
+        <ExcludeApp ID="Bing" />
+      </Product>
+    </Add>
+    <Property Name="SharedComputerLicensing" Value="0" />
+    <Property Name="PinIconsToTaskbar" Value="FALSE" />
+    <Property Name="SCLCacheOverride" Value="0" />
+    <Property Name="AUTOACTIVATE" Value="0" />
+    <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+    <Property Name="DeviceBasedLicensing" Value="0" />
+    <Updates Enabled="FALSE" />
+    <RemoveMSI />
+    <AppSettings>
+      <User Key="software\microsoft\office\16.0\common\toolbars" Name="customuiroaming" Value="1" Type="REG_DWORD" App="office16" Id="L_AllowRoamingQuickAccessToolBarRibbonCustomizations" />
+      <User Key="software\microsoft\office\16.0\excel\options" Name="defaultformat" Value="51" Type="REG_DWORD" App="excel16" Id="L_SaveExcelfilesas" />
+      <User Key="software\microsoft\office\16.0\onenote\options\other" Name="runsystemtrayapp" Value="0" Type="REG_DWORD" App="onent16" Id="L_AddOneNoteicontonotificationarea" />
+      <User Key="software\microsoft\office\16.0\outlook\setup" Name="disableroamingsettings" Value="0" Type="REG_DWORD" App="outlk16" Id="L_DisableRoamingSettings" />
+      <User Key="software\microsoft\office\16.0\powerpoint\options" Name="defaultformat" Value="27" Type="REG_DWORD" App="ppt16" Id="L_SavePowerPointfilesas" />
+      <User Key="software\microsoft\office\16.0\word\options" Name="defaultformat" Value="" Type="REG_SZ" App="word16" Id="L_SaveWordfilesas" />
+    </AppSettings>
+    <Display Level="None" AcceptEULA="TRUE" />
+    <Logging Level="Standard" Path="C:\Apps" />
+  </Configuration>
 "@
 
     # Get Office version
@@ -300,7 +297,7 @@ Function Install-MicrosoftOffice ($Path) {
 
         Push-Location -Path $Path
         $XmlFile = Join-Path -Path $Path -ChildPath "Office.xml"
-        Out-File -FilePath $XmlFile -InputObject $OfficeXml -Encoding ascii
+        Out-File -FilePath $XmlFile -InputObject $OfficeXml -Encoding utf8
 
         Invoke-Process -FilePath $OutFile -ArgumentList "/configure $XmlFile" -Verbose
         Pop-Location
@@ -309,6 +306,41 @@ Function Install-MicrosoftOffice ($Path) {
     }
     Else {
         Write-Host "================ Failed to retreive Microsoft Office"
+    }
+}
+
+Function Install-MicrosoftWvdRtcService ($Path) {
+    Write-Host "================ Microsoft WVD Infrastructure Agent"
+    Write-Host "================ Downloading Microsoft WVD Infrastructure Agent"
+    $Rtc = Get-MicrosoftWvdRtcService | Where-Object { $_.Architecture -eq "x64" }
+    
+    If ($Rtc) {
+        If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
+
+        # Download
+        $OutFile = Join-Path -Path $Path -ChildPath $Rtc.Filename
+        Write-Host "================ Downloading to: $OutFile"
+        try {
+            Invoke-WebRequest -Uri $Rtc.URI -OutFile $OutFile -UseBasicParsing
+            If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
+        }
+        catch {
+            Throw "Failed to download Microsoft WVD Infrastructure Agent."
+        }
+
+        # Install
+        Write-Host "================ Installing Microsoft WVD Infrastructure Agent"
+        try {
+            $ArgumentList = "/package $OutFile ALLUSERS=1 /quiet"
+            Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Verbose
+        }
+        catch {
+            Throw "Failed to install Microsoft WVD Infrastructure Agent."
+        }
+        Write-Host "================ Done"
+    }
+    Else {
+        Write-Host "================ Failed to retreive Microsoft WVD Infrastructure Agent"
     }
 }
 
@@ -337,8 +369,12 @@ Function Install-MicrosoftTeams ($Path) {
         try {
             reg add "HKLM\SOFTWARE\Microsoft\Teams" /v "IsWVDEnvironment" /t REG_DWORD /d 1
             reg add "HKLM\SOFTWARE\Citrix\PortICA" /v "IsWVDEnvironment" /t REG_DWORD /d 1
-            $ArgumentList = '/package $OutFile ALLUSER=1 ALLUSERS=1 OPTIONS="noAutoStart=true" /quiet'
-            Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Verbose
+            $params = @{
+                FilePath     = "$env:SystemRoot\System32\msiexec.exe"
+                ArgumentList = "/package $OutFile ALLUSER=1 ALLUSERS=1 " + 'OPTIONS="noAutoStart=true" /quiet'
+                Verbose      = $True
+            }
+            Invoke-Process @params
             Remove-Variable -Name url
         }
         catch {
@@ -541,6 +577,7 @@ Install-VcRedistributables -Path "$Target\VcRedist"
 Install-FSLogix -Path "$Target\FSLogix"
 Install-MicrosoftEdge -Path "$Target\Edge"
 Install-MicrosoftOffice -Path "$Target\Office"
+Install-MicrosoftWvdRtcService
 Install-MicrosoftTeams -Path "$Target\Teams"
 Set-TeamsAutostart
 Install-MicrosoftOneDrive -Path "$Target\OneDrive"

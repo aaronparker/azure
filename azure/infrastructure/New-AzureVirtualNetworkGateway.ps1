@@ -1,13 +1,18 @@
 #Requires -Module Az
 # Dot source Export-Variables.ps1 first
 
+$Tags = @{
+    Environment = "Development"
+    Function    = "VpnGateway"
+}
+
 # Create local network gateway
 $params = @{
     Name              = "$OrgName-$Location-LocalNetworkGateway"
     ResourceGroupName = $ResourceGroups.Infrastructure
     Location          = $Location
     GatewayIpAddress  = "180.150.38.232"
-    AddressPrefix     = @("10.100.100.0/24", "192.169.0.1")
+    AddressPrefix     = @("10.100.100.0/24", "192.168.0.0/24")
     Tag               = $Tags
 }
 $LocalNetworkGateway = New-AzLocalNetworkGateway @params
@@ -44,7 +49,7 @@ $params = @{
     IpConfigurations  = $gwipconfig
     GatewayType       = "Vpn"
     VpnType           = "RouteBased"
-    GatewaySku        = "VpnGw1"
+    GatewaySku        = "Standard"
     Tag               = $Tags
 }
 $VirtualNetworkGateway = New-AzVirtualNetworkGateway @params
@@ -52,7 +57,7 @@ $VirtualNetworkGateway = New-AzVirtualNetworkGateway @params
 # Preshared key
 $VpnSharedKey = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name "GatewaySecret").SecretValueText
 
-# IPsec/IKE policy for Sydney
+# IPsec/IKE policy for Lab
 $params = @{
     IkeEncryption     = "AES256"
     IkeIntegrity      = "SHA256"
@@ -75,11 +80,12 @@ $params = @{
     UsePolicyBasedTrafficSelectors = $True
     IpsecPolicies                  = $IpsecPolicy
     SharedKey                      = $VpnSharedKey
+    Tag                            = $Tags
 }
 New-AzVirtualNetworkGatewayConnection @params
+#endregion
 
-
-# Recreate gateway connection
+#region Recreate gateway connection
 $params = @{
     VaultName = $KeyVault
     Name      = "VpnPresharedKey"
