@@ -346,9 +346,9 @@ Function Install-MicrosoftWvdRtcService ($Path) {
 
 Function Install-MicrosoftWvdRtcService2 ($Path) {
     $Url = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4AQBt"
-    #$File = "MsRdcWebRTCSvc_HostSetup_1.0.2006.11001_x64.msi"
-    $File = "MsRdcWebRTCSvcHostSetup.msi"
+    $File = "MsRdcWebRTCSvc_HostSetup_1.0.2006.11001_x64.msi"
 
+    If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
     $OutFile = Join-Path -Path $Path -ChildPath $File
     Write-Host "================ Downloading to: $OutFile"
     Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing -ErrorAction "SilentlyContinue"
