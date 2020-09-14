@@ -310,8 +310,8 @@ Function Install-MicrosoftOffice ($Path) {
 }
 
 Function Install-MicrosoftWvdRtcService ($Path) {
-    Write-Host "================ Microsoft WVD Infrastructure Agent"
-    Write-Host "================ Downloading Microsoft WVD Infrastructure Agent"
+    Write-Host "================ Microsoft Remote Desktop WebRTC"
+    Write-Host "================ Downloading Microsoft Remote Desktop WebRTC"
     $Rtc = Get-MicrosoftWvdRtcService | Where-Object { $_.Architecture -eq "x64" }
     
     If ($Rtc) {
@@ -325,28 +325,28 @@ Function Install-MicrosoftWvdRtcService ($Path) {
             If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
         }
         catch {
-            Throw "Failed to download Microsoft WVD Infrastructure Agent."
+            Throw "Failed to download Microsoft Remote Desktop WebRTC."
         }
 
         # Install
-        Write-Host "================ Installing Microsoft WVD Infrastructure Agent"
+        Write-Host "================ Installing Microsoft Remote Desktop WebRTC"
         try {
             $ArgumentList = "/package $OutFile ALLUSERS=1 /quiet"
             Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Verbose
         }
         catch {
-            Throw "Failed to install Microsoft WVD Infrastructure Agent."
+            Throw "Failed to install Microsoft Remote Desktop WebRTC."
         }
         Write-Host "================ Done"
     }
     Else {
-        Write-Host "================ Failed to retreive Microsoft WVD Infrastructure Agent"
+        Write-Host "================ Failed to retreive Microsoft Remote Desktop WebRTC"
     }
 }
 
 Function Install-MicrosoftWvdRtcService2 ($Path) {
     $Url = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4AQBt"
-    $File = "MsRdcWebRTCSvc_HostSetup_1.0.2006.11001_x64"
+    $File = "MsRdcWebRTCSvc_HostSetup_1.0.2006.11001_x64.msi"
 
     $OutFile = Join-Path -Path $Path -ChildPath $File
     Write-Host "================ Downloading to: $OutFile"
@@ -355,17 +355,17 @@ Function Install-MicrosoftWvdRtcService2 ($Path) {
         If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
     }
     catch {
-        Throw "Failed to download Microsoft WVD Infrastructure Agent."
+        Throw "Failed to download Microsoft Remote Desktop WebRTC."
     }
 
     # Install
-    Write-Host "================ Installing Microsoft WVD Infrastructure Agent"
+    Write-Host "================ Installing Microsoft Remote Desktop WebRTC"
     try {
         $ArgumentList = "/package $OutFile ALLUSERS=1 /quiet"
         Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Verbose
     }
     catch {
-        Throw "Failed to install Microsoft WVD Infrastructure Agent."
+        Throw "Failed to install Microsoft Remote Desktop WebRTC."
     }
     Write-Host "================ Done"
 }
