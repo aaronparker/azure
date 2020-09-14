@@ -344,6 +344,32 @@ Function Install-MicrosoftWvdRtcService ($Path) {
     }
 }
 
+Function Install-MicrosoftWvdRtcService2 ($Path) {
+    $Url = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4AQBt"
+    $File = "MsRdcWebRTCSvc_HostSetup_1.0.2006.11001_x64"
+
+    $OutFile = Join-Path -Path $Path -ChildPath $File
+    Write-Host "================ Downloading to: $OutFile"
+    try {
+        Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing
+        If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
+    }
+    catch {
+        Throw "Failed to download Microsoft WVD Infrastructure Agent."
+    }
+
+    # Install
+    Write-Host "================ Installing Microsoft WVD Infrastructure Agent"
+    try {
+        $ArgumentList = "/package $OutFile ALLUSERS=1 /quiet"
+        Invoke-Process -FilePath "$env:SystemRoot\System32\msiexec.exe" -ArgumentList $ArgumentList -Verbose
+    }
+    catch {
+        Throw "Failed to install Microsoft WVD Infrastructure Agent."
+    }
+    Write-Host "================ Done"
+}
+
 Function Install-MicrosoftTeams ($Path) {
     Write-Host "================ Microsoft Teams"
     Write-Host "================ Downloading Microsoft Teams"
@@ -577,7 +603,7 @@ Install-VcRedistributables -Path "$Target\VcRedist"
 Install-FSLogix -Path "$Target\FSLogix"
 Install-MicrosoftEdge -Path "$Target\Edge"
 Install-MicrosoftOffice -Path "$Target\Office"
-Install-MicrosoftWvdRtcService
+Install-MicrosoftWvdRtcService2 -Path "$Target\Wvd"
 Install-MicrosoftTeams -Path "$Target\Teams"
 Set-TeamsAutostart
 Install-MicrosoftOneDrive -Path "$Target\OneDrive"
