@@ -346,7 +346,8 @@ Function Install-MicrosoftWvdRtcService ($Path) {
 
 Function Install-MicrosoftWvdRtcService2 ($Path) {
     $Url = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4AQBt"
-    $File = "MsRdcWebRTCSvc_HostSetup_1.0.2006.11001_x64.msi"
+    #$File = "MsRdcWebRTCSvc_HostSetup_1.0.2006.11001_x64.msi"
+    $File = "MsRdcWebRTCSvcHostSetup.msi"
 
     $OutFile = Join-Path -Path $Path -ChildPath $File
     Write-Host "================ Downloading to: $OutFile"
