@@ -351,7 +351,7 @@ Function Install-MicrosoftWvdRtcService2 ($Path) {
     $OutFile = Join-Path -Path $Path -ChildPath $File
     Write-Host "================ Downloading to: $OutFile"
     try {
-        Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing
+        Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing -ErrorAction "SilentlyContinue"
         If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
     }
     catch {
