@@ -16,7 +16,7 @@ Function Set-Customise ($Path) {
     If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
 
     # Customisation scripts
-    $url = "https://github.com/aaronparker/image-customise/archive/master.zip"
+    $url = "https://github.com/aaronparker/image-customise/archive/main.zip"
     $OutFile = Join-Path -Path $Path -ChildPath $(Split-Path $url -Leaf)
     Invoke-WebRequest -Uri $url -OutFile $OutFile -UseBasicParsing
     try {
@@ -26,7 +26,7 @@ Function Set-Customise ($Path) {
     catch { }
     
     # Run scripts
-    Push-Location (Join-Path -Path $Path -ChildPath "image-customise-master")
+    Push-Location (Join-Path -Path $Path -ChildPath "image-customise-main")
     . .\Invoke-Scripts.ps1 -Verbose
     Pop-Location
 }
