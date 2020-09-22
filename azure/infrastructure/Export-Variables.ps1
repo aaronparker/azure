@@ -10,6 +10,7 @@ Param ()
 $SubscriptionName = "Visual Studio Enterprise Subscription"
 $SubscriptionId = (Get-AzSubscription | Where-Object { $_.Name -eq $SubscriptionName }).Id
 Set-AzContext -SubscriptionId $SubscriptionId
+$Context = Get-AzContext
 
 $OrgName = "stealthpuppy"
 $ShortOrgName = "stpy"
@@ -19,6 +20,12 @@ $ShortLocation = "ause"
 $OrgName = "stealthpuppy"
 $Location = "AustraliaEast"
 $ShortLocation = "aue"
+
+$Tags = @{
+    Environment = "Development"
+    Function    = $LongName
+    Owner       = $Context.Account
+}
 #endregion
 
 #region Hub variables
@@ -28,6 +35,7 @@ $KeyVault = "$($OrgName.ToLower())$ShortName"
 $Tags = @{
     Environment = "Development"
     Function    = $LongName
+    Owner       = $Context.Account
 }
 $ResourceGroups = @{
     Infrastructure = "rg-$($LongName)Infrastructure-$Location"
@@ -55,10 +63,6 @@ $gatewayPrefix = "virtualgateway"
 $LongName = "WindowsVirtualDesktop"
 $ShortName = "wvd"
 $KeyVault = "$($OrgName.ToLower())$ShortName"
-$Tags = @{
-    Environment = "Development"
-    Function    = $LongName
-}
 $ResourceGroups = @{
     Images         = "rg-$($LongName)Images-$Location"
     Infrastructure = "rg-$($LongName)Infrastructure-$Location"
@@ -89,7 +93,9 @@ $SubnetAddress = @{
 }
 $gatewayPrefix = "virtualgateway"
 $FileShares = @{
-    FSLogixShare = "FSLogixContainers"
+    # FSLogixShare = "FSLogixContainers"
+    Profile = "ProfileContainers"
+    Office  = "OfficeContainers"
 }
 $BlobContainers = @{
     Apps    = "apps"

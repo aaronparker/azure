@@ -2,16 +2,19 @@
 # Dot source Export-Variables.ps1 first
 
 #region Storage account
+# Standard storage
 $params = @{
-    Name                                            = ("$OrgName$ShortName$ShortLocation").ToLower()
-    ResourceGroupName                               = $ResourceGroups.Infrastructure
-    Kind                                            = "StorageV2"
-    Location                                        = $Location
-    SkuName                                         = "Standard_LRS"
-    EnableAzureActiveDirectoryDomainServicesForFile = $True
-    Tag                                             = $Tags
+    Name              = ("$($ShortOrgName)fslogix$($ShortLocation)").ToLower()
+    ResourceGroupName = $ResourceGroups.Infrastructure
+    Kind              = "StorageV2"
+    Location          = $Location
+    SkuName           = "Standard_LRS"
+    AccessTier        = "Hot"
+    MinimumTlsVersion = "TLS1_2"
+    Tag               = $Tags
 }
 
+# Premium storage
 $params = @{
     Name              = ("$($ShortOrgName)fslogix$($ShortLocation)").ToLower()
     ResourceGroupName = $ResourceGroups.Infrastructure
@@ -22,6 +25,7 @@ $params = @{
     Tag               = $Tags
 }
 $storageAccount = New-AzStorageAccount @params
+#endregion
 
 # Configure the file shares
 ForEach ($item in $FileShares.GetEnumerator()) {
@@ -42,7 +46,7 @@ ForEach ($item in $BlobContainers.GetEnumerator()) {
     $share = New-AzStorageContainer @params
 }
 
-# Storage account firewall
+#region Storage account firewall
 ForEach ($item in $Subnets.GetEnumerator()) {
 
     $params = @{
@@ -137,13 +141,15 @@ ForEach ($item in $FileShares.GetEnumerator()) {
 
 #region 
 <#
-SET Folder="\\stpyfslogixaue.file.core.windows.net\fslogixcontainers\Profile"
-SET Folder="\\stpyfslogixaue.file.core.windows.net\fslogixcontainers\Office"
+SET Folder="\\stpyfslogixause.file.core.windows.net\fslogixcontainers\Profile"
+SET Folder="\\stpyfslogixause.file.core.windows.net\fslogixcontainers\Office"
 
+md %Folder%
 icacls %Folder% /inheritance:d
 icacls %Folder% /remove Users
 icacls %Folder% /remove "Authenticated Users"
 icacls %Folder% /grant Users:(S,RD,AD,X,RA)
+icacls %Folder% /grant home\PowerUser:F
 #>
 #endregion
 

@@ -388,8 +388,8 @@ Function Install-MicrosoftTeams ($Path) {
         # Install
         Write-Host "================ Installing Microsoft Teams"
         try {
-            reg add "HKLM\SOFTWARE\Microsoft\Teams" /v "IsWVDEnvironment" /t REG_DWORD /d 1
-            reg add "HKLM\SOFTWARE\Citrix\PortICA" /v "IsWVDEnvironment" /t REG_DWORD /d 1
+            reg add "HKLM\SOFTWARE\Microsoft\Teams" /v "IsWVDEnvironment" /t REG_DWORD /d 1 /f
+            reg add "HKLM\SOFTWARE\Citrix\PortICA" /v "IsWVDEnvironment" /t REG_DWORD /d 1 /f
             $params = @{
                 FilePath     = "$env:SystemRoot\System32\msiexec.exe"
                 ArgumentList = "/package $OutFile ALLUSER=1 ALLUSERS=1 " + 'OPTIONS="noAutoStart=true" /quiet'
