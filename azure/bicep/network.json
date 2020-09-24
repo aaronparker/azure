@@ -1,0 +1,90 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "AustraliaEast"
+    },
+    "suffix": {
+      "type": "string",
+      "defaultValue": "WindowsVirtualDesktop"
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.1.0.0/16"
+    },
+    "subnetInfrastructureName": {
+      "type": "string",
+      "defaultValue": "subnet-Infrastructure"
+    },
+    "subnetInfrastructurePrefix": {
+      "type": "string",
+      "defaultValue": "10.1.1.0/24"
+    },
+    "subnetPooledName": {
+      "type": "string",
+      "defaultValue": "subnet-PooledDesktops"
+    },
+    "subnetPooledPrefix": {
+      "type": "string",
+      "defaultValue": "10.1.2.0/24"
+    },
+    "subnetPersonalName": {
+      "type": "string",
+      "defaultValue": "subnet-PersonalDesktops"
+    },
+    "subnetPersonalPrefix": {
+      "type": "string",
+      "defaultValue": "10.1.3.0/24"
+    }
+  },
+  "functions": [],
+  "variables": {
+    "vnetName": "[format('vnet-{0}-{1}', parameters('suffix'), parameters('location'))]",
+    "function": "WindowsVirtualDesktop",
+    "environment": "Development"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2018-10-01",
+      "name": "[variables('vnetName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "Function": "[variables('function')]",
+        "Environment": "[variables('environment')]"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetPrefix')]"
+          ]
+        },
+        "enableVmProtection": false,
+        "enableDdosProtection": false,
+        "subnets": [
+          {
+            "name": "[parameters('subnetInfrastructureName')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetInfrastructurePrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('subnetPooledName')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPooledPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('subnetPersonalName')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPersonalPrefix')]"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {}
+}
