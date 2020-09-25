@@ -14,25 +14,25 @@
       "type": "string",
       "defaultValue": "10.1.0.0/16"
     },
-    "subnetInfrastructureName": {
+    "subnetInfrastructure": {
       "type": "string",
-      "defaultValue": "subnet-Infrastructure"
+      "defaultValue": "Infrastructure"
     },
     "subnetInfrastructurePrefix": {
       "type": "string",
       "defaultValue": "10.1.1.0/24"
     },
-    "subnetPooledName": {
+    "subnetPooled": {
       "type": "string",
-      "defaultValue": "subnet-PooledDesktops"
+      "defaultValue": "PooledDesktops"
     },
     "subnetPooledPrefix": {
       "type": "string",
       "defaultValue": "10.1.2.0/24"
     },
-    "subnetPersonalName": {
+    "subnetPersonal": {
       "type": "string",
-      "defaultValue": "subnet-PersonalDesktops"
+      "defaultValue": "PersonalDesktops"
     },
     "subnetPersonalPrefix": {
       "type": "string",
@@ -41,9 +41,28 @@
   },
   "functions": [],
   "variables": {
+    "subnetInfrastructureName": "[concat('subnet-', parameters('subnetInfrastructure'))]",
+    "subnetPooledName": "[concat('subnet-', parameters('subnetPooled'))]",
+    "subnetPersonalName": "[concat('subnet-', parameters('subnetPersonal'))]",
+    "nsgInfrastructureName": "[concat('nsg-', parameters('subnetInfrastructure'))]",
+    "nsgPooledName": "[concat('nsg-', parameters('subnetPooled'))]",
+    "nsgPersonalName": "[concat('nsg-', parameters('subnetPersonal'))]",
     "vnetName": "[format('vnet-{0}-{1}', parameters('suffix'), parameters('location'))]",
     "function": "WindowsVirtualDesktop",
-    "environment": "Development"
+    "environment": "Development",
+    "rdpRule": {
+      "name": "default-allow-rdp",
+      "properties": {
+        "priority": 1000,
+        "sourceAddressPrefix": "*",
+        "protocol": "Tcp",
+        "destinationPortRange": "3389",
+        "access": "Allow",
+        "direction": "Inbound",
+        "sourcePortRange": "*",
+        "destinationAddressPrefix": "*"
+      }
+    }
   },
   "resources": [
     {
@@ -65,26 +84,78 @@
         "enableDdosProtection": false,
         "subnets": [
           {
-            "name": "[parameters('subnetInfrastructureName')]",
+            "name": "[variables('subnetInfrastructureName')]",
             "properties": {
-              "addressPrefix": "[parameters('subnetInfrastructurePrefix')]"
+              "addressPrefix": "[parameters('subnetInfrastructurePrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgInfrastructureName'))]"
+              }
             }
           },
           {
-            "name": "[parameters('subnetPooledName')]",
+            "name": "[variables('subnetPooledName')]",
             "properties": {
-              "addressPrefix": "[parameters('subnetPooledPrefix')]"
+              "addressPrefix": "[parameters('subnetPooledPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgPooledName'))]"
+              }
             }
           },
           {
-            "name": "[parameters('subnetPersonalName')]",
+            "name": "[variables('subnetPersonalName')]",
             "properties": {
-              "addressPrefix": "[parameters('subnetPersonalPrefix')]"
+              "addressPrefix": "[parameters('subnetPersonalPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgPersonalName'))]"
+              }
             }
           }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgInfrastructureName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgPooledName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgPersonalName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-05-01",
+      "name": "[variables('nsgInfrastructureName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          "[variables('rdpRule')]"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-05-01",
+      "name": "[variables('nsgPooledName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          "[variables('rdpRule')]"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-05-01",
+      "name": "[variables('nsgPersonalName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          "[variables('rdpRule')]"
         ]
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "networkid": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+    }
+  }
 }

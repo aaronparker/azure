@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "AustraliaEast"
+        },
+        "suffix": {
+            "value": "WindowsVirtualDesktop"
+        },
+        "vnetPrefix": {
+            "value": "10.1.0.0/16"
+        },
+        "subnetInfrastructure": {
+            "value": "Infrastructure"
+        },
+        "subnetInfrastructurePrefix": {
+            "value": "10.1.1.0/24"
+        },
+        "subnetPooled": {
+            "value": "PooledDesktops"
+        },
+        "subnetPooledPrefix": {
+            "value": "10.1.2.0/24"
+        },
+        "subnetPersonal": {
+            "value": "PersonalDesktops"
+        },
+        "subnetPersonalPrefix": {
+            "value": "10.1.3.0/24"
+        }
+    }
+}
