@@ -1,6 +1,8 @@
 param location string = 'AustraliaEast'
 param suffix string = 'WindowsVirtualDesktop'
 param vnetPrefix string = '10.1.0.0/16'
+/* param subnetGatewayName string = 'GatewaySubnet'
+param subnetGatewayPrefix string = '10.1.0.0/27' */
 param subnetInfrastructureName string = 'subnet-Infrastructure'
 param subnetInfrastructurePrefix string = '10.1.1.0/24'
 param subnetPooledName string = 'subnet-PooledDesktops'
@@ -37,6 +39,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2018-10-01' = {
         name: subnetPooledName
         properties: {
           addressPrefix: subnetPooledPrefix
+          
         }
       }
       {
