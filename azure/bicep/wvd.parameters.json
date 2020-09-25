@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "westus"
+        },
+        "workspaceName": {
+            "value": "Workspace-AustraliaEast1"
+        },
+        "workspaceNameFriendlyName": {
+            "value": "Australia East1"
+        },
+        "hostpoolName": {
+            "value": "Windows10-2004-Pooled-AustraliaEast1"
+        },
+        "hostpoolFriendlyName": {
+            "value": "Windows10-2004-Pooled-AustraliaEast1"
+        },
+        "appgroupName": {
+            "value": "Windows10-2004-Pooled-AustraliaEast-DAG1"
+        },
+        "appgroupNameFriendlyName": {
+            "value": "Windows10-2004-Pooled-AustraliaEast-DAG1"
+        }
+    }
+}
