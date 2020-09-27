@@ -1,0 +1,85 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "metadataLocation": {
+      "type": "string",
+      "defaultValue": "westus"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "AustraliaEast"
+    },
+    "wvd1cfg": {
+      "type": "object",
+      "defaultValue": {
+        "workspaceName": "[format('Workspace-{0}', parameters('location'))]",
+        "workspaceNameFriendlyName": "[format('{0}', parameters('location'))]",
+        "hostpoolName": "[format('Windows10-2004-Pooled-{0}', parameters('location'))]",
+        "hostpoolFriendlyName": "[format('Windows10-2004-Pooled-{0}', parameters('location'))]",
+        "appgroupName": "[format('Windows10-2004-Pooled-{0}-DAG', parameters('location'))]",
+        "appgroupNameFriendlyName": "[format('Windows10-2004-Pooled-{0}-DAG', parameters('location'))]",
+        "hostpooltype": "pooled",
+        "loadbalancertype": "BreadthFirst",
+        "appgroupType": "Desktop"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "Function": "WindowsVirtualDesktop",
+        "Environment": "Development",
+        "Owner": "aaron@example.com",
+        "CostCenter": "Lab"
+      }
+    }
+  },
+  "functions": [],
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.DesktopVirtualization/hostpools",
+      "apiVersion": "2019-12-10-preview",
+      "name": "[parameters('wvd1cfg').hostpoolName]",
+      "location": "[parameters('metadataLocation')]",
+      "properties": {
+        "friendlyname": "[parameters('wvd1cfg').hostpoolFriendlyName]",
+        "tags": "[parameters('tags')]",
+        "hostpooltype": "[parameters('wvd1cfg').hostpooltype]",
+        "loadbalancertype": "[parameters('wvd1cfg').loadbalancertype]"
+      }
+    },
+    {
+      "type": "Microsoft.DesktopVirtualization/applicationgroups",
+      "apiVersion": "2019-12-10-preview",
+      "name": "[parameters('wvd1cfg').appgroupName]",
+      "location": "[parameters('metadataLocation')]",
+      "properties": {
+        "friendlyname": "[parameters('wvd1cfg').appgroupNameFriendlyName]",
+        "tags": "[parameters('tags')]",
+        "applicationgrouptype": "[parameters('wvd1cfg').appgroupType]",
+        "hostpoolarmpath": "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('wvd1cfg').hostpoolName)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('wvd1cfg').hostpoolName)]"
+      ]
+    },
+    {
+      "type": "Microsoft.DesktopVirtualization/workspaces",
+      "apiVersion": "2019-12-10-preview",
+      "name": "[parameters('wvd1cfg').workspaceName]",
+      "location": "[parameters('metadataLocation')]",
+      "properties": {
+        "friendlyname": "[parameters('wvd1cfg').workspaceNameFriendlyName]",
+        "tags": "[parameters('tags')]",
+        "applicationGroupReferences": []
+      }
+    }
+  ],
+  "outputs": {
+    "workspaceid": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.DesktopVirtualization/workspaces', parameters('wvd1cfg').workspaceName)]"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "metadataLocation": {
+            "value": "westus"
+        },
+        "location": {
+            "value": "AustraliaEast"
+        },
+        "wvd1cfg": {
+            "value": {
+              "workspaceName": "[format('Workspace-{0}', parameters('location'))]",
+              "workspaceNameFriendlyName": "[format('{0}', parameters('location'))]",
+              "hostpoolName": "[format('Windows10-2004-Pooled-{0}', parameters('location'))]",
+              "hostpoolFriendlyName": "[format('Windows10-2004-Pooled-{0}', parameters('location'))]",
+              "appgroupName": "[format('Windows10-2004-Pooled-{0}-DAG', parameters('location'))]",
+              "appgroupNameFriendlyName": "[format('Windows10-2004-Pooled-{0}-DAG', parameters('location'))]",
+              "hostpooltype": "pooled",
+              "loadbalancertype": "BreadthFirst",
+              "appgroupType": "Desktop"
+            }
+        },
+        "tags": {
+            "value": {
+              "Function": "WindowsVirtualDesktop",
+              "Environment": "Development",
+              "Owner": "aaron@example.com",
+              "CostCenter": "Lab"
+            }
+        }
+    }
+}

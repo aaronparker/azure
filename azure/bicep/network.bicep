@@ -1,27 +1,28 @@
-param location string = 'AustraliaEast'
+param location string = resourceGroup().location
 param suffix string = 'WindowsVirtualDesktop'
-param vnetPrefix string = '10.1.0.0/16'
-/* param subnetGatewayName string = 'GatewaySubnet'
-param subnetGatewayPrefix string = '10.1.0.0/27' */
-param subnetInfrastructure string = 'Infrastructure'
-param subnetInfrastructurePrefix string = '10.1.1.0/24'
-param subnetPooled string = 'PooledDesktops'
-param subnetPooledPrefix string = '10.1.2.0/24'
-param subnetPersonal string = 'PersonalDesktops'
-param subnetPersonalPrefix string = '10.1.3.0/24'
 param tags object = {
   Function: 'WindowsVirtualDesktop'
   Environment: 'Development'
+  Owner: 'aaron@example.com'
+  CostCenter: 'Lab'
 }
-var subnetInfrastructureName = concat('subnet-', subnetInfrastructure)
-var subnetPooledName = concat('subnet-', subnetPooled)
-var subnetPersonalName = concat('subnet-', subnetPersonal)
-var nsgInfrastructureName = concat('nsg-', subnetInfrastructure)
-var nsgPooledName = concat('nsg-', subnetPooled)
-var nsgPersonalName = concat('nsg-', subnetPersonal)
-var vnetName = 'vnet-${suffix}-${location}'
+param vnet1cfg object = {
+  name: 'vnet-${suffix}-${location}'
+  addressSpacePrefix: '10.1.0.0/16'
+  /* subnet0Name: 'GatewaySubnet'
+  subnet0Prefix: '10.1.0.0/27' */
+  subnet1Name: 'subnet-Infrastructure'
+  subnet1Prefix: '10.1.2.0/24'
+  nsg1: 'nsg-Infrastructure'
+  subnet2Name: 'subnet-Pooled'
+  subnet2Prefix: '10.1.3.0/24'
+  nsg2: 'nsg-Pooled'
+  subnet3Name: 'subnet-Personal'
+  subnet3Prefix: '10.1.4.0/24'
+  nsg3: 'nsg-Personal'
+}
 var rdpRule = {
-  name: 'default-allow-rdp'
+  name: 'default-allow-rdp' // don't use this rule in production
   properties: {
     priority: 1000
     sourceAddressPrefix: '*'
@@ -34,63 +35,58 @@ var rdpRule = {
   }
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2018-10-01' = {
-  name: vnetName
-  location: resourceGroup().location
+resource vnet1 'Microsoft.Network/virtualNetworks@2018-10-01' = {
+  name: vnet1cfg.Name
+  location: location
   tags: tags
   properties: {
     addressSpace: {
       addressPrefixes: [
-        vnetPrefix
+        vnet1cfg.addressSpacePrefix
       ]
     }
     enableVmProtection: false
     enableDdosProtection: false
     subnets: [
-      {
-        name: subnetInfrastructureName
+      /* {
+        name: vnet1cfg.subnet0Name
         properties: {
-          addressPrefix: subnetInfrastructurePrefix
+          addressPrefix: vnet1cfg.subnet0Prefix
+        }
+      } */
+      {
+        name: vnet1cfg.subnet1Name
+        properties: {
+          addressPrefix: vnet1cfg.subnet1Prefix
           networkSecurityGroup: {
-            id: nsg.id
+            id: nsg1.id
           }
         }
       }
       {
-        name: subnetPooledName
+        name: vnet1cfg.subnet2Name
         properties: {
-          addressPrefix: subnetPooledPrefix
+          addressPrefix: vnet1cfg.subnet2Prefix
           networkSecurityGroup: {
-            id: nsg1.id
+            id: nsg2.id
           }          
         }
       }
       {
-        name: subnetPersonalName
+        name: vnet1cfg.subnet3Name
         properties: {
-          addressPrefix: subnetPersonalPrefix
+          addressPrefix: vnet1cfg.subnet3Prefix
           networkSecurityGroup: {
-            id: nsg2.id
+            id: nsg3.id
           }
         }
       }
-    ]
-  }
-}
-
-resource nsg 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
-  name: nsgInfrastructureName
-  location: location
-  tags: tags
-  properties: {
-    securityRules: [
-      rdpRule
     ]
   }
 }
 
 resource nsg1 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
-  name: nsgPooledName
+  name: vnet1cfg.nsg1
   location: location
   tags: tags
   properties: {
@@ -101,7 +97,7 @@ resource nsg1 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
 }
 
 resource nsg2 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
-  name: nsgPersonalName
+  name: vnet1cfg.nsg2
   location: location
   tags: tags
   properties: {
@@ -111,4 +107,15 @@ resource nsg2 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
   }
 }
 
-output networkid string = vnet.id
+resource nsg3 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
+  name: vnet1cfg.nsg3
+  location: location
+  tags: tags
+  properties: {
+    securityRules: [
+      rdpRule
+    ]
+  }
+}
+
+output networkId string = vnet1.id
