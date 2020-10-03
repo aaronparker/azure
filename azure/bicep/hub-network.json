@@ -1,0 +1,153 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "suffix": {
+      "type": "string",
+      "defaultValue": "Hub"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "Function": "Hub",
+        "Environment": "Development",
+        "Owner": "aaron@example.com",
+        "CostCenter": "Lab"
+      }
+    },
+    "vnet1cfg": {
+      "type": "object",
+      "defaultValue": {
+        "name": "[format('vnet-{0}-{1}', parameters('suffix'), parameters('location'))]",
+        "addressSpacePrefix": "10.0.0.0/16",
+        "subnet0Name": "GatewaySubnet",
+        "subnet0Prefix": "10.0.0.0/27",
+        "subnet1Name": "AzureBastionSubnet",
+        "subnet1Prefix": "10.0.1.0/27",
+        "subnet2Name": "subnet-Firewall",
+        "subnet2Prefix": "10.0.2.0/24",
+        "nsg2": "nsg-Firewall",
+        "subnet3Name": "subnet-Identity",
+        "subnet3Prefix": "10.0.3.0/24",
+        "nsg3": "nsg-Identity",
+        "subnet4Name": "subnet-Apps",
+        "subnet4Prefix": "10.0.4.0/24",
+        "nsg4": "nsg-Apps"
+      }
+    }
+  },
+  "functions": [],
+  "variables": {
+    "rdpRule": {
+      "name": "default-allow-rdp",
+      "properties": {
+        "priority": 1000,
+        "sourceAddressPrefix": "*",
+        "protocol": "Tcp",
+        "destinationPortRange": "3389",
+        "access": "Allow",
+        "direction": "Inbound",
+        "sourcePortRange": "*",
+        "destinationAddressPrefix": "*"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2018-10-01",
+      "name": "[parameters('vnet1cfg').Name]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnet1cfg').addressSpacePrefix]"
+          ]
+        },
+        "enableVmProtection": false,
+        "enableDdosProtection": false,
+        "subnets": [
+          {
+            "name": "[parameters('vnet1cfg').subnet1Name]",
+            "properties": {
+              "addressPrefix": "[parameters('vnet1cfg').subnet1Prefix]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnet1cfg').nsg1)]"
+              }
+            }
+          },
+          {
+            "name": "[parameters('vnet1cfg').subnet2Name]",
+            "properties": {
+              "addressPrefix": "[parameters('vnet1cfg').subnet2Prefix]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnet1cfg').nsg2)]"
+              }
+            }
+          },
+          {
+            "name": "[parameters('vnet1cfg').subnet3Name]",
+            "properties": {
+              "addressPrefix": "[parameters('vnet1cfg').subnet3Prefix]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnet1cfg').nsg3)]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnet1cfg').nsg1)]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnet1cfg').nsg2)]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('vnet1cfg').nsg3)]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-05-01",
+      "name": "[parameters('vnet1cfg').nsg1]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "securityRules": [
+          "[variables('rdpRule')]"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-05-01",
+      "name": "[parameters('vnet1cfg').nsg2]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "securityRules": [
+          "[variables('rdpRule')]"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-05-01",
+      "name": "[parameters('vnet1cfg').nsg3]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "securityRules": [
+          "[variables('rdpRule')]"
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "networkId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet1cfg').Name)]"
+    }
+  }
+}

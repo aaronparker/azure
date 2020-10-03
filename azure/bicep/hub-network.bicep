@@ -1,25 +1,27 @@
 param location string = resourceGroup().location
-param suffix string = 'WindowsVirtualDesktop'
+param suffix string = 'Hub'
 param tags object = {
-  Function: 'WindowsVirtualDesktop'
+  Function: 'Hub'
   Environment: 'Development'
   Owner: 'aaron@example.com'
   CostCenter: 'Lab'
 }
 param vnet1cfg object = {
   name: 'vnet-${suffix}-${location}'
-  addressSpacePrefix: '10.1.0.0/16'
-  /* subnet0Name: 'GatewaySubnet'
-  subnet0Prefix: '10.1.0.0/27' */
-  subnet1Name: 'subnet-Infrastructure'
-  subnet1Prefix: '10.1.2.0/24'
-  nsg1: 'nsg-Infrastructure'
-  subnet2Name: 'subnet-Pooled'
-  subnet2Prefix: '10.1.3.0/24'
-  nsg2: 'nsg-Pooled'
-  subnet3Name: 'subnet-Personal'
-  subnet3Prefix: '10.1.4.0/24'
-  nsg3: 'nsg-Personal'
+  addressSpacePrefix: '10.0.0.0/16'
+  subnet0Name: 'GatewaySubnet'
+  subnet0Prefix: '10.0.0.0/27'
+  subnet1Name: 'AzureBastionSubnet'
+  subnet1Prefix: '10.0.1.0/27'
+  subnet2Name: 'subnet-Firewall'
+  subnet2Prefix: '10.0.2.0/24'
+  nsg2: 'nsg-Firewall'
+  subnet3Name: 'subnet-Identity'
+  subnet3Prefix: '10.0.3.0/24'
+  nsg3: 'nsg-Identity'
+  subnet4Name: 'subnet-Apps'
+  subnet4Prefix: '10.0.4.0/24'
+  nsg4: 'nsg-Apps'
 }
 var rdpRule = {
   name: 'default-allow-rdp' // don't use this rule in production
@@ -59,7 +61,7 @@ resource vnet1 'Microsoft.Network/virtualNetworks@2018-10-01' = {
         properties: {
           addressPrefix: vnet1cfg.subnet1Prefix
           networkSecurityGroup: {
-            id: nsg1.id
+            id: vnet1nsg1.id
           }
         }
       }
@@ -68,7 +70,7 @@ resource vnet1 'Microsoft.Network/virtualNetworks@2018-10-01' = {
         properties: {
           addressPrefix: vnet1cfg.subnet2Prefix
           networkSecurityGroup: {
-            id: nsg2.id
+            id: vnet1nsg2.id
           }          
         }
       }
@@ -77,15 +79,14 @@ resource vnet1 'Microsoft.Network/virtualNetworks@2018-10-01' = {
         properties: {
           addressPrefix: vnet1cfg.subnet3Prefix
           networkSecurityGroup: {
-            id: nsg3.id
+            id: vnet1nsg3.id
           }
         }
       }
     ]
   }
 }
-
-resource nsg1 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
+resource vnet1nsg1 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
   name: vnet1cfg.nsg1
   location: location
   tags: tags
@@ -95,8 +96,7 @@ resource nsg1 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
     ]
   }
 }
-
-resource nsg2 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
+resource vnet1nsg2 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
   name: vnet1cfg.nsg2
   location: location
   tags: tags
@@ -106,8 +106,7 @@ resource nsg2 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
     ]
   }
 }
-
-resource nsg3 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
+resource vnet1nsg3 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
   name: vnet1cfg.nsg3
   location: location
   tags: tags
