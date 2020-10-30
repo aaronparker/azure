@@ -6,7 +6,7 @@ $params = @{
     Name              = "LogAnalytics-$LongName-$Location"
     Sku               = "Free"
     Location          = $Location
-    ResourceGroupName = $ResourceGroups.Infrastructure
+    ResourceGroupName = $ResourceGroups.DeviceManagement
     Tag               = $Tags
 }
 New-AzOperationalInsightsWorkspace @params

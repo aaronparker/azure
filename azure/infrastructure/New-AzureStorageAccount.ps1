@@ -4,13 +4,13 @@
 #region Storage account
 # Standard storage
 $params = @{
-    Name              = ("$($ShortOrgName)fslogix$($ShortLocation)").ToLower()
-    ResourceGroupName = $ResourceGroups.Infrastructure
+    Name              = ("$($ShortOrgName)device$($ShortLocation)").ToLower()
+    ResourceGroupName = $ResourceGroups.DeviceManagement
     Kind              = "StorageV2"
     Location          = $Location
     SkuName           = "Standard_LRS"
     AccessTier        = "Hot"
-    MinimumTlsVersion = "TLS1_2"
+    #MinimumTlsVersion = "TLS1_2"
     Tag               = $Tags
 }
 
@@ -167,3 +167,15 @@ $params = @{
 }
 New-AzDnsForwarder @params
 #endregion
+
+# Join storage account to AD
+$params = @{
+    ResourceGroupName                   = "rg-WindowsVirtualDesktopInfrastructure-AustraliaEast"
+    StorageAccountName                  = "stpyfslogixaue"
+    DomainAccountType                   = "ComputerAccount"
+    Domain                              = "home.stealthpuppy.com"
+    OrganizationalUnitDistinguishedName = "OU=Services,OU=stealthpuppy,DC=home,DC=stealthpuppy,DC=com"
+    OverwriteExistingADObject           = $True
+}
+Join-AzStorageAccountForAuth @params
+

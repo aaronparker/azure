@@ -20,12 +20,6 @@ $ShortLocation = "ause"
 $OrgName = "stealthpuppy"
 $Location = "AustraliaEast"
 $ShortLocation = "aue"
-
-$Tags = @{
-    Environment = "Development"
-    Function    = $LongName
-    Owner       = $Context.Account
-}
 #endregion
 
 #region Hub variables
@@ -38,7 +32,9 @@ $Tags = @{
     Owner       = $Context.Account
 }
 $ResourceGroups = @{
-    Infrastructure = "rg-$($LongName)Infrastructure-$Location"
+    Infrastructure   = "rg-$($LongName)Infrastructure-$Location"
+    DeviceManagement = "rg-DeviceManagement-$Location"
+    IdentityManagement = "rg-IdentityManagement-$Location"
 }
 $VirtualNetworkName = "vnet-$LongName-$Location"
 $NetworkSecurityGroups = @{
@@ -57,6 +53,13 @@ $SubnetAddress = @{
     Identity      = "10.0.2.0/24"
 }
 $gatewayPrefix = "virtualgateway"
+
+# Tags
+$Tags = @{
+    Environment = "Development"
+    Function    = $LongName
+    Owner       = $Context.Account
+}
 #endregion
 
 #region WVD variables
