@@ -10,12 +10,12 @@
         },
         "wvd1cfg": {
             "value": {
-              "workspaceName": "[format('Workspace-{0}', parameters('location'))]",
-              "workspaceNameFriendlyName": "[format('{0}', parameters('location'))]",
-              "hostpoolName": "[format('Windows10-2004-Pooled-{0}', parameters('location'))]",
-              "hostpoolFriendlyName": "[format('Windows10-2004-Pooled-{0}', parameters('location'))]",
-              "appgroupName": "[format('Windows10-2004-Pooled-{0}-DAG', parameters('location'))]",
-              "appgroupNameFriendlyName": "[format('Windows10-2004-Pooled-{0}-DAG', parameters('location'))]",
+              "workspaceName": "Workspace-AustraliaEast",
+              "workspaceNameFriendlyName": "AustraliaEast",
+              "hostpoolName": "Windows10-20H2-Pooled-AustraliaEast",
+              "hostpoolFriendlyName": "Windows10-20H2-Pooled-AustraliaEast",
+              "appgroupName": "Windows10-20H2-Pooled-AustraliaEast-DAG",
+              "appgroupNameFriendlyName": "Windows10-20H2-Pooled-AustraliaEast-DAG",
               "hostpooltype": "pooled",
               "loadbalancertype": "BreadthFirst",
               "appgroupType": "Desktop"
@@ -25,7 +25,7 @@
             "value": {
               "Function": "WindowsVirtualDesktop",
               "Environment": "Development",
-              "Owner": "aaron@example.com",
+              "Owner": "aaronparker@cloud.stealthpuppy.com",
               "CostCenter": "Lab"
             }
         }
