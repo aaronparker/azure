@@ -14,10 +14,10 @@ $Context = Get-AzContext
 
 $OrgName = "stealthpuppy"
 $ShortOrgName = "stpy"
+
 $Location = "AustraliaSoutheast"
 $ShortLocation = "ause"
 
-$OrgName = "stealthpuppy"
 $Location = "AustraliaEast"
 $ShortLocation = "aue"
 #endregion
@@ -26,11 +26,6 @@ $ShortLocation = "aue"
 $LongName = "HubNetwork"
 $ShortName = "hub"
 $KeyVault = "$($OrgName.ToLower())$ShortName"
-$Tags = @{
-    Environment = "Development"
-    Function    = $LongName
-    Owner       = $Context.Account
-}
 $ResourceGroups = @{
     Infrastructure   = "rg-$($LongName)Infrastructure-$Location"
     DeviceManagement = "rg-DeviceManagement-$Location"
@@ -105,3 +100,9 @@ $BlobContainers = @{
     Scripts = "scripts"
 }
 #endregion
+
+$Tags = @{
+    Environment = "Development"
+    Function    = $LongName
+    Owner       = $Context.Account
+}
