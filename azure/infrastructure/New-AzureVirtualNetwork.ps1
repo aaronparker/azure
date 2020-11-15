@@ -55,7 +55,6 @@ ForEach ($item in $Subnets.GetEnumerator()) {
 
 #TODO: GatewaySubnet
 
-
 #region Add the required rules for AADDS
 <#
 $Nsg = Get-AzNetworkSecurityGroup -Name $NetworkSecurityGroups.DomainServices -ResourceGroupName $ResourceGroups.Infrastructure

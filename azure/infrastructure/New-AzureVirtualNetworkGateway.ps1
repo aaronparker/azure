@@ -4,11 +4,13 @@
 $Tags = @{
     Environment = "Development"
     Function    = "VpnGateway"
+    Owner       = $Context.Account
 }
 
 # Create local network gateway
+$LocalNetworkGatewayName = "lng-$LongName-$Location"
 $params = @{
-    Name              = "$OrgName-$Location-LocalNetworkGateway"
+    Name              = $LocalNetworkGatewayName
     ResourceGroupName = $ResourceGroups.Infrastructure
     Location          = $Location
     GatewayIpAddress  = "180.150.38.232"
@@ -19,8 +21,8 @@ $LocalNetworkGateway = New-AzLocalNetworkGateway @params
 
 # Public IP address for the VPN gateway
 $params = @{
-    Name              = "$OrgName-$Location-GatewayIP"
-    DomainNameLabel   = ("$($OrgName)$($ShortName)").ToLower()
+    Name              = "gwip-$LongName-$Location"
+    DomainNameLabel   = ("$($LongName)$($ShortName)").ToLower()
     ResourceGroupName = $ResourceGroups.Infrastructure
     Location          = $Location
     AllocationMethod  = "Dynamic"
@@ -49,13 +51,14 @@ $params = @{
     IpConfigurations  = $gwipconfig
     GatewayType       = "Vpn"
     VpnType           = "RouteBased"
-    GatewaySku        = "Standard"
+    GatewaySku        = "Basic"
     Tag               = $Tags
 }
 $VirtualNetworkGateway = New-AzVirtualNetworkGateway @params
 
 # Preshared key
-$VpnSharedKey = (Get-AzKeyVaultSecret -VaultName $KeyVault -Name "GatewaySecret").SecretValueText
+#TODO Add VPN pre-shared key to vault
+$VpnSharedKey = (Get-AzKeyVaultSecret -VaultName $KeyVault.VaultName -Name "GatewaySecret").SecretValueText
 
 # IPsec/IKE policy for Lab
 $params = @{
@@ -64,14 +67,14 @@ $params = @{
     DhGroup           = "DHGroup2"
     IpsecEncryption   = "AES256"
     IpsecIntegrity    = "SHA256"
-    PfsGroup          = "PFS2"
+    PfsGroup          = "None"
     SALifeTimeSeconds = "86400"
 }
 $IpsecPolicy = New-AzIpsecPolicy @params
 
 # Create the S2S VPN connection with policy-based traffic selectors and IPsec/IKE policy
 $params = @{
-    Name                           = "connection-$OrgName-$ShortName"
+    Name                           = "connection-$LongName-$Location"
     ResourceGroupName              = $ResourceGroups.Infrastructure
     VirtualNetworkGateway1         = $VirtualNetworkGateway
     LocalNetworkGateway2           = $LocalNetworkGateway
@@ -97,7 +100,7 @@ $params = @{
 }
 $VirtualNetworkGateway = Get-AzVirtualNetworkGateway @params
 $params = @{
-    Name              = "$OrgName-$Location-LocalNetworkGateway"
+    Name              = $LocalNetworkGatewayName
     ResourceGroupName = $ResourceGroups.Infrastructure
 }
 $LocalNetworkGateway = Get-AzLocalNetworkGateway @params
@@ -112,7 +115,7 @@ $params = @{
 }
 $IpsecPolicy = New-AzIpsecPolicy @params
 $params = @{
-    Name                           = "connection-$OrgName-$ShortName"
+    Name                           = "connection-$LongName-$ShortName"
     ResourceGroupName              = $ResourceGroups.Infrastructure
     VirtualNetworkGateway1         = $VirtualNetworkGateway
     LocalNetworkGateway2           = $LocalNetworkGateway

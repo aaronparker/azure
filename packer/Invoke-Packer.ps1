@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $False)]
-    [System.String] $ResourceGroup = "rg-WindowsVirtualDesktopImages-AustraliaEast",
+    [System.String] $ResourceGroup = "rg-Images-AustraliaEast",
 
     [Parameter(Mandatory = $False)]
     [System.String] $TemplateFile = ".\PackerTemplate-Windows.json",
@@ -10,7 +10,7 @@ param(
     [System.String] $VariablesFile = ".\PackerVariables-Windows10Multisession.json",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $KeyVault = "stealthpuppyhub",
+    [System.String] $KeyVault = "stpywvdaustraliaeast",
 
     [Parameter(Mandatory = $False)]
     [System.String] $BlobStorage = "https://stealthpuppycore.blob.core.windows.net/apps/"
@@ -31,7 +31,7 @@ If ($Elevated) {
     }
 
     # Install the Az module
-    Find-Module -Name Az -Repository PSGallery | Install-Module -AllowClobber
+    # Find-Module -Name Az -Repository PSGallery | Install-Module -AllowClobber
 }
 Else {
     Write-Host "Not running elevated. Check modules are installed." -ForegroundColor Cyan
@@ -50,6 +50,7 @@ If ($Null -eq (Get-AzSubscription)) {
     }
 }
 Else {
+    #TODO - update for multiple subscriptions
     $sub = Get-AzSubscription
 }
 
