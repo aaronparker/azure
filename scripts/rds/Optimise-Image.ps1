@@ -154,7 +154,7 @@ Function Disable-Services {
     $ServicesToDisable = @("autotimesvc", "BcastDVRUserService", "CDPSvc", "CDPUserSvc", "CscService",
         "defragsvc", "DiagSvc", "DiagTrack", "DPS", "DsmSvc", "DusmSvc", "icssvc", "lfsvc", "MapsBroker",
         "MessagingService", "OneSyncSvc", "PimIndexMaintenanceSvc", "Power", "SEMgrSvc", "SmsRouter",
-        "SysMain", "TabletInputService", "UsoSvc", "VSS", "WdiSystemHost", "WerSvc", "XblAuthManager",
+        "SysMain", "TabletInputService", "UsoSvc", "WdiSystemHost", "WerSvc", "XblAuthManager",
         "XblGameSave", "XboxGipSvc", "XboxNetApiSvc")
     If ($ServicesToDisable.count -gt 0) {
         Foreach ($Item in $ServicesToDisable) {
@@ -165,6 +165,10 @@ Function Disable-Services {
         }
     }
     #endregion
+}
+
+Function Disable-SystemRestore {
+    Disable-ComputerRestore -Drive "$($env:SystemDrive)\"
 }
 
 Function Optimize-Network {
@@ -279,6 +283,7 @@ Invoke-WindowsDefender
 # Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
 Disable-ScheduledTasks
 Disable-WindowsTraces
+Disable-SystemRestore
 Disable-Services
 Optimize-Network
 # Invoke-Cleanmgr

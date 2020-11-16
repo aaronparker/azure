@@ -37,7 +37,7 @@ Switch ($Location) {
 Switch ($Resource) {
     "Hub" {
         #region Hub variables
-        $LongName = "HubNetwork"
+        $LongName = "Hub"
         $ShortName = "hub"
         $KeyVault = "$($OrgName.ToLower())$ShortName"
         $ResourceGroups = @{

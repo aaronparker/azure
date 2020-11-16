@@ -4,8 +4,8 @@
 #region Storage account
 # Standard storage
 $params = @{
-    Name              = ("$($ShortOrgName)device$($ShortLocation)").ToLower()
-    ResourceGroupName = $ResourceGroups.DeviceManagement
+    Name              = ("$($ShortOrgName)$($ShortName)$($ShortLocation)").ToLower()
+    ResourceGroupName = $ResourceGroups.Infrastructure
     Kind              = "StorageV2"
     Location          = $Location
     SkuName           = "Standard_LRS"
@@ -13,6 +13,7 @@ $params = @{
     #MinimumTlsVersion = "TLS1_2"
     Tag               = $Tags
 }
+$storageAccount = New-AzStorageAccount @params
 
 # Premium storage
 $params = @{

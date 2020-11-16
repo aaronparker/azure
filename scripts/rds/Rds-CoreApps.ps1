@@ -392,7 +392,8 @@ Function Install-MicrosoftTeams ($Path) {
             reg add "HKLM\SOFTWARE\Citrix\PortICA" /v "IsWVDEnvironment" /t REG_DWORD /d 1 /f
             $params = @{
                 FilePath     = "$env:SystemRoot\System32\msiexec.exe"
-                ArgumentList = "/package $OutFile ALLUSER=1 ALLUSERS=1 " + 'OPTIONS="noAutoStart=true" /quiet'
+                # ArgumentList = "/package $OutFile ALLUSER=1 ALLUSERS=1 " + 'OPTIONS="noAutoStart=true" /quiet'
+                ArgumentList = "/package $OutFile ALLUSER=1 ALLUSERS=1 /quiet"
                 Verbose      = $True
             }
             Invoke-Process @params
