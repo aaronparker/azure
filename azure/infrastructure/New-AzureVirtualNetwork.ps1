@@ -28,7 +28,7 @@ ForEach ($item in $NetworkSecurityGroups.GetEnumerator()) {
     New-AzNetworkSecurityGroup @params
 }
 
-# Virtual network
+# Virtual network peering
 $params = @{
     Name              = $VirtualNetworkName
     ResourceGroupName = $ResourceGroups.Infrastructure
@@ -50,8 +50,37 @@ ForEach ($item in $Subnets.GetEnumerator()) {
     $VirtualNetwork | Set-AzVirtualNetwork
 }
 
-#TODO: Peering
-#vnet-HubNetwork-AustraliaSoutheast-vnet-WindowsVirtualDesktop-AustraliaEast
+
+# Get the vnets
+$vnet1 = Get-AzVirtualNetwork | Where-Object { $_.Name -eq "vnet-HubNetwork-AustraliaSoutheast" }
+$vnet2 = Get-AzVirtualNetwork | Where-Object { $_.Name -eq "vnet-WindowsVirtualDesktop-AustraliaEast" }
+
+# Peer VNet1 to VNet2.
+$params = @{
+    Name                   = "$($vnet1.Name)-$($vnet2.Name)"
+    VirtualNetwork         = $vnet1
+    RemoteVirtualNetworkId = $vnet2.Id
+    AllowGatewayTransit    = $true
+}
+Add-AzVirtualNetworkPeering @params
+
+# Peer VNet2 to VNet1.
+$params = @{
+    Name                   = "$($vnet2.Name)-$($vnet1.Name)"
+    VirtualNetwork         = $vnet2
+    RemoteVirtualNetworkId = $vnet1.Id
+    UseRemoteGateways      = $True
+}
+Add-AzVirtualNetworkPeering @params
+
+# Set DNS servers
+$DomainServers = "10.100.100.2"
+ForEach ($vnet in ($vnet1, $vnet2)) {
+    ForEach ($server in $DomainServers) {
+        $vnet.DhcpOptions.DnsServers += $server
+    }
+    Set-AzVirtualNetwork -VirtualNetwork $vnet
+}
 
 #TODO: GatewaySubnet
 
