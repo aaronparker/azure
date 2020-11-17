@@ -32,3 +32,26 @@ steps:
       }
     imageUri: 'BuiltImageName'
     imageId: 'BuiltImageId'
+
+- task: Packer@1
+  inputs:
+    connectedServiceType: 'azure'
+    azureSubscription: 'Visual Studio Enterprise Subscription(63e8f660-f6a4-4ac5-ad4e-623268509f20)'
+    templatePath: 'https://raw.githubusercontent.com/aaronparker/build-azure/main/packer/rds/PackerTemplate-Windows.json'
+    command: 'build'
+    force: true
+    variables: |
+      "winrmuser"="packer"
+      "client_id"=""
+      "client_secret"=""
+      "subscription_id"=""
+      "tenant_id"=""
+      "managed_image_resource_group_name"=""
+      "image_publisher"="MicrosoftWindowsDesktop"
+      "image_offer"="Windows-10"
+      "image_sku"="20h2-ent"
+      "location"="australiaeast"
+      "vm_size"="Standard_D2_v3"
+      "Locale"="en-AU"
+      "BlobStorage"=""
+      "image_date"=""
