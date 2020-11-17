@@ -1,15 +1,15 @@
 {
     "winrmuser": "packer",
-    "client_id": "<clientid>",
-    "client_secret": "<clientsecrect>",
-    "subscription_id": "<subscriptionid>",
-    "tenant_id": "<tenantid>",
-    "managed_image_resource_group_name": "<resourcegroup>",
+    "client_id": "$(client_id)",
+    "client_secret": "$(client_secrect)",
+    "subscription_id": "$(subscription_id)",
+    "tenant_id": "$(tenant_id)",
+    "managed_image_resource_group_name": "$(managed_image_resource_group_name)",
     "image_publisher": "MicrosoftWindowsDesktop",
     "image_offer": "Windows-10",
     "image_sku": "20h2-evd",
     "location": "australiaeast",
     "vm_size": "Standard_D2_v3",
     "Locale": "en-AU",
-    "BlobStorage": "<storageaccount>"
+    "BlobStorage": "$(BlobStorage)"
 }
