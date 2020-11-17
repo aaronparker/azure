@@ -10,3 +10,14 @@ $params = @{
     Tag               = $Tags
 }
 New-AzOperationalInsightsWorkspace @params
+
+
+# Create the automation account
+$params = @{
+    Name              = "LogAnalytics-$LongName-$Location"
+    Plan              = "Free"
+    Location          = $Location
+    ResourceGroupName = $ResourceGroups.Infrastructure
+    Tag               = $Tags
+}
+New-AzAutomationAccount

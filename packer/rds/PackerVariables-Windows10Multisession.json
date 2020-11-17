@@ -7,7 +7,7 @@
     "managed_image_resource_group_name": "<resourcegroup>",
     "image_publisher": "MicrosoftWindowsDesktop",
     "image_offer": "Windows-10",
-    "image_sku": "20h1-evd",
+    "image_sku": "20h2-evd",
     "location": "australiaeast",
     "vm_size": "Standard_D2_v3",
     "Locale": "en-AU",
