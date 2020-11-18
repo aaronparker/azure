@@ -13,7 +13,7 @@ param(
     [System.String] $KeyVault = "stpywvdaustraliaeast",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $BlobStorage = "https://stealthpuppycore.blob.core.windows.net/apps/"
+    [System.String] $BlobStorage = "https://stpywvdaue.blob.core.windows.net/apps/"
 )
 
 # Get elevation status
