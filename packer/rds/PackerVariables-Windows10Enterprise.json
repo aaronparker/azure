@@ -9,7 +9,7 @@
     "image_offer": "Windows-10",
     "image_sku": "20h2-ent",
     "location": "australiaeast",
-    "vm_size": "Standard_D2_v3",
+    "vm_size": "Standard_D2as_v4",
     "Locale": "en-AU",
     "BlobStorage": "$(BlobStorage)"
 }
