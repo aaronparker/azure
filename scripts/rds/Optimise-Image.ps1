@@ -161,7 +161,6 @@ Function Disable-Services {
             Write-Host "Processing $Item"
             Stop-Service $Item -Force -ErrorAction SilentlyContinue
             Set-Service $Item -StartupType Disabled 
-            #New-ItemProperty -Path "$Item" -Name "Start" -PropertyType "DWORD" -Value "4" -Force
         }
     }
     #endregion
@@ -184,10 +183,11 @@ Function Optimize-Network {
     # NIC Advanced Properties performance settings for network biased environments
     # Set-NetAdapterAdvancedProperty -DisplayName "Send Buffer Size" -DisplayValue 4MB
 
-    <# Note that the above setting is for a Microsoft Hyper-V VM.  You can adjust these values in your environment...
-by querying in PowerShell using Get-NetAdapterAdvancedProperty, and then adjusting values using the...
-Set-NetAdapterAdvancedProperty command.
-#>
+    <#
+        Note that the above setting is for a Microsoft Hyper-V VM.  You can adjust these values in your environment...
+        by querying in PowerShell using Get-NetAdapterAdvancedProperty, and then adjusting values using the...
+        Set-NetAdapterAdvancedProperty command.
+    #>
     #endregion
 }
 
@@ -289,24 +289,6 @@ Optimize-Network
 # Invoke-Cleanmgr
 # Remove-TempFiles
 Get-WinEvent -ListLog * | ForEach-Object { Clear-WinEvent $_.LogName -Confirm:$False }
-
-<# Prep for Sysprep
-# Try to fix IMAGE_STATE_UNDEPLOYABLE
-Write-Output "====== Set services"
-If (Get-Service -Name RdAgent -ErrorAction "SilentlyContinue") {
-    Set-Service RdAgent -StartupType "Disabled"
-    While ((Get-Service -Name RdAgent).Status -ne "Running") { Start-Sleep -s 5 }
-}
-If (Get-Service -Name WindowsAzureTelemetryService -ErrorAction "SilentlyContinue") {
-    Set-Service WindowsAzureTelemetryService -StartupType "Disabled"
-    While ((Get-Service -Name WindowsAzureTelemetryService).Status -ne "Running") { Start-Sleep -s 5 }
-}
-If (Get-Service -Name WindowsAzureGuestAgent -ErrorAction "SilentlyContinue") {
-    Set-Service WindowsAzureGuestAgent -StartupType "Disabled"
-    While ((Get-Service -Name WindowsAzureGuestAgent).Status -ne "Running") { Start-Sleep -s 5 }
-}
-Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\SysPrepExternal\Generalize" -Name "*"
-#>
 
 # Re-enable Defender
 Write-Output "====== Enable Windows Defender real time scan"
