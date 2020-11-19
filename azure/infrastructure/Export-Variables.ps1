@@ -62,13 +62,6 @@ Switch ($Resource) {
             Identity      = "10.0.2.0/24"
         }
         $gatewayPrefix = "virtualgateway"
-
-        # Tags
-        $Tags = @{
-            Environment = "Development"
-            Function    = $LongName
-            Owner       = $Context.Account
-        }
     }
 
     "WindowsVirtualDesktop" {

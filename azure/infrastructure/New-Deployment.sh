@@ -9,3 +9,9 @@ az deployment group create --resource-group "rg-HubNetworkInfrastructure-Austral
 az deployment group create --resource-group "rg-WindowsVirtualDesktopInfrastructure-AustraliaEast" \
     --template-file /Users/aaron/Projects/build-azure/azure/bicep/wvd-workspace.json \
     --parameters /Users/aaron/Projects/build-azure/azure/bicep/wvd-workspace.parameters.json
+
+
+az deployment group create --resource-group "rg-WindowsVirtualDesktopPersonal-AustraliaEast" \
+    --template-file /Users/aaron/Projects/build-azure/azure/wvd/personal-hostpool/template.json \
+    --parameters /Users/aaron/Projects/build-azure/azure/wvd/personal-hostpool/parameters.json
+
