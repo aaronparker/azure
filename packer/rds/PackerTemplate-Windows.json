@@ -108,7 +108,7 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "#Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Optimise-Image.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Optimise-Image.ps1'))",
                 "If (Get-Service -Name RdAgent -ErrorAction SilentlyContinue) { Set-Service RdAgent -StartupType Disabled }",
                 "If (Get-Service -Name WindowsAzureTelemetryService -ErrorAction SilentlyContinue) { Set-Service WindowsAzureTelemetryService -StartupType Disabled }",
                 "If (Get-Service -Name WindowsAzureGuestAgent -ErrorAction SilentlyContinue) { Set-Service WindowsAzureGuestAgent -StartupType Disabled }",
