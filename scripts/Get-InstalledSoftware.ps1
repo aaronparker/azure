@@ -53,4 +53,5 @@ Function Get-InstalledSoftware {
 }
 
 # Output the installed software
-Get-InstalledSoftware | Sort-Object -Property Publisher, Version
+$software = Get-InstalledSoftware
+$software | Sort-Object -Property Publisher, Version

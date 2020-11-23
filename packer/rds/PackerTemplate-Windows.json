@@ -47,12 +47,9 @@
     "provisioners": [
         {
             "type": "powershell",
+            "environment_vars": ["Locale={{build `Locale`}}"],
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "#Locale parameter used by Customise.ps1",
-                "Write-Output \"====== Locale parameter: {{user `Locale`}}\"",
-                "$env:Locale = '{{user `Locale`}}'",
-                "[System.Environment]::SetEnvironmentVariable('Locale','{{user `Locale`}}',[System.EnvironmentVariableTarget]::User)",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-PrepImage.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-RegionalRoles.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-Customise.ps1'))"
@@ -83,12 +80,9 @@
         },
         {
             "type": "powershell",
+            "environment_vars": ["BlobStorage={{build `BlobStorage`}}"],
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "#BlobStorage parameter used by LoBApps.ps1",
-                "Write-Output \"====== BlobStorage parameter: {{user `BlobStorage`}}\"",
-                "$env:BlobStorage = '{{user `BlobStorage`}}'",
-                "[System.Environment]::SetEnvironmentVariable('BlobStorage','{{user `BlobStorage`}}',[System.EnvironmentVariableTarget]::User)",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-LobApps.ps1'))"
             ]
         },
@@ -130,8 +124,11 @@
     "post-processors": [
         {
             "type": "manifest",
-            "output": "packer-windows-manifest-{{user `image_date`}}.json",
-            "strip_path": true
+            "output": "packer-manifest-{{user `image_publisher`}}-{{user `image_offer`}}-{{user `image_sku`}}-{{user `image_date`}}.json",
+            "strip_path": true,
+            "custom_data": {
+                "software": "{{user `software`}}"
+              }
         }
     ]
 }
