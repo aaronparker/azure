@@ -292,7 +292,7 @@ Else {
     Write-Output "====== Can't find passed parameter, setting Locale to en-AU."
     $Locale = "en-AU"
 }
-If (Test-Path -Path env:AppsUrl) {
+If (Test-Path -Path env:PackagesUrl) {
     Install-Packages -Path $Target -PackagesUrl $env:PackagesUrl
 }
 Set-RegionalSettings -Path $Target -Locale $Locale
