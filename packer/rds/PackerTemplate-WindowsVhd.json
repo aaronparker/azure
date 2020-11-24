@@ -14,7 +14,8 @@
         "vm_size": "Standard_D2_v3",
         "WorkingDirectory": "{{env `System_DefaultWorkingDirectory`}}",
         "Locale": "en-AU",
-        "BlobStorage": ""
+        "AppsUrl": "",
+        "PackagesUrl": ""
     },
     "builders": [
         {
@@ -83,10 +84,10 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "#BlobStorage parameter used by LoBApps.ps1",
-                "Write-Output \"====== BlobStorage parameter: {{user `BlobStorage`}}\"",
-                "$env:BlobStorage = '{{user `BlobStorage`}}'",
-                "[System.Environment]::SetEnvironmentVariable('BlobStorage','{{user `BlobStorage`}}',[System.EnvironmentVariableTarget]::User)",
+                "#AppsUrl parameter used by LoBApps.ps1",
+                "Write-Output \"====== AppsUrl parameter: {{user `AppsUrl`}}\"",
+                "$env:AppsUrl = '{{user `AppsUrl`}}'",
+                "[System.Environment]::SetEnvironmentVariable('AppsUrl','{{user `AppsUrl`}}',[System.EnvironmentVariableTarget]::User)",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-LobApps.ps1'))"
             ]
         },

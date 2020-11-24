@@ -11,5 +11,6 @@
     "location": "australiaeast",
     "vm_size": "Standard_D2as_v4",
     "Locale": "en-AU",
-    "BlobStorage": "$(BlobStorage)"
+    "AppsUrl": "$(AppsUrl)",
+    "PackagesUrl": "$(PackagesUrl)"
 }

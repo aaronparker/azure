@@ -1,6 +1,7 @@
 <# 
     .SYNOPSIS
-        Install line-of-business applications.
+        Install line-of-business applications from an Azure storage account
+        Assumes applications are installed via the PSAppDeployToolkit
 #>
 [CmdletBinding()]
 Param (
@@ -90,14 +91,14 @@ Function Get-AzureBlobItem {
     }
 }
 
-Function Install-LobApps ($Path, $BlobStorage) {
+Function Install-LobApps ($Path, $AppsUrl) {
     # Get the list of items from blob storage
     try {
-        $Items = Get-AzureBlobItem -Uri "$($BlobStorage)?comp=list" | Where-Object { $_.Name -match "zip?" }
+        $Items = Get-AzureBlobItem -Uri "$($AppsUrl)?comp=list" | Where-Object { $_.Name -match "zip?" }
     }
     catch {
-        Write-Host "================ Failed to retrieve items from: [$BlobStorage]."
-        Throw "Failed to retrieve items from: [$BlobStorage]."
+        Write-Host "================ Failed to retrieve items from: [$AppsUrl]."
+        Throw "Failed to retrieve items from: [$AppsUrl]."
     }
 
     ForEach ($item in $Items) {
@@ -119,7 +120,8 @@ Function Install-LobApps ($Path, $BlobStorage) {
 
         Write-Host "================ Installing item: $($AppName)."
         Push-Location $AppPath
-        . .\Install.ps1
+        Get-ChildItem -Path $AppPath -Recurse | Unblock-File
+        . .\Deploy-Application.ps1
         Pop-Location
     }
 }
@@ -138,8 +140,8 @@ Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
 New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Run tasks
-If (Test-Path -Path env:BlobStorage) {
-    Install-LobApps -Path $Target -BlobStorage $env:BlobStorage
+If (Test-Path -Path env:AppsUrl) {
+    Install-LobApps -Path $Target -AppsUrl $env:AppsUrl
 }
 
 # Stop Logging

@@ -13,7 +13,10 @@ param(
     [System.String] $KeyVault = "stpywvdaustraliaeast",
 
     [Parameter(Mandatory = $False)]
-    [System.String] $BlobStorage = "https://stpywvdaue.blob.core.windows.net/apps/"
+    [System.String] $AppsUrl = "https://stpywvdaue.blob.core.windows.net/apps/",
+
+    [Parameter(Mandatory = $False)]
+    [System.String] $PackagesUrl = "https://stpywvdaue.blob.core.windows.net/apps/"
 )
 
 # Get elevation status
@@ -97,7 +100,8 @@ $json.subscription_id = $sub.Id
 $json.tenant_id = $sub.TenantId
 $json.managed_image_resource_group_name = $ResourceGroup
 $json.Locale = $Locale
-If ($BlobStorage.Length -gt 0) { $json.BlobStorage = $BlobStorage }
+If ($AppsUrl.Length -gt 0) { $json.AppsUrl = $AppsUrl }
+If ($PackagesUrl.Length -gt 0) { $json.PackagesUrl = $PackagesUrl }
 
 # Output the new variables file
 $json | ConvertTo-Json | Set-Content -Path $newVariablesFile -Force
@@ -110,7 +114,8 @@ Write-Host "Subscription:   $($sub.TenantId)" -ForegroundColor Green
 Write-Host "Resource group: $ResourceGroup" -ForegroundColor Green
 Write-Host "Image date:     $Date" -ForegroundColor Green
 Write-Host "Locale:         $Locale" -ForegroundColor Green
-If ($BlobStorage.Length -gt 0) { Write-Host "Blob storage:   $BlobStorage" -ForegroundColor Green }
+If ($AppsUrl.Length -gt 0) { Write-Host "Apps blob storage:   $AppsUrl" -ForegroundColor Green }
+If ($PackagesUrl.Length -gt 0) { Write-Host "Packages blob storage:   $PackagesUrl" -ForegroundColor Green }
 Write-Host "Template file:  $TemplateFile" -ForegroundColor Green
 Write-Host "Variables file: $newVariablesFile" -ForegroundColor Green
 

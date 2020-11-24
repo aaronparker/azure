@@ -14,7 +14,8 @@
         "vm_size": "Standard_D2as_v4",
         "WorkingDirectory": "{{env `System_DefaultWorkingDirectory`}}",
         "Locale": "en-AU",
-        "BlobStorage": ""
+        "AppsUrl": "",
+        "PackagesUrl": ""
     },
     "builders": [
         {
@@ -47,7 +48,7 @@
     "provisioners": [
         {
             "type": "powershell",
-            "environment_vars": ["Locale={{user `Locale`}}"],
+            "environment_vars": ["Locale={{user `Locale`}}", "PackagesUrl={{user `PackagesUrl`}}"],
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-PrepImage.ps1'))",
@@ -80,7 +81,7 @@
         },
         {
             "type": "powershell",
-            "environment_vars": ["BlobStorage={{user `BlobStorage`}}"],
+            "environment_vars": ["AppsUrl={{user `AppsUrl`}}"],
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-LobApps.ps1'))"
