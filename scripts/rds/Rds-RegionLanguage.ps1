@@ -99,7 +99,6 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
     }
     catch {
         Throw "Failed to set locale to: $Locale."
-        Break
     }
 
     # Run language.xml
@@ -110,7 +109,6 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
     catch {
         Write-Host "Failed to create language file: $OutFile."
         Write-Error -Message $_.Exception.Message
-        Break
     }
 
     # Set-Region.ps1
@@ -129,7 +127,6 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
     catch {
         Write-Host "Failed to create language file: $languageXML."
         Write-Error -Message $_.Exception.Message
-        Break
     }
 
     try {
@@ -138,17 +135,16 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
     catch {
         Write-Host "Failed to create set-language script: $languagePS1."
         Write-Error -Message $_.Exception.Message
-        Break
     }
 
     # SetupComplete.CMD
     try {
+        & takeown /f $setupCompleteCMD /a
         Out-File -FilePath $setupCompleteCMD -InputObject $setupCompleteContent -Append
     }
     catch {
         Write-Host "Failed to update set-language script: $setupCompleteCMD."
         Write-Error -Message $_.Exception.Message
-        Break
     }
     #endregion
 }
