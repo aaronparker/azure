@@ -527,6 +527,7 @@ Function Install-AdobeReaderDC ($Path) {
         ForEach ($command in $res.Install.Virtual.PostInstall) {
             Invoke-Command -ScriptBlock ($executioncontext.invokecommand.NewScriptBlock($command))
         }
+        Set-Service -Name AdobeARMservice -StartupType "Disabled"
 
         # Update Adobe Reader
         Write-Host "================ Update Reader"

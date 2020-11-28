@@ -49,5 +49,5 @@ Set-Customise -Path "$Target\Customise"
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
-Write-Host "Complete: $($MyInvocation.MyCommand)."
+Write-Host "Complete: Rds-Customise.ps1."
 #endregion

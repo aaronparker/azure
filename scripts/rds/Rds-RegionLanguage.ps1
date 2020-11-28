@@ -85,7 +85,6 @@ Set-TimeZone -Id $Timezone -Verbose
 
     $setupCompleteCMD = Join-Path -Path "$env:SystemRoot\Setup\Scripts" -ChildPath "SetupComplete.cmd"
     $setupCompleteContent = @"
-@ECHO OFF
 $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File $languagePS1
 "@
     #endregion
@@ -144,10 +143,10 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
 
     # SetupComplete.CMD
     try {
-        Out-File -FilePath $setupCompleteCMD -InputObject $setupCompleteContent
+        Out-File -FilePath $setupCompleteCMD -InputObject $setupCompleteContent -Append
     }
     catch {
-        Write-Host "Failed to create set-language script: $setupCompleteCMD."
+        Write-Host "Failed to update set-language script: $setupCompleteCMD."
         Write-Error -Message $_.Exception.Message
         Break
     }
@@ -217,4 +216,4 @@ Set-RegionSettings -Path $Target -Locale $Locale
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
-Write-Host "Complete: $($MyInvocation.MyCommand)."
+Write-Host "Complete: Rds-RegionLanguage.ps1."

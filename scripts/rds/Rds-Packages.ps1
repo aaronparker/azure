@@ -1,6 +1,6 @@
 <# 
     .SYNOPSIS
-        Enable/disable Windows roles and features and set language/regional settings.
+        Downlaods packages from blob storage and applies to the local machine.
 #>
 [CmdletBinding()]
 Param (
@@ -12,41 +12,6 @@ Param (
 )
 
 #region Functions
-Function Install-LanguageCapability ($Locale) {
-    Switch ($Locale) {
-        "en-US" {
-            # United States
-            $Language = "en-US"
-        }
-        "en-GB" {
-            # Great Britain
-            $Language = "en-GB"
-        }
-        "en-AU" {
-            # Australia
-            $Language = "en-AU", "en-GB"
-        }
-        Default {
-            # Australia
-            $Language = "en-AU", "en-GB"
-        }
-    }
-
-    # Install Windows capability packages using Windows Update
-    ForEach ($lang in $Language) {
-        Write-Verbose -Message "$($MyInvocation.MyCommand): Adding packages for [$lang]."
-        $Capabilities = Get-WindowsCapability -Online | Where-Object { $_.Name -like "Language*$lang*" }
-        ForEach ($Capability in $Capabilities) {
-            try {
-                Add-WindowsCapability -Online -Name $Capability.Name -LogLevel 2
-            }
-            catch {
-                Throw "Failed to add capability: $($Capability.Name)."
-            }
-        }
-    }
-}
-
 Function Get-AzureBlobItem {
     <#
         .SYNOPSIS
@@ -116,6 +81,41 @@ Function Get-AzureBlobItem {
     }
 }
 
+Function Install-LanguageCapability ($Locale) {
+    Switch ($Locale) {
+        "en-US" {
+            # United States
+            $Language = "en-US"
+        }
+        "en-GB" {
+            # Great Britain
+            $Language = "en-GB"
+        }
+        "en-AU" {
+            # Australia
+            $Language = "en-AU", "en-GB"
+        }
+        Default {
+            # Australia
+            $Language = "en-AU", "en-GB"
+        }
+    }
+
+    # Install Windows capability packages using Windows Update
+    ForEach ($lang in $Language) {
+        Write-Verbose -Message "$($MyInvocation.MyCommand): Adding packages for [$lang]."
+        $Capabilities = Get-WindowsCapability -Online | Where-Object { $_.Name -like "Language*$lang*" }
+        ForEach ($Capability in $Capabilities) {
+            try {
+                Add-WindowsCapability -Online -Name $Capability.Name -LogLevel 2
+            }
+            catch {
+                Throw "Failed to add capability: $($Capability.Name)."
+            }
+        }
+    }
+}
+
 Function Install-Packages ($Path, $PackagesUrl) {
     # Get the list of items from blob storage
     try {
@@ -166,11 +166,9 @@ Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
 New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Run tasks
-If (Test-Path -Path env:PackagesUrl) {
-    Install-Packages -Path $Target -PackagesUrl $env:PackagesUrl
-}
+Install-Packages -Path $Target -PackagesUrl $PackagesUrl
 
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
-Write-Host "Complete: $($MyInvocation.MyCommand)."
+Write-Host "Complete: Rds-Packages.ps1."

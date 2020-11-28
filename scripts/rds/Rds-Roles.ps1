@@ -67,4 +67,4 @@ Set-Roles
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
-Write-Host "Complete: $($MyInvocation.MyCommand)."
+Write-Host "Complete: Rds-Roles.ps1."
