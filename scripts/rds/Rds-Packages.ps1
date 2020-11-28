@@ -166,7 +166,7 @@ Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
 New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Run tasks
-Install-Packages -Path $Target -PackagesUrl $PackagesUrl
+Install-Packages -Path $Target -PackagesUrl $Env:PackagesUrl
 
 
 # Stop Logging

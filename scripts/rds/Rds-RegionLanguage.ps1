@@ -210,7 +210,7 @@ Else {
     Write-Output "====== Can't find passed parameter, setting Locale to en-AU."
     $Locale = "en-AU"
 }
-Set-RegionSettings -Path $Target -Locale $Locale
+Set-RegionSettings -Path $Target -Locale $Env:Locale
 #Install-LanguageCapability -Locale $Locale
 
 
