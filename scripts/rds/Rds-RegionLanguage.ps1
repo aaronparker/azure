@@ -22,24 +22,28 @@ Function Set-RegionSettings ($Path, $Locale) {
             $GeoId = 244
             $Timezone = "Pacific Standard Time"
             $LanguageId = "0409:00000409"
+            $Language = "en-US"
         }
         "en-GB" {
             # Great Britain
             $GeoId = 242
             $Timezone = "GMT Standard Time"
             $LanguageId = "0809:00000809"
+            $Language = "en-GB"
         }
         "en-AU" {
             # Australia
             $GeoId = 12
             $Timezone = "AUS Eastern Standard Time"
             $LanguageId = "0c09:00000409"
+            $Language = "en-AU"
         }
         Default {
             # Australia
             $GeoId = 12
             $Timezone = "AUS Eastern Standard Time"
             $LanguageId = "0c09:00000409"
+            $Language = "en-AU"
         }
     }
 
@@ -93,9 +97,12 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
     try {
         Import-Module -Name "International"
         Set-WinSystemLocale -SystemLocale $Locale
-        Set-WinUserLanguageList -LanguageList $Locale -Force
         Set-WinHomeLocation -GeoId $GeoId
         Set-TimeZone -Id $Timezone -Verbose
+
+        $LanguageList = Get-WinUserLanguageList
+        $LanguageList.Add($Language)
+        Set-WinUserLanguageList $LanguageList -Force
     }
     catch {
         Throw "Failed to set locale to: $Locale."
@@ -137,7 +144,11 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
         Write-Error -Message $_.Exception.Message
     }
 
+    ##Disable Language Pack Cleanup##
+    Disable-ScheduledTask -TaskPath "\Microsoft\Windows\AppxDeploymentClient\" -TaskName "Pre-staged app cleanup"
+
     # SetupComplete.CMD
+    <#
     try {
         & takeown /f $setupCompleteCMD /a
         Out-File -FilePath $setupCompleteCMD -InputObject $setupCompleteContent -Append
@@ -145,7 +156,7 @@ $env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -
     catch {
         Write-Host "Failed to update set-language script: $setupCompleteCMD."
         Write-Error -Message $_.Exception.Message
-    }
+    }#>
     #endregion
 }
 
@@ -206,7 +217,7 @@ Else {
     Write-Output "====== Can't find passed parameter, setting Locale to en-AU."
     $Locale = "en-AU"
 }
-Set-RegionSettings -Path $Target -Locale $Env:Locale
+Set-RegionSettings -Path $Target -Locale $Locale
 #Install-LanguageCapability -Locale $Locale
 
 

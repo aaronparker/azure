@@ -155,7 +155,7 @@ Function Disable-Services {
         "defragsvc", "DiagSvc", "DiagTrack", "DPS", "DsmSvc", "DusmSvc", "icssvc", "lfsvc", "MapsBroker",
         "MessagingService", "OneSyncSvc", "PimIndexMaintenanceSvc", "Power", "SEMgrSvc", "SmsRouter",
         "SysMain", "TabletInputService", "UsoSvc", "WdiSystemHost", "WerSvc", "XblAuthManager",
-        "XblGameSave", "XboxGipSvc", "XboxNetApiSvc")
+        "XblGameSave", "XboxGipSvc", "XboxNetApiSvc", "AdobeARMservice")
     If ($ServicesToDisable.count -gt 0) {
         Foreach ($Item in $ServicesToDisable) {
             Write-Host "Processing $Item"
