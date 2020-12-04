@@ -15,7 +15,8 @@
         "WorkingDirectory": "{{env `System_DefaultWorkingDirectory`}}",
         "Locale": "en-AU",
         "AppsUrl": "",
-        "PackagesUrl": ""
+        "PackagesUrl": "",
+        "Owner": ""
     },
     "builders": [
         {
@@ -39,7 +40,9 @@
             "azure_tags": {
                 "Function": "Gold image",
                 "Type": "WindowsVirtualDesktop",
-                "Operating System": "{{user `image_publisher`}}-{{user `image_offer`}}-{{user `image_sku`}}"
+                "Operating System": "{{user `image_publisher`}}-{{user `image_offer`}}-{{user `image_sku`}}",
+                "Owner": "{{user `Owner`}}",
+                "Billing": "Packer"
             },
             "location": "{{user `location`}}",
             "vm_size": "{{user `vm_size`}}"

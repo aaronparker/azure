@@ -12,5 +12,6 @@
     "vm_size": "Standard_D2as_v4",
     "Locale": "en-AU",
     "AppsUrl": "$(AppsUrl)",
-    "PackagesUrl": "$(PackagesUrl)"
+    "PackagesUrl": "$(PackagesUrl)",
+    "Owner": "$(Owner)"
 }
