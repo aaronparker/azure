@@ -446,7 +446,7 @@ Function Uninstall-MicrosoftOneDrive {
 Function Install-MicrosoftOneDrive ($Path) {
     Write-Host "================ Microsoft OneDrive"    
     Write-Host "================ Downloading Microsoft OneDrive"
-    $OneDrive = Get-MicrosoftOneDrive | Where-Object { $_.Ring -eq "Production" } | Sort-Object -Property Version | Select-Object -First 1
+    $OneDrive = Get-MicrosoftOneDrive | Where-Object { $_.Ring -eq "Production" -and $_.Type -eq "Exe" } | Sort-Object -Property Version | Select-Object -First 1
 
     If ($OneDrive) {
         If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
@@ -488,7 +488,7 @@ Function Install-AdobeReaderDC ($Path) {
     # Download Reader installer and updater
     Write-Host "================ Adobe Acrobat Reader DC"
     Write-Host "================ Downloading Reader"
-    $Reader = Get-AdobeAcrobatReaderDC | Where-Object { $_.Platform -eq "Windows" -and ($_.Language -eq "English" -or $_.Language -eq "Neutral") }
+    $Reader = Get-AdobeAcrobatReaderDC | Where-Object { $_.Language -eq "English" -or $_.Language -eq "Neutral" }
 
     If ($Reader) {
         If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
