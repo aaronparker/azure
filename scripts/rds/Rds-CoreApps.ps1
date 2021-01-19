@@ -492,19 +492,41 @@ Function Install-AdobeReaderDC ($Path) {
 
     If ($Reader) {
         If (!(Test-Path $Path)) { New-Item -Path $Path -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null }
+
+        $Installer = ($Reader | Where-Object { $_.Type -eq "Installer" | Sort-Object -Property "Version" -Descending })[-1]
+        $Updater = ($Reader | Where-Object { $_.Type -eq "Updater" | Sort-Object -Property "Version" -Descending })[-1]
         
         # Download Adobe Reader
-        ForEach ($File in $Reader) {
-            $url = $File.Uri
-            $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $url -Leaf)
+        ForEach ($File in $Installer) {
+            $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $File.Uri -Leaf)
             Write-Host "================ Downloading to: $OutFile."
             try {
-                (New-Object System.Net.WebClient).DownloadFile($url, $OutFile)
+                Invoke-WebRequest -Uri $File.Uri -OutFile $OutFile -UseBasicParsing
                 If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
             }
             catch {
-                Throw "Failed to download Adobe Reader."
+                Throw "Failed to download Adobe Reader installer."
+                Break
             }
+        }
+    
+        # Download the updater if the updater version is greater than the installer
+        If ($Updater.Version -gt $Installer.Version) {
+            ForEach ($File in $Updater) {
+                $OutFile = Join-Path -Path $Path -ChildPath (Split-Path -Path $File.Uri -Leaf)
+                Write-Host "================ Downloading to: $OutFile."
+                try {
+                    Invoke-WebRequest -Uri $File.Uri -OutFile $OutFile -UseBasicParsing
+                    If (Test-Path -Path $OutFile) { Write-Host "================ Downloaded: $OutFile." }
+                }
+                catch {
+                    Throw "Failed to download Adobe Reader update patch."
+                    Break
+                }
+            }
+        }
+        Else {
+            Write-Host "================ Installer already up to date, skipping patch file."
         }
 
         # Get resource strings
