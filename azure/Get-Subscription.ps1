@@ -11,20 +11,20 @@ Param (
     [System.String] $Password
 )
 
-# Check for AzureRM module
-If (!(Get-Module -ListAvailable AzureRM)) {
-    Write-Warning "AzureRM module not found. Attempting to install."
+# Check for Az module
+If (!(Get-Module -ListAvailable Az)) {
+    Write-Warning "Az module not found. Attempting to install."
     Try {
         If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
             Write-Verbose "Trusting the repository: PSGallery"
             Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
             Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
         }
-        Write-Verbose "Installing the AzureRM module."
-        Install-Module AzureRM
+        Write-Verbose "Installing the Az module."
+        Install-Module Az
     }
     Catch {
-        Write-Error "Failed to install the AzureRM module with $_.Exception"
+        Write-Error "Failed to install the Az module with $_.Exception"
     }
 }
 
@@ -49,7 +49,7 @@ If (!($cred)) {
 # Login to the Azure tenant
 Try {
     Write-Verbose "Logging into Microsoft Azure."
-    $rmLogin = Login-AzureRmAccount -Credential $cred -ErrorAction SilentlyContinue
+    $rmLogin = Login-AzAccount -Credential $cred -ErrorAction SilentlyContinue
 }
 Catch {
     Write-Error "Failed to log into Azure with $_.Exception"
@@ -60,7 +60,7 @@ Catch {
 If ($rmLogin) {
     Write-Verbose "Successful login to Azure."
     Write-Verbose "Returning context object."
-    Write-Output (Set-AzureRmContext -Context $RmLogin.Context)
+    Write-Output (Set-AzContext -Context $RmLogin.Context)
 }
 Else {
     Write-Warning "Unable to set Azure login context."

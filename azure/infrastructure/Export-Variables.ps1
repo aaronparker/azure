@@ -24,6 +24,11 @@ $Context = Get-AzContext
 $OrgName = "stealthpuppy"
 $ShortOrgName = "stpy"
 
+$ManagementGroups = @{
+    Production = "mg-prod-$OrgName-au"
+    Test = "mg-test-$OrgName-au"
+}
+
 Switch ($Location) {
     "AustraliaSoutheast" {
         $ShortLocation = "ause"
@@ -116,5 +121,7 @@ Switch ($Resource) {
 $Tags = @{
     Environment = "Development"
     Function    = $LongName
-    Owner       = $Context.Account
+    Date        = (Get-Date -Format dd-MM-yyyy)
+    CreatedBy   = $Context.Account
+    Owner       = "stealthpuppy"
 }
