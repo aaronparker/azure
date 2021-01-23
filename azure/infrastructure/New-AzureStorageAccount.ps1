@@ -1,16 +1,18 @@
 #Requires -Module Az
 # Dot source Export-Variables.ps1 first
 
+# Get the target resource group
+$ResourceGroup = Get-AzResourceGroup -Name $ResourceGroups.Core.Name
+
 #region Storage account
 # Standard storage
 $params = @{
     Name              = ("$($ShortOrgName)$($ShortName)$($ShortLocation)").ToLower()
-    ResourceGroupName = $ResourceGroups.Infrastructure
+    ResourceGroupName = $ResourceGroup.ResourceGroupName
+    Location          = $ResourceGroup.Location
     Kind              = "StorageV2"
-    Location          = $Location
     SkuName           = "Standard_LRS"
     AccessTier        = "Hot"
-    #MinimumTlsVersion = "TLS1_2"
     Tag               = $Tags
 }
 $storageAccount = New-AzStorageAccount @params
@@ -18,9 +20,9 @@ $storageAccount = New-AzStorageAccount @params
 # Premium storage
 $params = @{
     Name              = ("$($ShortOrgName)fslogix$($ShortLocation)").ToLower()
-    ResourceGroupName = $ResourceGroups.Infrastructure
+    ResourceGroupName = $ResourceGroup.ResourceGroupName
+    Location          = $ResourceGroup.Location
     Kind              = "FileStorage"
-    Location          = $Location
     SkuName           = "Premium_LRS"
     MinimumTlsVersion = "TLS1_2"
     Tag               = $Tags

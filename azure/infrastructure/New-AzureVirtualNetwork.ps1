@@ -1,6 +1,10 @@
 #Requires -Module Az
 # Dot source Export-Variables.ps1 first
 
+# Get the target resource group
+$ResourceGroup = Get-AzResourceGroup -Name $ResourceGroups.Network.Name
+$ResourceGroup = Get-AzResourceGroup -Name "rg-Terraform-$Location"
+
 #region Network
 # Network Security Groups
 $params = @{

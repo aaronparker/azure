@@ -11,7 +11,7 @@ Param (
     [System.String] $Location = "AustraliaSoutheast",
 
     [Parameter(Mandatory = $False)]
-    [ValidateSet("Hub", "WindowsVirtualDesktop")]
+    [ValidateSet("Hub", "WindowsVirtualDesktop", "Terraform")]
     [System.String] $Resource = "Hub"
 )
 
@@ -26,7 +26,7 @@ $ShortOrgName = "stpy"
 
 $ManagementGroups = @{
     Production = "mg-prod-$OrgName-au"
-    Test = "mg-test-$OrgName-au"
+    Test       = "mg-test-$OrgName-au"
 }
 
 Switch ($Location) {
@@ -67,6 +67,20 @@ Switch ($Resource) {
             Identity      = "10.0.2.0/24"
         }
         $gatewayPrefix = "virtualgateway"
+    }
+
+    "Terraform" {
+        #region Hub variables
+        $LongName = "Terraform"
+        $ShortName = "tfrm"
+        $KeyVault = "$($OrgName.ToLower())$ShortName"
+        $ResourceGroups = @{
+            Core = @{
+                Name     = "rg-$LongName-$Location"
+                Location = $Location
+                Function = $LongName
+            }
+        }
     }
 
     "WindowsVirtualDesktop" {
@@ -121,7 +135,7 @@ Switch ($Resource) {
 $Tags = @{
     Environment = "Development"
     Function    = $LongName
-    Date        = (Get-Date -Format dd-MM-yyyy)
+    CreatedDate = (Get-Date -Format dd-MM-yyyy)
     CreatedBy   = $Context.Account
     Owner       = "stealthpuppy"
 }
