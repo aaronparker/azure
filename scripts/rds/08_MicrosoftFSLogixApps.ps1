@@ -73,5 +73,4 @@ Install-FSLogix -Path "$Target\FSLogix"
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
 Write-Host "================ Complete: $($MyInvocation.MyCommand)."
-Exit 0
 #endregion

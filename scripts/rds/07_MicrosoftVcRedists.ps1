@@ -44,5 +44,4 @@ Install-VcRedistributables -Path "$Target\VcRedist"
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
 Write-Host "================ Complete: $($MyInvocation.MyCommand)."
-Exit 0
 #endregion

@@ -90,7 +90,6 @@ New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContin
 # Run tasks
 Set-Roles
 
-
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue
 Write-Host "Complete: Rds-Roles.ps1."

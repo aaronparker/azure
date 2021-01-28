@@ -51,14 +51,17 @@
     "provisioners": [
         {
             "type": "powershell",
-            "environment_vars": ["Locale={{user `Locale`}}", "PackagesUrl={{user `PackagesUrl`}}"],
+            "environment_vars": [
+                "Locale={{user `Locale`}}",
+                "PackagesUrl={{user `PackagesUrl`}}"
+            ],
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/01_Rds-PrepImage.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/02_Rds-Packages.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/03_Rds-RegionLanguage.ps1'))",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/04_Rds-Customise.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/05_Rds-RegionLanguage.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/05_Rds-Roles.ps1'))"
             ]
         },
         {
@@ -91,7 +94,9 @@
         },
         {
             "type": "powershell",
-            "environment_vars": ["AppsUrl={{user `AppsUrl`}}"],
+            "environment_vars": [
+                "AppsUrl={{user `AppsUrl`}}"
+            ],
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
                 "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/13_Rds-LobApps.ps1'))"
@@ -139,7 +144,7 @@
             "strip_path": true,
             "custom_data": {
                 "software": "{{user `software`}}"
-              }
+            }
         }
     ]
 }
