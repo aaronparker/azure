@@ -1,6 +1,6 @@
 <# 
     .SYNOPSIS
-        Downlaods packages from blob storage and applies to the local machine.
+        Downloads packages from blob storage and applies to the local machine.
 #>
 [CmdletBinding()]
 Param (
@@ -167,7 +167,6 @@ New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContin
 
 # Run tasks
 Install-Packages -Path $Target -PackagesUrl $Env:PackagesUrl
-
 
 # Stop Logging
 Stop-Transcript -ErrorAction SilentlyContinue

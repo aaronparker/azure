@@ -15,16 +15,42 @@ Param (
 Function Set-Roles {
     Switch -Regex ((Get-WmiObject Win32_OperatingSystem).Caption) {
         "Microsoft Windows Server*" {
-            # Add / Remove roles (requires reboot at end of deployment)
-            Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Features", "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue
-            Uninstall-WindowsFeature -Name BitLocker, EnhancedStorage, PowerShell-ISE
-            Add-WindowsFeature -Name RDS-RD-Server, Server-Media-Foundation, 'Search-Service', NET-Framework-Core
+            # Add / Remove roles and features (requires reboot at end of deployment)
+            $params = @{
+                FeatureName   = "Printing-XPSServices-Features", "WindowsMediaPlayer"
+                Online        = $true
+                NoRestart     = $true
+                WarningAction = "Continue"
+                ErrorAction   = "Continue"
+            }
+            Disable-WindowsOptionalFeature @params
+
+            $params = @{
+                Name                   = "BitLocker", "EnhancedStorage", "PowerShell-ISE"
+                IncludeManagementTools = $true
+                WarningAction          = "Continue"
+                ErrorAction            = "Continue"
+            }
+            Uninstall-WindowsFeature @params
+
+            $params = @{
+                Name          = "RDS-RD-Server", "Server-Media-Foundation", "Search-Service", "NET-Framework-Core"
+                WarningAction = "Continue"
+                ErrorAction   = "Continue"
+            }
+            Install-WindowsFeature @params
 
             # Enable services
             If ((Get-WindowsFeature -Name "RDS-RD-Server").InstallState -eq "Installed") {
                 ForEach ($service in "Audiosrv", "WSearch") {
                     try {
-                        Set-Service $service -StartupType "Automatic"
+                        $params = @{
+                            Name          = $service
+                            StartupType   = "Automatic"
+                            WarningAction = "Continue"
+                            ErrorAction   = "Continue"
+                        }
+                        Set-Service @params
                     }
                     catch {
                         Throw "Failed to set service properties [$service]."

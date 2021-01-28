@@ -12,15 +12,6 @@ Param (
 )
 
 #region Functions
-Function Set-Repository {
-    # Trust the PSGallery for installing modules
-    If (Get-PSRepository | Where-Object { $_.Name -eq "PSGallery" -and $_.InstallationPolicy -ne "Trusted" }) {
-        Write-Verbose "Trusting the repository: PSGallery"
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-    }
-}
-
 Function Invoke-WindowsDefender {
     # Run Windows Defender quick scan
     Write-Host "=============== Running Windows Defender"
@@ -278,7 +269,6 @@ Start-Transcript -Path $Log -Append -ErrorAction SilentlyContinue
 New-Item -Path $Target -ItemType "Directory" -Force -ErrorAction "SilentlyContinue" > $Null
 
 # Seal image tasks
-# Set-Repository
 Invoke-WindowsDefender
 # Invoke-CitrixOptimizer -Path "$Target\CitrixOptimizer"
 Disable-ScheduledTasks

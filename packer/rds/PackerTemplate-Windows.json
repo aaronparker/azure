@@ -54,11 +54,11 @@
             "environment_vars": ["Locale={{user `Locale`}}", "PackagesUrl={{user `PackagesUrl`}}"],
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-PrepImage.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-Packages.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-Roles.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-Customise.ps1'))",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-RegionLanguage.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/01_Rds-PrepImage.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/02_Rds-Packages.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/03_Rds-RegionLanguage.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/04_Rds-Customise.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/05_Rds-RegionLanguage.ps1'))"
             ]
         },
         {
@@ -77,8 +77,13 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-CoreApps.ps1'))",
-                "#Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Wvd-Agents.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/06_SupportFunctions.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/07_MicrosoftVcRedists.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/08_MicrosoftFSLogixApps.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/09_MicrosoftEdge.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/10_Microsoft365Apps.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/11_Wvd-Agents.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/12_AdobeAcrobatReaderDC.ps1'))"
             ]
         },
         {
@@ -89,7 +94,7 @@
             "environment_vars": ["AppsUrl={{user `AppsUrl`}}"],
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Rds-LobApps.ps1'))"
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/13_Rds-LobApps.ps1'))"
             ]
         },
         {
@@ -108,7 +113,7 @@
             "type": "powershell",
             "inline": [
                 "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12",
-                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/Optimise-Image.ps1'))",
+                "Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aaronparker/build-azure/main/scripts/rds/14_Optimise-Image.ps1'))",
                 "If (Get-Service -Name RdAgent -ErrorAction SilentlyContinue) { Set-Service RdAgent -StartupType Disabled }",
                 "If (Get-Service -Name WindowsAzureTelemetryService -ErrorAction SilentlyContinue) { Set-Service WindowsAzureTelemetryService -StartupType Disabled }",
                 "If (Get-Service -Name WindowsAzureGuestAgent -ErrorAction SilentlyContinue) { Set-Service WindowsAzureGuestAgent -StartupType Disabled }",
