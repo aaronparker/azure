@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "australiaeast"
+        },
+        "networkInterfaceName": {
+            "value": "nic-adc1aue001"
+        },
+        "subnetName": {
+            "value": "subnet-ProdServers"
+        },
+        "virtualNetworkId": {
+            "value": "/subscriptions/23bf9984-442a-4564-a599-c883a24e3e77/resourceGroups/rg-HubNetwork-AustraliaEast/providers/Microsoft.Network/virtualNetworks/vnet-Hub-AustraliaEast"
+        },
+        "virtualMachineName": {
+            "value": "adc1aue"
+        },
+        "virtualMachineComputerName": {
+            "value": "adc1aue"
+        },
+        "virtualMachineRG": {
+            "value": "rg-DomainControllers-AustraliaEast"
+        },
+        "osDiskType": {
+            "value": "Premium_LRS"
+        },
+        "virtualMachineSize": {
+            "value": "Standard_B2ms"
+        },
+        "adminUsername": {
+            "reference": {
+                "keyVault": {
+                "id": "/subscriptions/23bf9984-442a-4564-a599-c883a24e3e77/resourceGroups/rg-HubNetwork-AustraliaEast/providers/Microsoft.KeyVault/vaults/kv-stpyhubaue"
+                },
+                "secretName": "LocalUser"
+            }
+        },
+        "adminPassword": {
+            "reference": {
+                "keyVault": {
+                "id": "/subscriptions/23bf9984-442a-4564-a599-c883a24e3e77/resourceGroups/rg-HubNetwork-AustraliaEast/providers/Microsoft.KeyVault/vaults/kv-stpyhubaue"
+                },
+                "secretName": "LocalPass"
+            }
+        },
+        "patchMode": {
+            "value": "AutomaticByOS"
+        },
+        "diagnosticsStorageAccountName": {
+            "value": "stpyhubdiagsdiagsaue"
+        },
+        "diagnosticsStorageAccountId": {
+            "value": "/subscriptions/23bf9984-442a-4564-a599-c883a24e3e77/resourceGroups/rg-HubNetwork-AustraliaEast/providers/Microsoft.Storage/storageAccounts/stpyhubdiagsdiagsaue"
+        },
+        "availabilitySetName": {
+            "value": "as-DomainControllers-AustraliaEast"
+        },
+        "availabilitySetPlatformFaultDomainCount": {
+            "value": 2
+        },
+        "availabilitySetPlatformUpdateDomainCount": {
+            "value": 5
+        }
+    }
+}
