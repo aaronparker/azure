@@ -11,14 +11,15 @@
    },
    "createdBy": "ff79e5fe-f747-4428-8cc1-59cb6dfaf112",
    "createdOn": "2021-02-02T07:31:11.7317124Z",
-   "updatedBy": null,
-   "updatedOn": null
+   "updatedBy": "ff79e5fe-f747-4428-8cc1-59cb6dfaf112",
+   "updatedOn": "2021-02-02T08:12:19.5948732Z"
   },
   "parameters": {
    "Allowed_Locations": {
     "type": "Array",
     "metadata": {
-     "displayName": "Locations"
+     "displayName": "Locations",
+     "description": null
     },
     "allowedValues": [
      "australiaeast",
@@ -94,6 +95,14 @@
     "groupNames": [
      "Required_tags"
     ]
+   },
+   {
+    "policyDefinitionReferenceId": "System updates should be installed on your machines_1",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/86b3d65f-7626-441e-b690-81a8b71cff60",
+    "parameters": {},
+    "groupNames": [
+     "Virtual_machines"
+    ]
    }
   ],
   "policyDefinitionGroups": [
@@ -104,6 +113,10 @@
    {
     "name": "Required_tags",
     "category": "Tags"
+   },
+   {
+    "name": "Virtual_machines",
+    "category": "Updates"
    }
   ]
  },
