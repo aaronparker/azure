@@ -1,0 +1,113 @@
+{
+ "properties": {
+  "displayName": "stealthpuppy Azure Foundations",
+  "policyType": "Custom",
+  "description": "Policy set for basic Azure foundational requirements",
+  "metadata": {
+   "category": "Foundations",
+   "version": "1.0",
+   "parameterScopes": {
+    "listOfAllowedLocations": "/providers/Microsoft.Management/managementGroups/9a95621c-b347-40ab-ab83-707f98942280"
+   },
+   "createdBy": "ff79e5fe-f747-4428-8cc1-59cb6dfaf112",
+   "createdOn": "2021-02-02T07:31:11.7317124Z",
+   "updatedBy": null,
+   "updatedOn": null
+  },
+  "parameters": {
+   "Allowed_Locations": {
+    "type": "Array",
+    "metadata": {
+     "displayName": "Locations"
+    },
+    "allowedValues": [
+     "australiaeast",
+     "australiasoutheast",
+     "uswest",
+     "uswest2"
+    ],
+    "defaultValue": [
+     "australiaeast",
+     "australiasoutheast",
+     "uswest",
+     "uswest2"
+    ]
+   }
+  },
+  "policyDefinitions": [
+   {
+    "policyDefinitionReferenceId": "Allowed locations for resource groups_1",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e765b5de-1225-4ba3-bd56-1ac6695af988",
+    "parameters": {
+     "listOfAllowedLocations": {
+      "value": "[parameters('Allowed_Locations')]"
+     }
+    },
+    "groupNames": [
+     "Allowed_locations"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Allowed locations_1",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c",
+    "parameters": {
+     "listOfAllowedLocations": {
+      "value": "[parameters('Allowed_Locations')]"
+     }
+    },
+    "groupNames": [
+     "Allowed_locations"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Require a tag on resource groups_1",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025",
+    "parameters": {
+     "tagName": {
+      "value": "Environment"
+     }
+    },
+    "groupNames": [
+     "Required_tags"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Require a tag on resource groups_2",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025",
+    "parameters": {
+     "tagName": {
+      "value": "Function"
+     }
+    },
+    "groupNames": [
+     "Required_tags"
+    ]
+   },
+   {
+    "policyDefinitionReferenceId": "Require a tag on resource groups_3",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025",
+    "parameters": {
+     "tagName": {
+      "value": "Owner"
+     }
+    },
+    "groupNames": [
+     "Required_tags"
+    ]
+   }
+  ],
+  "policyDefinitionGroups": [
+   {
+    "name": "Allowed_locations",
+    "category": "Locations"
+   },
+   {
+    "name": "Required_tags",
+    "category": "Tags"
+   }
+  ]
+ },
+ "id": "/providers/Microsoft.Management/managementGroups/9a95621c-b347-40ab-ab83-707f98942280/providers/Microsoft.Authorization/policySetDefinitions/6d67f5ba21624822bffaeacf",
+ "type": "Microsoft.Authorization/policySetDefinitions",
+ "name": "6d67f5ba21624822bffaeacf"
+}
