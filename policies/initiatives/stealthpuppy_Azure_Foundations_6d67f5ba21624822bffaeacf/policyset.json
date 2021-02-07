@@ -24,14 +24,14 @@
     "allowedValues": [
      "australiaeast",
      "australiasoutheast",
-     "uswest",
-     "uswest2"
+     "westus",
+     "westus2"
     ],
     "defaultValue": [
      "australiaeast",
      "australiasoutheast",
-     "uswest",
-     "uswest2"
+     "westus",
+     "westus2"
     ]
    }
   },
