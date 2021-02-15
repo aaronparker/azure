@@ -14,14 +14,34 @@
       "type": "object",
       "defaultValue": {
         "workspaceName": "[format('Workspace-{0}', parameters('location'))]",
-        "workspaceNameFriendlyName": "[format('{0}', parameters('location'))]",
-        "hostpoolName": "[format('Windows10-2004-Pooled-{0}', parameters('location'))]",
-        "hostpoolFriendlyName": "[format('Windows10-2004-Pooled-{0}', parameters('location'))]",
-        "appgroupName": "[format('Windows10-2004-Pooled-{0}-DAG', parameters('location'))]",
-        "appgroupNameFriendlyName": "[format('Windows10-2004-Pooled-{0}-DAG', parameters('location'))]",
-        "hostpooltype": "pooled",
-        "loadbalancertype": "BreadthFirst",
-        "appgroupType": "Desktop"
+        "workspaceNameFriendlyName": "[parameters('location')]",
+        "workspaceDescription": "[parameters('location')]"
+      }
+    },
+    "hp1cfg": {
+      "type": "object",
+      "defaultValue": {
+        "hostPoolName": "[format('Windows10-20H2-Pooled-{0}', parameters('location'))]",
+        "hostPoolFriendlyName": "[format('Windows10-20H2-Pooled-{0}', parameters('location'))]",
+        "hostPoolDescription": "Windows 10 Enterprise 20H2 pooled desktops",
+        "appGroupName": "[format('Windows10-20H2-Pooled-{0}-DAG', parameters('location'))]",
+        "appGroupNameFriendlyName": "[format('Windows10-20H2-Pooled-{0}-DAG', parameters('location'))]",
+        "hostPoolType": "pooled",
+        "loadBalancerType": "BreadthFirst",
+        "appGroupType": "Desktop",
+        "maxSessionLimit": 2
+      }
+    },
+    "hp2cfg": {
+      "type": "object",
+      "defaultValue": {
+        "hostPoolName": "[format('Windows10-20H2-Personal-{0}', parameters('location'))]",
+        "hostPoolFriendlyName": "[format('Windows10-20H2-Personal-{0}', parameters('location'))]",
+        "hostPoolDescription": "Windows 10 Enterprise 20H2 Personal desktops",
+        "appGroupName": "[format('Windows10-20H2-Personal-{0}-DAG', parameters('location'))]",
+        "appGroupNameFriendlyName": "[format('Windows10-20H2-Personal-{0}-DAG', parameters('location'))]",
+        "hostPoolType": "Personal",
+        "appGroupType": "Desktop"
       }
     },
     "tags": {
@@ -35,49 +55,94 @@
     }
   },
   "functions": [],
-  "variables": {},
   "resources": [
     {
-      "type": "Microsoft.DesktopVirtualization/hostpools",
-      "apiVersion": "2019-12-10-preview",
-      "name": "[parameters('wvd1cfg').hostpoolName]",
+      "type": "Microsoft.DesktopVirtualization/hostPools",
+      "apiVersion": "2020-11-02-preview",
+      "name": "[parameters('wvd1cfg').hostPoolName]",
       "location": "[parameters('metadataLocation')]",
       "properties": {
-        "friendlyname": "[parameters('wvd1cfg').hostpoolFriendlyName]",
-        "tags": "[parameters('tags')]",
-        "hostpooltype": "[parameters('wvd1cfg').hostpooltype]",
-        "loadbalancertype": "[parameters('wvd1cfg').loadbalancertype]"
+        "friendlyName": "[parameters('hp1cfg').hostPoolFriendlyName]",
+        "hostPoolType": "[parameters('hp1cfg').hostPoolType]",
+        "loadBalancerType": "[parameters('hp1cfg').loadBalancerType]",
+        "preferredAppGroupType": "[parameters('hp1cfg').appGroupType]",
+        "description": "[parameters('hp1cfg').hostPoolDescription]",
+        "ring": 0,
+        "startVMOnConnect": true,
+        "validationEnvironment": true,
+        "maxSessionLimit": "[parameters('hp1cfg').maxSessionLimit]",
+        "vmTemplate": ""
       }
     },
     {
-      "type": "Microsoft.DesktopVirtualization/applicationgroups",
-      "apiVersion": "2019-12-10-preview",
-      "name": "[parameters('wvd1cfg').appgroupName]",
+      "type": "Microsoft.DesktopVirtualization/applicationGroups",
+      "apiVersion": "2020-11-02-preview",
+      "name": "[parameters('hp1cfg').appGroupName]",
       "location": "[parameters('metadataLocation')]",
       "properties": {
-        "friendlyname": "[parameters('wvd1cfg').appgroupNameFriendlyName]",
-        "tags": "[parameters('tags')]",
-        "applicationgrouptype": "[parameters('wvd1cfg').appgroupType]",
-        "hostpoolarmpath": "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('wvd1cfg').hostpoolName)]"
+        "friendlyName": "[parameters('hp1cfg').appGroupNameFriendlyName]",
+        "applicationGroupType": "[parameters('hp1cfg').appGroupType]",
+        "hostPoolArmPath": "[resourceId('Microsoft.DesktopVirtualization/hostPools', parameters('wvd1cfg').hostPoolName)]",
+        "description": "[parameters('hp1cfg').hostPoolDescription]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('wvd1cfg').hostpoolName)]"
+        "[resourceId('Microsoft.DesktopVirtualization/hostPools', parameters('wvd1cfg').hostPoolName)]"
+      ]
+    },
+    {
+      "type": "Microsoft.DesktopVirtualization/hostPools",
+      "apiVersion": "2020-11-02-preview",
+      "name": "[parameters('wvd1cfg').hostPoolName]",
+      "location": "[parameters('metadataLocation')]",
+      "properties": {
+        "friendlyName": "[parameters('hp2cfg').hostPoolFriendlyName]",
+        "hostPoolType": "[parameters('hp2cfg').hostPoolType]",
+        "loadBalancerType": "[parameters('hp2cfg').loadBalancerType]",
+        "preferredAppGroupType": "[parameters('hp2cfg').appGroupType]",
+        "description": "[parameters('hp2cfg').hostPoolDescription]",
+        "ring": 0,
+        "startVMOnConnect": true,
+        "validationEnvironment": true,
+        "maxSessionLimit": "[parameters('hp2cfg').maxSessionLimit]",
+        "vmTemplate": ""
+      }
+    },
+    {
+      "type": "Microsoft.DesktopVirtualization/applicationGroups",
+      "apiVersion": "2020-11-02-preview",
+      "name": "[parameters('hp2cfg').appGroupName]",
+      "location": "[parameters('metadataLocation')]",
+      "properties": {
+        "friendlyName": "[parameters('hp2cfg').appGroupNameFriendlyName]",
+        "applicationGroupType": "[parameters('hp2cfg').appGroupType]",
+        "hostPoolArmPath": "[resourceId('Microsoft.DesktopVirtualization/hostPools', parameters('wvd1cfg').hostPoolName)]",
+        "description": "[parameters('hp2cfg').hostPoolDescription]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DesktopVirtualization/hostPools', parameters('wvd1cfg').hostPoolName)]"
       ]
     },
     {
       "type": "Microsoft.DesktopVirtualization/workspaces",
-      "apiVersion": "2019-12-10-preview",
+      "apiVersion": "2020-11-02-preview",
       "name": "[parameters('wvd1cfg').workspaceName]",
       "location": "[parameters('metadataLocation')]",
       "properties": {
-        "friendlyname": "[parameters('wvd1cfg').workspaceNameFriendlyName]",
-        "tags": "[parameters('tags')]",
-        "applicationGroupReferences": []
-      }
+        "friendlyName": "[parameters('wvd1cfg').workspaceNameFriendlyName]",
+        "applicationGroupReferences": [
+          "[resourceId('Microsoft.DesktopVirtualization/applicationGroups', parameters('hp1cfg').appGroupName)]",
+          "[resourceId('Microsoft.DesktopVirtualization/applicationGroups', parameters('hp2cfg').appGroupName)]"
+        ],
+        "description": "[parameters('wvd1cfg').workspaceDescription]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DesktopVirtualization/applicationGroups', parameters('hp1cfg').appGroupName)]",
+        "[resourceId('Microsoft.DesktopVirtualization/applicationGroups', parameters('hp2cfg').appGroupName)]"
+      ]
     }
   ],
   "outputs": {
-    "workspaceid": {
+    "workspaceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.DesktopVirtualization/workspaces', parameters('wvd1cfg').workspaceName)]"
     }

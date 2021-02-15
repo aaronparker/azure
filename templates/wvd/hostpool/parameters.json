@@ -1,0 +1,181 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "artifactsLocation": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_1-25-2021.zip"
+        },
+        "nestedTemplatesLocation": {
+            "value": "https://catalogartifact.azureedge.net/publicartifacts/Microsoft.Hostpool-ARM-1.0.22-preview/"
+        },
+        "hostpoolName": {
+            "value": "Windows10-20H2-Evd-Pooled-AustraliaEast"
+        },
+        "hostpoolDescription": {
+            "value": "Windows 10 Enterprise multi-session 20H2 pooled desktops in Australia East"
+        },
+        "location": {
+            "value": "westus"
+        },
+        "validationEnvironment": {
+            "value": true
+        },
+        "addToWorkspace": {
+            "value": false
+        },
+        "hostpoolType": {
+            "value": "Pooled"
+        },
+        "loadBalancerType": {
+            "value": "BreadthFirst"
+        },
+        "customRdpProperty": {
+            "value": ""
+        },
+        "vmTemplate": {
+            "value": ""
+        },
+        "tokenExpirationTime": {
+            "value": "2021-02-16T21:51:39.709Z"
+        },
+        "vmAdministratorAccountUsername": {
+            "value": ""
+        },
+        "vmAdministratorAccountPassword": {
+            "value": null
+        },
+        "administratorAccountUsername": {
+            "value": ""
+        },
+        "administratorAccountPassword": {
+            "value": null
+        },
+        "createAvailabilitySet": {
+            "value": false
+        },
+        "vmResourceGroup": {
+            "value": ""
+        },
+        "vmLocation": {
+            "value": ""
+        },
+        "vmSize": {
+            "value": ""
+        },
+        "vmNumberOfInstances": {
+            "value": 0
+        },
+        "vmNamePrefix": {
+            "value": ""
+        },
+        "vmDiskType": {
+            "value": "StandardSSD_LRS"
+        },
+        "vmUseManagedDisks": {
+            "value": true
+        },
+        "existingVnetName": {
+            "value": ""
+        },
+        "existingSubnetName": {
+            "value": ""
+        },
+        "virtualNetworkResourceGroupName": {
+            "value": ""
+        },
+        "createNetworkSecurityGroup": {
+            "value": false
+        },
+        "domain": {
+            "value": ""
+        },
+        "ouPath": {
+            "value": ""
+        },
+        "aadJoin": {
+            "value": false
+        },
+        "intune": {
+            "value": false
+        },
+        "hostpoolTags": {
+            "value": {
+                "Function": "WindowsVirtualDesktop",
+                "Environment": "Lab",
+                "Owner": "aaronparker@cloud.stealthpuppy.com",
+                "Type": "Pooled",
+                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
+                "CreatedDate": "16-02-2021"
+            }
+        },
+        "applicationGroupTags": {
+            "value": {
+                "Function": "WindowsVirtualDesktop",
+                "Environment": "Lab",
+                "Owner": "aaronparker@cloud.stealthpuppy.com",
+                "Type": "Pooled",
+                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
+                "CreatedDate": "16-02-2021"
+            }
+        },
+        "availabilitySetTags": {
+            "value": {
+                "Function": "WindowsVirtualDesktop",
+                "Environment": "Lab",
+                "Owner": "aaronparker@cloud.stealthpuppy.com",
+                "Type": "Pooled",
+                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
+                "CreatedDate": "16-02-2021"
+            }
+        },
+        "networkInterfaceTags": {
+            "value": {
+                "Function": "WindowsVirtualDesktop",
+                "Environment": "Lab",
+                "Owner": "aaronparker@cloud.stealthpuppy.com",
+                "Type": "Pooled",
+                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
+                "CreatedDate": "16-02-2021"
+            }
+        },
+        "networkSecurityGroupTags": {
+            "value": {
+                "Function": "WindowsVirtualDesktop",
+                "Environment": "Lab",
+                "Owner": "aaronparker@cloud.stealthpuppy.com",
+                "Type": "Pooled",
+                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
+                "CreatedDate": "16-02-2021"
+            }
+        },
+        "virtualMachineTags": {
+            "value": {
+                "Function": "WindowsVirtualDesktop",
+                "Environment": "Lab",
+                "Owner": "aaronparker@cloud.stealthpuppy.com",
+                "Type": "Pooled",
+                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
+                "CreatedDate": "16-02-2021"
+            }
+        },
+        "imageTags": {
+            "value": {
+                "Function": "WindowsVirtualDesktop",
+                "Environment": "Lab",
+                "Owner": "aaronparker@cloud.stealthpuppy.com",
+                "Type": "Pooled",
+                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
+                "CreatedDate": "16-02-2021"
+            }
+        },
+        "apiVersion": {
+            "value": "2019-12-10-preview"
+        },
+        "deploymentId": {
+            "value": "66f128ba-6e58-434a-9ac3-940e4699905f"
+        },
+        "maxSessionLimit": {
+            "value": 2
+        }
+    }
+}

@@ -10,22 +10,40 @@
         },
         "wvd1cfg": {
             "value": {
-              "workspaceName": "Workspace-AustraliaEast",
-              "workspaceNameFriendlyName": "AustraliaEast",
-              "hostpoolName": "Windows10-20H2-Pooled-AustraliaEast",
-              "hostpoolFriendlyName": "Windows10-20H2-Pooled-AustraliaEast",
-              "appgroupName": "Windows10-20H2-Pooled-AustraliaEast-DAG",
-              "appgroupNameFriendlyName": "Windows10-20H2-Pooled-AustraliaEast-DAG",
-              "hostpooltype": "pooled",
-              "loadbalancertype": "BreadthFirst",
-              "appgroupType": "Desktop"
+              "workspaceName": "[format('Workspace-{0}', parameters('location'))]",
+              "workspaceNameFriendlyName": "[parameters('location')]",
+              "workspaceDescription": "[parameters('location')]"
+            }
+        },
+        "hp1cfg": {
+            "value": {
+              "hostPoolName": "[format('Windows10-20H2-Pooled-{0}', parameters('location'))]",
+              "hostPoolFriendlyName": "[format('Windows10-20H2-Pooled-{0}', parameters('location'))]",
+              "hostPoolDescription": "Windows 10 Enterprise 20H2 pooled desktops",
+              "appGroupName": "[format('Windows10-20H2-Pooled-{0}-DAG', parameters('location'))]",
+              "appGroupNameFriendlyName": "[format('Windows10-20H2-Pooled-{0}-DAG', parameters('location'))]",
+              "hostPoolType": "pooled",
+              "loadBalancerType": "BreadthFirst",
+              "appGroupType": "Desktop",
+              "maxSessionLimit": 2
+            }
+        },
+        "hp2cfg": {
+            "value": {
+              "hostPoolName": "[format('Windows10-20H2-Personal-{0}', parameters('location'))]",
+              "hostPoolFriendlyName": "[format('Windows10-20H2-Personal-{0}', parameters('location'))]",
+              "hostPoolDescription": "Windows 10 Enterprise 20H2 Personal desktops",
+              "appGroupName": "[format('Windows10-20H2-Personal-{0}-DAG', parameters('location'))]",
+              "appGroupNameFriendlyName": "[format('Windows10-20H2-Personal-{0}-DAG', parameters('location'))]",
+              "hostPoolType": "Personal",
+              "appGroupType": "Desktop"
             }
         },
         "tags": {
             "value": {
               "Function": "WindowsVirtualDesktop",
               "Environment": "Development",
-              "Owner": "aaronparker@cloud.stealthpuppy.com",
+              "Owner": "aaron@example.com",
               "CostCenter": "Lab"
             }
         }

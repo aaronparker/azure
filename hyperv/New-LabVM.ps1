@@ -5,7 +5,10 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $True)]
-    [System.String[]] $Name
+    [System.String[]] $Name,
+
+    [Parameter(Mandatory = $False)]
+    [System.String] $IsoFile = "D:\ISOs\Automata-LiteTouchPE_x64.iso"
 )
 
 Begin {}
@@ -53,17 +56,18 @@ Process {
             If ($Null -ne $NewVM) {
                 #region Update VM settings
                 $params = @{
-                    VM                   = $NewVM
-                    AutomaticStartAction = "Nothing"
-                    AutomaticStopAction  = "ShutDown"
-                    CheckpointType       = "Standard"
-                    DynamicMemory        = $True
+                    VM                          = $NewVM
+                    AutomaticStartAction        = "Nothing"
+                    AutomaticStopAction         = "ShutDown"
+                    CheckpointType              = "Standard"
+                    AutomaticCheckpointsEnabled = $False
+                    DynamicMemory               = $True
                     #MemoryMaximumBytes   = ""
                     #MemoryMinimumBytes   = ""
                     #MemoryStartupBytes   = ""
-                    Notes                = "Created by New-LabVM.ps1"
-                    Passthru             = $True
-                    ProcessorCount       = 2
+                    Notes                       = "Created by New-LabVM.ps1"
+                    Passthru                    = $True
+                    ProcessorCount              = 2
                     #SmartPagingFilePath  = ""
                     #SnapshotFileLocation = ""
                 }
@@ -73,7 +77,7 @@ Process {
                 #region Add MDT boot ISO; set DVD as boot device
                 $params = @{
                     VM       = $NewVM
-                    Path     = "D:\ISOs\InsentraAutomata-LiteTouchPE_x64.iso"
+                    Path     = $IsoFile
                     Passthru = $True
                 }
                 $DvdDrive = Add-VMDvdDrive @params

@@ -1,0 +1,178 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "artifactsLocation": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_1-25-2021.zip"
+        },
+        "nestedTemplatesLocation": {
+            "value": "https://catalogartifact.azureedge.net/publicartifacts/Microsoft.Hostpool-ARM-1.0.22-preview/"
+        },
+        "hostpoolName": {
+            "value": "Windows10-20H2-Pooled-AustraliaEast"
+        },
+        "hostpoolDescription": {
+            "value": "Created through the WVD extension"
+        },
+        "location": {
+            "value": "westus"
+        },
+        "validationEnvironment": {
+            "value": true
+        },
+        "addToWorkspace": {
+            "value": true
+        },
+        "hostpoolType": {
+            "value": "Pooled"
+        },
+        "loadBalancerType": {
+            "value": "BreadthFirst"
+        },
+        "customRdpProperty": {
+            "value": ""
+        },
+        "vmTemplate": {
+            "value": "{\"domain\":\"home.stealthpuppy.com\",\"galleryImageOffer\":null,\"galleryImagePublisher\":null,\"galleryImageSKU\":null,\"imageType\":\"CustomImage\",\"imageUri\":null,\"customImageId\":\"/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourceGroups/rg-Images-AustraliaEast/providers/Microsoft.Compute/galleries/sigWindowsVirtualDesktop/images/MicrosoftWindowsDesktop-Windows-10-20h2-evd\",\"namePrefix\":\"wvdauepool\",\"osDiskType\":\"StandardSSD_LRS\",\"useManagedDisks\":true,\"vmSize\":{\"id\":\"Standard_D2s_v3\",\"cores\":2,\"ram\":8},\"galleryItemId\":null}"
+        },
+        "tokenExpirationTime": {
+            "value": "2021-02-16T12:39:48.245Z"
+        },
+        "vmAdministratorAccountUsername": {
+            "value": "rmuser"
+        },
+        "vmAdministratorAccountPassword": {
+            "value": null
+        },
+        "administratorAccountUsername": {
+            "value": "mdt@home.stealthpuppy.com"
+        },
+        "administratorAccountPassword": {
+            "value": null
+        },
+        "createAvailabilitySet": {
+            "value": true
+        },
+        "vmResourceGroup": {
+            "value": "rg-WindowsVirtualDesktopPooled-AustraliaEast"
+        },
+        "vmLocation": {
+            "value": "australiaeast"
+        },
+        "vmSize": {
+            "value": "Standard_D2s_v3"
+        },
+        "vmNumberOfInstances": {
+            "value": 1
+        },
+        "vmNamePrefix": {
+            "value": "wvdauepool"
+        },
+        "vmImageType": {
+            "value": "CustomImage"
+        },
+        "vmDiskType": {
+            "value": "StandardSSD_LRS"
+        },
+        "vmUseManagedDisks": {
+            "value": true
+        },
+        "existingVnetName": {
+            "value": "vnet-WindowsVirtualDesktop-AustraliaEast"
+        },
+        "existingSubnetName": {
+            "value": "subnet-PooledDesktops"
+        },
+        "virtualNetworkResourceGroupName": {
+            "value": "rg-WindowsVirtualDesktopInfrastructure-AustraliaEast"
+        },
+        "createNetworkSecurityGroup": {
+            "value": false
+        },
+        "domain": {
+            "value": "home.stealthpuppy.com"
+        },
+        "ouPath": {
+            "value": "OU=Pooled,OU=AustraliaEast,OU=Virtual Desktops,OU=Workstations,DC=home,DC=stealthpuppy,DC=com"
+        },
+        "aadJoin": {
+            "value": false
+        },
+        "intune": {
+            "value": false
+        },
+        "hostpoolTags": {
+            "value": {
+                "Environment": "Development",
+                "Function": "WindowsVirtualDesktop",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
+            }
+        },
+        "applicationGroupTags": {
+            "value": {
+                "Environment": "Development",
+                "Function": "WindowsVirtualDesktop",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
+            }
+        },
+        "availabilitySetTags": {
+            "value": {
+                "Environment": "Development",
+                "Function": "WindowsVirtualDesktop",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
+            }
+        },
+        "networkInterfaceTags": {
+            "value": {
+                "Environment": "Development",
+                "Function": "WindowsVirtualDesktop",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
+            }
+        },
+        "networkSecurityGroupTags": {
+            "value": {
+                "Environment": "Development",
+                "Function": "WindowsVirtualDesktop",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
+            }
+        },
+        "virtualMachineTags": {
+            "value": {
+                "Environment": "Development",
+                "Function": "WindowsVirtualDesktop",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
+            }
+        },
+        "imageTags": {
+            "value": {
+                "Environment": "Development",
+                "Function": "WindowsVirtualDesktop",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
+            }
+        },
+        "apiVersion": {
+            "value": "2019-12-10-preview"
+        },
+        "deploymentId": {
+            "value": "eb906cb0-b4b4-4dda-a158-94ec5e378068"
+        },
+        "vmCustomImageSourceId": {
+            "value": "/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourceGroups/rg-Images-AustraliaEast/providers/Microsoft.Compute/galleries/sigWindowsVirtualDesktop/images/MicrosoftWindowsDesktop-Windows-10-20h2-evd"
+        },
+        "maxSessionLimit": {
+            "value": 2
+        },
+        "workspaceResourceGroup": {
+            "value": "rg-WindowsVirtualDesktopPooled-AustraliaEast"
+        },
+        "workspaceName": {
+            "value": "Workspace-AustraliaEast"
+        },
+        "workspaceLocation": {
+            "value": "westus"
+        },
+        "allApplicationGroupReferences": {
+            "value": ""
+        }
+    }
+}
