@@ -11,32 +11,8 @@
         "hostpoolName": {
             "value": "Windows10-20H2-Evd-Pooled-AustraliaEast"
         },
-        "hostpoolDescription": {
-            "value": "Created through the WVD extension"
-        },
-        "location": {
-            "value": "westus"
-        },
-        "validationEnvironment": {
-            "value": true
-        },
-        "addToWorkspace": {
-            "value": true
-        },
-        "hostpoolType": {
-            "value": "Pooled"
-        },
-        "loadBalancerType": {
-            "value": "BreadthFirst"
-        },
-        "customRdpProperty": {
-            "value": ""
-        },
-        "vmTemplate": {
-            "value": "{\"domain\":\"home.stealthpuppy.com\",\"galleryImageOffer\":null,\"galleryImagePublisher\":null,\"galleryImageSKU\":null,\"imageType\":\"CustomImage\",\"imageUri\":null,\"customImageId\":\"/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourceGroups/rg-Images-AustraliaEast/providers/Microsoft.Compute/galleries/sigWindowsVirtualDesktop/images/MicrosoftWindowsDesktop-Windows-10-20h2-evd\",\"namePrefix\":\"auepool\",\"osDiskType\":\"StandardSSD_LRS\",\"useManagedDisks\":true,\"vmSize\":{\"id\":\"Standard_B2ms\",\"cores\":2,\"ram\":8},\"galleryItemId\":null}"
-        },
-        "tokenExpirationTime": {
-            "value": "2021-02-17T09:52:23.021Z"
+        "hostpoolToken": {
+            "value": null
         },
         "vmAdministratorAccountUsername": {
             "value": "rmuser"
@@ -50,8 +26,20 @@
         "administratorAccountPassword": {
             "value": null
         },
+        "hostpoolResourceGroup": {
+            "value": ""
+        },
+        "hostpoolProperties": {
+            "value": {}
+        },
+        "hostpoolLocation": {
+            "value": ""
+        },
         "createAvailabilitySet": {
-            "value": true
+            "value": false
+        },
+        "vmInitialNumber": {
+            "value": 0
         },
         "vmResourceGroup": {
             "value": "rg-WindowsVirtualDesktopPooled-AustraliaEast"
@@ -90,10 +78,10 @@
             "value": false
         },
         "domain": {
-            "value": ""
+            "value": "home.stealthpuppy.com"
         },
         "ouPath": {
-            "value": ""
+            "value": "OU=WindowsVirtualDesktop,OU=Workstations,OU=stealthpuppy,DC=home,DC=stealthpuppy,DC=com"
         },
         "aadJoin": {
             "value": false
@@ -101,99 +89,59 @@
         "intune": {
             "value": false
         },
-        "hostpoolTags": {
-            "value": {
-                "Environment": "Lab",
-                "Function": "WindowsVirtualDesktop",
-                "CreatedDate": "16-02-2021",
-                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "OperatingSystem": "Windows-10-20h2-evd"
-            }
-        },
-        "applicationGroupTags": {
-            "value": {
-                "Environment": "Lab",
-                "Function": "WindowsVirtualDesktop",
-                "CreatedDate": "16-02-2021",
-                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "OperatingSystem": "Windows-10-20h2-evd"
-            }
-        },
         "availabilitySetTags": {
             "value": {
                 "Environment": "Lab",
                 "Function": "WindowsVirtualDesktop",
-                "CreatedDate": "16-02-2021",
                 "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "OperatingSystem": "Windows-10-20h2-evd"
+                "CreatedDate": "16-02-2021",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
             }
         },
         "networkInterfaceTags": {
             "value": {
                 "Environment": "Lab",
                 "Function": "WindowsVirtualDesktop",
-                "CreatedDate": "16-02-2021",
                 "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "OperatingSystem": "Windows-10-20h2-evd"
+                "CreatedDate": "16-02-2021",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
             }
         },
         "networkSecurityGroupTags": {
             "value": {
                 "Environment": "Lab",
                 "Function": "WindowsVirtualDesktop",
-                "CreatedDate": "16-02-2021",
                 "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "OperatingSystem": "Windows-10-20h2-evd"
+                "CreatedDate": "16-02-2021",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
             }
         },
         "virtualMachineTags": {
             "value": {
                 "Environment": "Lab",
                 "Function": "WindowsVirtualDesktop",
-                "CreatedDate": "16-02-2021",
                 "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "OperatingSystem": "Windows-10-20h2-evd"
+                "CreatedDate": "16-02-2021",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
             }
         },
         "imageTags": {
             "value": {
                 "Environment": "Lab",
                 "Function": "WindowsVirtualDesktop",
-                "CreatedDate": "16-02-2021",
                 "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "OperatingSystem": "Windows-10-20h2-evd"
+                "CreatedDate": "16-02-2021",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
             }
+        },
+        "deploymentId": {
+            "value": "8ad85a03-eeec-4b2c-8bbb-e5be41148064"
         },
         "apiVersion": {
             "value": "2019-12-10-preview"
         },
-        "deploymentId": {
-            "value": "9c18edad-e1e8-4496-aba2-a20cf9879033"
-        },
         "vmCustomImageSourceId": {
             "value": "/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourceGroups/rg-Images-AustraliaEast/providers/Microsoft.Compute/galleries/sigWindowsVirtualDesktop/images/MicrosoftWindowsDesktop-Windows-10-20h2-evd"
-        },
-        "maxSessionLimit": {
-            "value": 2
-        },
-        "workspaceResourceGroup": {
-            "value": "rg-WindowsVirtualDesktopPooled-AustraliaEast"
-        },
-        "workspaceName": {
-            "value": "Workspace-AustraliaEast"
-        },
-        "workspaceLocation": {
-            "value": "westus"
-        },
-        "allApplicationGroupReferences": {
-            "value": ""
         }
     }
 }

@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "value": "Workspace-AustraliaEast"
+        },
+        "friendlyName": {
+            "value": "Australia East"
+        },
+        "workspaceDescription": {
+            "value": "Windows Virtual Desktop workspace for Australia East"
+        },
+        "location": {
+            "value": "westus"
+        },
+        "appGroups": {
+            "value": [
+                "/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourcegroups/rg-WindowsVirtualDesktopPooled-AustraliaEast/providers/Microsoft.DesktopVirtualization/applicationgroups/Windows10-20H2-Evd-Pooled-AustraliaEast-DAG"
+            ]
+        },
+        "tags": {
+            "value": {
+                "Environment": "Lab",
+                "Function": "WindowsVirtualDesktop",
+                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
+                "CreatedDate": "16-02-2021",
+                "Owner": "aaronparker@cloud.stealthpuppy.com"
+            }
+        },
+        "apiVersion": {
+            "value": "2019-12-10-preview"
+        }
+    }
+}
