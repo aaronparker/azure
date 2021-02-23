@@ -18,8 +18,12 @@ Process {
         # Check whether the VM already exists
         $VM = Get-VM -Name $VMName -ErrorAction "SilentlyContinue"
         If ($Null -eq $VM) {
+
             #region Get host properties
             $VMSwitch = Get-VMSwitch | Where-Object { $_.SwitchType -eq "External" } | Select-Object -First 1
+            If ($Null -eq $VMSwitch) {
+                $VMSwitch = Get-VMSwitch | Select-Object -First 1
+            }
             If ($Null -eq $VMSwitch) { Write-Error -Message "Unable to determine external network."; Break }
             $VMHost = Get-VMHost
             #endregion
@@ -75,18 +79,23 @@ Process {
                 #endregion
 
                 #region Add MDT boot ISO; set DVD as boot device
-                $params = @{
-                    VM       = $NewVM
-                    Path     = $IsoFile
-                    Passthru = $True
-                }
-                $DvdDrive = Add-VMDvdDrive @params
-                If ($Null -ne $DvdDrive ) {
+                If (Test-Path -Path $IsoFile) {
                     $params = @{
-                        VM              = $NewVM
-                        FirstBootDevice = $DvdDrive
+                        VM       = $NewVM
+                        Path     = $IsoFile
+                        Passthru = $True
                     }
-                    Set-VMFirmware @params
+                    $DvdDrive = Add-VMDvdDrive @params
+                    If ($Null -ne $DvdDrive ) {
+                        $params = @{
+                            VM              = $NewVM
+                            FirstBootDevice = $DvdDrive
+                        }
+                        Set-VMFirmware @params
+                    }
+                }
+                Else {
+                    Write-Warning -Message "Failed to find ISO: $IsoFile. Cannot add DVD drive to VM."
                 }
                 #endregion
 
