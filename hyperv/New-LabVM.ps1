@@ -70,7 +70,7 @@ Process {
                     #MemoryMinimumBytes   = ""
                     #MemoryStartupBytes   = ""
                     Notes                       = "Created by New-LabVM.ps1"
-                    Passthru                    = $True
+                    PassThru                    = $True
                     ProcessorCount              = 2
                     #SmartPagingFilePath  = ""
                     #SnapshotFileLocation = ""
@@ -83,7 +83,7 @@ Process {
                     $params = @{
                         VM       = $NewVM
                         Path     = $IsoFile
-                        Passthru = $True
+                        PassThru = $True
                     }
                     $DvdDrive = Add-VMDvdDrive @params
                     If ($Null -ne $DvdDrive ) {
@@ -99,11 +99,22 @@ Process {
                 }
                 #endregion
 
-                #region Enable TPM
+                #region Enable vTPM
                 $HgsGuardian = Get-HgsGuardian -Name UntrustedGuardian
-                $KeyProtector = New-HgsKeyProtector -Owner $HgsGuardian -AllowUntrustedRoot
-                Set-VMKeyProtector -VM $NewVM -KeyProtector $KeyProtector.RawData
-                Enable-VMTPM -VM $NewVM
+                If ($HgsGuardian) {
+                    $KeyProtector = New-HgsKeyProtector -Owner $HgsGuardian -AllowUntrustedRoot
+                    Set-VMKeyProtector -VM $NewVM -KeyProtector $KeyProtector.RawData
+                    Enable-VMTPM -VM $NewVM
+                }
+                Else {
+                    try {
+                        Set-VMKeyProtector -VM $NewVM -NewLocalKeyProtector
+                        Enable-VMTPM -VM $NewVM
+                    }
+                    catch {
+                        Write-Warning -Message "Unable to add virtual TPM."
+                    }
+                }
                 #endregion
 
                 Write-Output -InputObject (Get-VM -Name $VMName)
