@@ -8,7 +8,10 @@ Param (
     [System.String[]] $Name,
 
     [Parameter(Mandatory = $False)]
-    [System.String] $IsoFile = "D:\ISOs\Automata-LiteTouchPE_x64.iso"
+    [System.String] $IsoFile = "D:\ISOs\Automata-LiteTouchPE_x64.iso",
+
+    [Parameter(Mandatory = $False)]
+    [System.Management.Automation.SwitchParameter] $Connect
 )
 
 Begin {}
@@ -122,6 +125,11 @@ Process {
         }
         Else {
             Write-Information -MessageData "Virtual machine already exists: $VMName. Skipping." -InformationAction Continue
+        }
+
+        # Open a connection to the new VM
+        If ($PSBoundParameters.Keys.Contains("Connect")) {
+            vmconnect localhost $NewVM.Name
         }
     }
 }
