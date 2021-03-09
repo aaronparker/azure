@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "nestedTemplatesLocation": {
@@ -22,59 +22,39 @@
                 "description": "The name of the Hostpool to be created."
             }
         },
-        "hostpoolFriendlyName": {
-            "type": "string",
+        "hostpoolToken": {
+            "type": "securestring",
             "metadata": {
-                "description": "The friendly name of the Hostpool to be created."
-            },
-            "defaultValue": ""
-        },
-        "hostpoolDescription": {
-            "type": "string",
-            "metadata": {
-                "description": "The description of the Hostpool to be created."
-            },
-            "defaultValue": ""
-        },
-        "location": {
-            "type": "string",
-            "metadata": {
-                "description": "The location where the resources will be deployed."
+                "description": "The token of the host pool where the session hosts will be added."
             }
         },
-        "workSpaceName": {
+        "hostpoolResourceGroup": {
             "type": "string",
             "metadata": {
-                "description": "The name of the workspace to be attach to new Applicaiton Group."
+                "description": "The resource group of the host pool to be updated. Used when the host pool was created empty."
             },
             "defaultValue": ""
         },
-        "workspaceLocation": {
+        "hostpoolLocation": {
             "type": "string",
             "metadata": {
-                "description": "The location of the workspace."
+                "description": "The location of the host pool to be updated. Used when the host pool was created empty."
             },
             "defaultValue": ""
         },
-        "workspaceResourceGroup": {
+        "hostpoolProperties": {
+            "type": "object",
+            "metadata": {
+                "description": "The properties of the Hostpool to be updated. Used when the host pool was created empty."
+            },
+            "defaultValue": {}
+        },
+        "vmTemplate": {
             "type": "string",
             "metadata": {
-                "description": "The workspace resource group Name."
+                "description": "The host pool VM template. Used when the host pool was created empty."
             },
             "defaultValue": ""
-        },
-        "allApplicationGroupReferences": {
-            "type": "string",
-            "metadata": {
-                "description": "The existing app groups references of the workspace selected."
-            },
-            "defaultValue": ""
-        },
-        "addToWorkspace": {
-            "type": "bool",
-            "metadata": {
-                "description": "Whether to add applicationGroup to workspace."
-            }
         },
         "administratorAccountUsername": {
             "type": "string",
@@ -108,43 +88,43 @@
             "type": "bool",
             "metadata": {
                 "description": "Whether to create a new availability set for the VMs"
-            },
-            "defaultValue": false
+            }
         },
         "vmResourceGroup": {
             "type": "string",
             "metadata": {
                 "description": "The resource group of the session host VMs."
-            },
-            "defaultValue": ""
+            }
         },
         "vmLocation": {
             "type": "string",
             "metadata": {
                 "description": "The location of the session host VMs."
-            },
-            "defaultValue": ""
+            }
         },
         "vmSize": {
             "type": "string",
             "metadata": {
                 "description": "The size of the session host VMs."
-            },
-            "defaultValue": ""
+            }
+        },
+        "vmInitialNumber": {
+            "type": "int",
+            "metadata": {
+                "description": "VM name prefix initial number."
+            }
         },
         "vmNumberOfInstances": {
             "type": "int",
             "metadata": {
                 "description": "Number of session hosts that will be created and added to the hostpool."
-            },
-            "defaultValue": 0
+            }
         },
         "vmNamePrefix": {
             "type": "string",
             "metadata": {
                 "description": "This prefix will be used in combination with the VM number to create the VM name. If using 'rdsh' as the prefix, VMs would be named 'rdsh-0', 'rdsh-1', etc. You should use a unique prefix to reduce name collisions in Active Directory."
-            },
-            "defaultValue": ""
+            }
         },
         "vmImageType": {
             "type": "string",
@@ -155,7 +135,8 @@
             "allowedValues": [
                 "CustomVHD",
                 "CustomImage",
-                "Gallery"
+                "Gallery",
+                "Disk"
             ]
         },
         "vmGalleryImageOffer": {
@@ -196,21 +177,20 @@
         "vmDiskType": {
             "type": "string",
             "allowedValues": [
+                "UltraSSD_LRS",
                 "Premium_LRS",
                 "StandardSSD_LRS",
                 "Standard_LRS"
             ],
             "metadata": {
                 "description": "The VM disk type for the VM: HDD or SSD."
-            },
-            "defaultValue": "StandardSSD_LRS"
+            }
         },
         "vmUseManagedDisks": {
             "type": "bool",
             "metadata": {
                 "description": "True indicating you would like to use managed disks or false indicating you would like to use unmanaged disks."
-            },
-            "defaultValue": true
+            }
         },
         "storageAccountResourceGroupName": {
             "type": "string",
@@ -223,22 +203,19 @@
             "type": "string",
             "metadata": {
                 "description": "The name of the virtual network the VMs will be connected to."
-            },
-            "defaultValue": ""
+            }
         },
         "existingSubnetName": {
             "type": "string",
             "metadata": {
                 "description": "The subnet the VMs will be placed in."
-            },
-            "defaultValue": ""
+            }
         },
         "virtualNetworkResourceGroupName": {
             "type": "string",
             "metadata": {
                 "description": "The resource group containing the existing virtual network."
-            },
-            "defaultValue": ""
+            }
         },
         "createNetworkSecurityGroup": {
             "type": "bool",
@@ -260,81 +237,6 @@
                 "description": "The rules to be given to the new network security group"
             },
             "defaultValue": []
-        },
-        "hostpoolType": {
-            "type": "string",
-            "allowedValues": [
-                "Personal",
-                "Pooled"
-            ],
-            "metadata": {
-                "description": "Set this parameter to Personal if you would like to enable Persistent Desktop experience. Defaults to false."
-            }
-        },
-        "personalDesktopAssignmentType": {
-            "type": "string",
-            "allowedValues": [
-                "Automatic",
-                "Direct",
-                ""
-            ],
-            "metadata": {
-                "description": "Set the type of assignment for a Personal hostpool type"
-            },
-            "defaultValue": ""
-        },
-        "maxSessionLimit": {
-            "type": "int",
-            "metadata": {
-                "description": "Maximum number of sessions."
-            },
-            "defaultValue": 99999
-        },
-        "loadBalancerType": {
-            "type": "string",
-            "allowedValues": [
-                "BreadthFirst",
-                "DepthFirst",
-                "Persistent"
-            ],
-            "metadata": {
-                "description": "Type of load balancer algorithm."
-            },
-            "defaultValue": "BreadthFirst"
-        },
-        "customRdpProperty": {
-            "type": "string",
-            "metadata": {
-                "description": "Hostpool rdp properties"
-            },
-            "defaultValue": ""
-        },
-        "vmTemplate": {
-            "type": "string",
-            "metadata": {
-                "description": "The necessary information for adding more VMs to this Hostpool"
-            },
-            "defaultValue": ""
-        },
-        "tokenExpirationTime": {
-            "type": "string",
-            "metadata": {
-                "description": "Hostpool token expiration time"
-            }
-        },
-        "hostpoolTags": {
-            "type": "object",
-            "metadata": {
-                "description": "The tags to be assigned to the hostpool"
-            },
-            "defaultValue": {}
-        },
-        "applicationGroupTags": {
-            "type": "object",
-            "metadata": {
-                "description": "The tags to be assigned to the application group"
-            },
-            "defaultValue": {}
         },
         "availabilitySetTags": {
             "type": "object",
@@ -371,13 +273,6 @@
             },
             "defaultValue": {}
         },
-        "apiVersion": {
-            "type": "string",
-            "metadata": {
-                "description": "WVD api version"
-            },
-            "defaultValue": "2019-12-10-preview"
-        },
         "deploymentId": {
             "type": "string",
             "metadata": {
@@ -385,19 +280,12 @@
             },
             "defaultValue": ""
         },
-        "validationEnvironment": {
-            "type": "bool",
-            "metadata": {
-                "description": "Whether to use validation environment."
-            },
-            "defaultValue": false
-        },
-        "preferredAppGroupType": {
+        "apiVersion": {
             "type": "string",
             "metadata": {
-                "description": "Preferred App Group type to display"
+                "description": "WVD api version"
             },
-            "defaultValue": "Desktop"
+            "defaultValue": "2019-12-10-preview"
         },
         "ouPath": {
             "type": "string",
@@ -429,82 +317,33 @@
         }
     },
     "variables": {
-        "createVMs": "[greater(parameters('vmNumberOfInstances'),0)]",
         "rdshManagedDisks": "[if(equals(parameters('vmImageType'), 'CustomVHD'), parameters('vmUseManagedDisks'), bool('true'))]",
         "rdshPrefix": "[concat(parameters('vmNamePrefix'),'-')]",
         "avSetSKU": "[if(variables('rdshManagedDisks'), 'Aligned', 'Classic')]",
         "vhds": "[concat('vhds','/', variables('rdshPrefix'))]",
         "subnet-id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('existingVnetName'), parameters('existingSubnetName'))]",
         "hostpoolName": "[replace(parameters('hostpoolName'),'\"','')]",
-        "hostpoolFriendlyName": "[parameters('hostpoolFriendlyName')]",
         "vmTemplateName": "[concat( if(variables('rdshManagedDisks'), 'managedDisks', 'unmanagedDisks'), '-', toLower(replace(parameters('vmImageType'),' ', '')), 'vm')]",
         "vmTemplateUri": "[concat(parameters('nestedTemplatesLocation'), variables('vmTemplateName'),'.json')]",
         "rdshVmNamesOutput": {
             "copy": [
                 {
                     "name": "rdshVmNamesCopy",
-                    "count": "[if(variables('createVMs'), parameters('vmNumberOfInstances'), 1)]",
+                    "count": "[parameters('vmNumberOfInstances')]",
                     "input": {
-                        "name": "[concat(variables('rdshPrefix'),copyIndex('rdshVmNamesCopy'))]"
+                        "name": "[concat(variables('rdshPrefix'), add(parameters('vmInitialNumber'), copyIndex('rdshVmNamesCopy')))]"
                     }
                 }
             ]
-        },
-        "appGroupName": "[concat(variables('hostpoolName'),'-DAG')]",
-        "appGroupResourceId": "[createArray(resourceId('Microsoft.DesktopVirtualization/applicationgroups/', variables('appGroupName')))]",
-        "workspaceResourceGroup": "[if(empty(parameters('workspaceResourceGroup')), resourceGroup().name, parameters('workspaceResourceGroup'))]",
-        "applicationGroupReferencesArr": "[if(equals('',parameters('allApplicationGroupReferences')), variables('appGroupResourceId'), concat(split(parameters('allApplicationGroupReferences'),','), variables('appGroupResourceId')))]",
-        "customScript": "Set-WinSystemLocale en-AU\r\nSet-WinUserLanguageList -LanguageList en-AU -Force\r\nSet-Culture -CultureInfo en-AU\r\nSet-WinHomeLocation -GeoId 12\r\nRestart-Computer -Force",
-        "timeZone": "AUS Eastern Standard Time"
+        }
     },
     "resources": [
         {
-            "name": "[parameters('hostpoolName')]",
-            "apiVersion": "[parameters('apiVersion')]",
-            "type": "Microsoft.DesktopVirtualization/hostpools",
-            "location": "[parameters('location')]",
-            "tags": "[parameters('hostpoolTags')]",
-            "properties": {
-                "friendlyName": "[parameters('hostpoolFriendlyName')]",
-                "description": "[parameters('hostpoolDescription')]",
-                "hostpoolType": "[parameters('hostpoolType')]",
-                "customRdpProperty": "[parameters('customRdpProperty')]",
-                "personalDesktopAssignmentType": "[parameters('personalDesktopAssignmentType')]",
-                "maxSessionLimit": "[parameters('maxSessionLimit')]",
-                "loadBalancerType": "[parameters('loadBalancerType')]",
-                "validationEnvironment": "[parameters('validationEnvironment')]",
-                "preferredAppGroupType": "[parameters('preferredAppGroupType')]",
-                "ring": null,
-                "registrationInfo": {
-                    "expirationTime": "[parameters('tokenExpirationTime')]",
-                    "token": null,
-                    "registrationTokenOperation": "Update"
-                },
-                "vmTemplate": "[parameters('vmTemplate')]"
-            }
-        },
-        {
-            "name": "[variables('appGroupName')]",
-            "apiVersion": "[parameters('apiVersion')]",
-            "type": "Microsoft.DesktopVirtualization/applicationgroups",
-            "location": "[parameters('location')]",
-            "tags": "[parameters('applicationGroupTags')]",
-            "properties": {
-                "hostpoolarmpath": "[resourceId('Microsoft.DesktopVirtualization/hostpools/', parameters('hostpoolName'))]",
-                "friendlyName": "Default Desktop",
-                "description": "Desktop Application Group created through the Hostpool Wizard",
-                "applicationGroupType": "Desktop"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.DesktopVirtualization/hostpools/', parameters('hostpoolName'))]"
-            ]
-        },
-        {
             "apiVersion": "2018-05-01",
-            "name": "[concat('Workspace-linkedTemplate-', parameters('deploymentId'))]",
+            "name": "[concat('UpdateHostPool-', parameters('deploymentId'))]",
             "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[variables('workspaceResourceGroup')]",
-            "condition": "[parameters('addToWorkspace')]",
+            "resourceGroup": "[parameters('hostpoolResourceGroup')]",
+            "condition": "[not(empty(parameters('hostpoolResourceGroup')))]",
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -512,20 +351,15 @@
                     "contentVersion": "1.0.0.0",
                     "resources": [
                         {
+                            "name": "[parameters('hostpoolName')]",
                             "apiVersion": "[parameters('apiVersion')]",
-                            "name": "[parameters('workSpaceName')]",
-                            "type": "Microsoft.DesktopVirtualization/workspaces",
-                            "location": "[parameters('workspaceLocation')]",
-                            "properties": {
-                                "applicationGroupReferences": "[variables('applicationGroupReferencesArr')]"
-                            }
+                            "location": "[parameters('hostpoolLocation')]",
+                            "type": "Microsoft.DesktopVirtualization/hostpools",
+                            "properties": "[parameters('hostpoolProperties')]"
                         }
                     ]
                 }
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.DesktopVirtualization/applicationgroups/', variables('appGroupName'))]"
-            ]
+            }
         },
         {
             "apiVersion": "2018-05-01",
@@ -557,18 +391,17 @@
                 }
             },
             "dependsOn": [
-                "[resourceId('Microsoft.DesktopVirtualization/applicationgroups', variables('appGroupName'))]"
+                "[concat('UpdateHostPool-', parameters('deploymentId'))]"
             ]
         },
         {
             "apiVersion": "2018-05-01",
             "name": "[concat('vmCreation-linkedTemplate-', parameters('deploymentId'))]",
-            "type": "Microsoft.Resources/deployments",
-            "condition": "[variables('createVMs')]",
             "resourceGroup": "[parameters('vmResourceGroup')]",
             "dependsOn": [
                 "[concat('AVSet-linkedTemplate-', parameters('deploymentId'))]"
             ],
+            "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -654,11 +487,14 @@
                     "imageTags": {
                         "value": "[parameters('imageTags')]"
                     },
-                    "hostpoolToken": {
-                        "value": "[reference(parameters('hostpoolName')).registrationInfo.token]"
+                    "vmInitialNumber": {
+                        "value": "[parameters('vmInitialNumber')]"
                     },
                     "hostpoolName": {
                         "value": "[parameters('hostpoolName')]"
+                    },
+                    "hostpoolToken": {
+                        "value": "[parameters('hostpoolToken')]"
                     },
                     "domain": {
                         "value": "[parameters('domain')]"

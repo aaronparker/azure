@@ -11,67 +11,38 @@
         "hostpoolName": {
             "value": "Windows10-20H2-Evd-Pooled-AustraliaEast"
         },
-        "hostpoolDescription": {
-            "value": "Windows 10 Enterprise multi-session 20H2 pooled desktops in Australia East"
+        "hostpoolToken": {
+            "value": null
         },
         "location": {
-            "value": "westus"
-        },
-        "validationEnvironment": {
-            "value": true
-        },
-        "addToWorkspace": {
-            "value": false
-        },
-        "hostpoolType": {
-            "value": "Pooled"
-        },
-        "loadBalancerType": {
-            "value": "BreadthFirst"
-        },
-        "customRdpProperty": {
-            "value": ""
-        },
-        "vmTemplate": {
-            "value": ""
-        },
-        "tokenExpirationTime": {
-            "value": "2021-02-16T21:51:39.709Z"
+            "value": "australiaeast"
         },
         "vmAdministratorAccountUsername": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourceGroups/rg-WindowsVirtualDesktopInfrastructure-AustraliaEast/providers/Microsoft.KeyVault/vaults/stpywvdaustraliaeast"
-                },
-                "secretName": "LocalUser"
-            }
+            "value": "rmuser"
         },
         "vmAdministratorAccountPassword": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourceGroups/rg-WindowsVirtualDesktopInfrastructure-AustraliaEast/providers/Microsoft.KeyVault/vaults/stpywvdaustraliaeast"
-                },
-                "secretName": "LocalPass"
-            }
+            "value": null
         },
         "administratorAccountUsername": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourceGroups/rg-WindowsVirtualDesktopInfrastructure-AustraliaEast/providers/Microsoft.KeyVault/vaults/stpywvdaustraliaeast"
-                },
-                "secretName": "DomainJoinUpn"
-            }
+            "value": "mdt@lab.stealthpuppy.com"
         },
         "administratorAccountPassword": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourceGroups/rg-WindowsVirtualDesktopInfrastructure-AustraliaEast/providers/Microsoft.KeyVault/vaults/stpywvdaustraliaeast"
-                },
-                "secretName": "DomainJoinSecret"
-            }
+            "value": null
+        },
+        "hostpoolResourceGroup": {
+            "value": ""
+        },
+        "hostpoolProperties": {
+            "value": {}
+        },
+        "hostpoolLocation": {
+            "value": ""
         },
         "createAvailabilitySet": {
             "value": false
+        },
+        "vmInitialNumber": {
+            "value": 0
         },
         "vmResourceGroup": {
             "value": "rg-WindowsVirtualDesktopPooled-AustraliaEast"
@@ -87,6 +58,9 @@
         },
         "vmNamePrefix": {
             "value": "auepool"
+        },
+        "vmImageType": {
+            "value": "CustomImage"
         },
         "vmDiskType": {
             "value": "StandardSSD_LRS"
@@ -118,84 +92,54 @@
         "intune": {
             "value": false
         },
-        "hostpoolTags": {
-            "value": {
-                "Function": "WindowsVirtualDesktop",
-                "Environment": "Lab",
-                "Owner": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "CreatedDate": "16-02-2021"
-            }
-        },
-        "applicationGroupTags": {
-            "value": {
-                "Function": "WindowsVirtualDesktop",
-                "Environment": "Lab",
-                "Owner": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "CreatedDate": "16-02-2021"
-            }
-        },
         "availabilitySetTags": {
             "value": {
-                "Function": "WindowsVirtualDesktop",
                 "Environment": "Lab",
+                "Function": "WindowsVirtualDesktop",
                 "Owner": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "CreatedDate": "16-02-2021"
+                "Type": "Pooled"
             }
         },
         "networkInterfaceTags": {
             "value": {
-                "Function": "WindowsVirtualDesktop",
                 "Environment": "Lab",
+                "Function": "WindowsVirtualDesktop",
                 "Owner": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "CreatedDate": "16-02-2021"
+                "Type": "Pooled"
             }
         },
         "networkSecurityGroupTags": {
             "value": {
-                "Function": "WindowsVirtualDesktop",
                 "Environment": "Lab",
+                "Function": "WindowsVirtualDesktop",
                 "Owner": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "CreatedDate": "16-02-2021"
+                "Type": "Pooled"
             }
         },
         "virtualMachineTags": {
             "value": {
-                "Function": "WindowsVirtualDesktop",
                 "Environment": "Lab",
+                "Function": "WindowsVirtualDesktop",
                 "Owner": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "CreatedDate": "16-02-2021"
+                "Type": "Pooled"
             }
         },
         "imageTags": {
             "value": {
-                "Function": "WindowsVirtualDesktop",
                 "Environment": "Lab",
+                "Function": "WindowsVirtualDesktop",
                 "Owner": "aaronparker@cloud.stealthpuppy.com",
-                "Type": "Pooled",
-                "CreatedBy": "aaronparker@cloud.stealthpuppy.com",
-                "CreatedDate": "16-02-2021"
+                "Type": "Pooled"
             }
+        },
+        "deploymentId": {
+            "value": "555fccde-2d19-4bcb-9750-d79ce4f1703b"
         },
         "apiVersion": {
             "value": "2019-12-10-preview"
         },
-        "deploymentId": {
-            "value": "66f128ba-6e58-434a-9ac3-940e4699905f"
-        },
-        "maxSessionLimit": {
-            "value": 2
+        "vmCustomImageSourceId": {
+            "value": "/subscriptions/63e8f660-f6a4-4ac5-ad4e-623268509f20/resourceGroups/rg-Images-AustraliaEast/providers/Microsoft.Compute/galleries/sigWindowsVirtualDesktop/images/MicrosoftWindowsDesktop-Windows-10-20h2-evd"
         }
     }
 }

@@ -21,26 +21,26 @@
     "hp1cfg": {
       "type": "object",
       "defaultValue": {
-        "hostPoolName": "[format('Windows10-20H2-Pooled-{0}', parameters('location'))]",
-        "hostPoolFriendlyName": "[format('Windows10-20H2-Pooled-{0}', parameters('location'))]",
-        "hostPoolDescription": "Windows 10 Enterprise 20H2 pooled desktops",
-        "appGroupName": "[format('Windows10-20H2-Pooled-{0}-DAG', parameters('location'))]",
-        "appGroupNameFriendlyName": "[format('Windows10-20H2-Pooled-{0}-DAG', parameters('location'))]",
+        "hostPoolName": "[format('Windows10-20H2-Evd-Pooled-{0}', parameters('location'))]",
+        "hostPoolFriendlyName": "[format('Windows10-20H2-Evd-Pooled-{0}', parameters('location'))]",
+        "hostPoolDescription": "Windows 10 Enterprise multi-session 20H2 pooled desktops",
         "hostPoolType": "pooled",
         "loadBalancerType": "BreadthFirst",
-        "appGroupType": "Desktop",
-        "maxSessionLimit": 2
+        "maxSessionLimit": 2,
+        "appGroupName": "[format('Windows10-20H2-Pooled-{0}-DAG', parameters('location'))]",
+        "appGroupNameFriendlyName": "[format('Windows10-20H2-Evd-Pooled-{0}-DAG', parameters('location'))]",
+        "appGroupType": "Desktop"
       }
     },
     "hp2cfg": {
       "type": "object",
       "defaultValue": {
-        "hostPoolName": "[format('Windows10-20H2-Personal-{0}', parameters('location'))]",
-        "hostPoolFriendlyName": "[format('Windows10-20H2-Personal-{0}', parameters('location'))]",
+        "hostPoolName": "[format('Windows10-20H2-Ent-Personal-{0}', parameters('location'))]",
+        "hostPoolFriendlyName": "[format('Windows10-20H2-Ent-Personal-{0}', parameters('location'))]",
         "hostPoolDescription": "Windows 10 Enterprise 20H2 Personal desktops",
-        "appGroupName": "[format('Windows10-20H2-Personal-{0}-DAG', parameters('location'))]",
-        "appGroupNameFriendlyName": "[format('Windows10-20H2-Personal-{0}-DAG', parameters('location'))]",
         "hostPoolType": "Personal",
+        "appGroupName": "[format('Windows10-20H2-Ent-Personal-{0}-DAG', parameters('location'))]",
+        "appGroupNameFriendlyName": "[format('Windows10-20H2-Ent-Personal-{0}-DAG', parameters('location'))]",
         "appGroupType": "Desktop"
       }
     },
