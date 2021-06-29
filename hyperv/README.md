@@ -34,3 +34,21 @@ New-OSDCloud.workspace -WorkspacePath C:\Apps\OSDCloud -Verbose
 Edit-OSDCloud.winpe -Wallpaper "C:\Projects\automata\mdt\images\wallpaper.jpg"
 New-OSDCloud.iso
 ```
+
+### Export Autopilot Profiles
+
+Export Windows Autopilot profiles from Microsoft Intune with the following commands:
+
+```powershell
+Install-Module AzureAD -Force
+Install-Module WindowsAutopilotIntune -Force
+Install-Module Microsoft.Graph.Intune -Force
+
+Connect-MSGraph
+
+$Path = "C:\Temp"
+Foreach ($AutopilotProfile in (Get-AutopilotProfile)) {
+    $OutFile = $([System.IO.Path]::Combine($Path, $AutopilotProfile.displayName, "_AutopilotConfigurationFile.json"))
+    $AutopilotProfile | ConvertTo-AutopilotConfigurationJSON | Out-File -FilePath $OutFile -Encoding "ASCII"
+}
+```
