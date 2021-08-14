@@ -29,9 +29,20 @@ Use the [OSDCloud](https://osdcloud.osdeploy.com/) module to install Windows 10 
 Example commands used to create the OSDCloud ISO:
 
 ```powershell
-New-OSDCloud.template -Language "en-GB" -SetAllIntl "en-GB" -SetInputLocale "en-AU"
-New-OSDCloud.workspace -WorkspacePath "E:\OSDCloud" -Verbose
-Edit-OSDCloud.winpe -Wallpaper "C:\Projects\automata\mdt\images\wallpaper.jpg"
+$params = @{
+    Language       = "en-GB"
+    SetAllIntl     = "en-GB"
+    SetInputLocale = "en-AU"
+}
+New-OSDCloud.template @params
+New-OSDCloud.workspace -WorkspacePath "E:\OSDCloud"
+$params = @{
+    CloudDriver      = 'WiFi'
+    StartOSDCloudGUI = $true
+    #StartOSDCloud    = "-OSBuild 21H1 -OSEdition Pro -OSLanguage en-us -OSLicense Retail"
+    Wallpaper        = "C:\Projects\automata\mdt\images\wallpaper.jpg"
+}
+Edit-OSDCloud.winpe @params
 New-OSDCloud.iso
 ```
 
