@@ -33,17 +33,19 @@ $params = @{
     Language       = "en-GB"
     SetAllIntl     = "en-GB"
     SetInputLocale = "en-AU"
+    Public         = $True
 }
-New-OSDCloud.template @params
-New-OSDCloud.workspace -WorkspacePath "E:\OSDCloud"
+New-OSDCloudTemplate @params
+New-OSDCloudWorkspace -WorkspacePath "E:\OSDCloud"
 $params = @{
-    CloudDriver      = 'WiFi'
+    CloudDriver      = 'IntelNet', 'Surface', 'USB', 'WiFi'
     StartOSDCloudGUI = $true
     #StartOSDCloud    = "-OSBuild 21H1 -OSEdition Pro -OSLanguage en-us -OSLicense Retail"
-    Wallpaper        = "C:\Projects\automata\mdt\images\wallpaper.jpg"
+    Wallpaper        = "E:\Temp\wallpaper.jpg"
+    Brand            = "stealthpuppy"
 }
-Edit-OSDCloud.winpe @params
-New-OSDCloud.iso
+Edit-OSDCloudWinPE @params
+New-OSDCloudIso
 ```
 
 ### Export Autopilot Profiles
