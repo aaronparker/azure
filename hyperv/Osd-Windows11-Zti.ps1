@@ -24,7 +24,6 @@ $params = @{
     OSEdition  = "Pro"
     OSLicense  = "Retail"
     ZTI        = $True
-    Restart    = $True
 }
 Start-OSDCloud @params
 
