@@ -30,7 +30,7 @@ Start-OSDCloud @params
 # Restart from WinPE
 Write-Host -ForegroundColor "Cyan" "Restart in 20 seconds."
 for ($i = 1; $i -le 20; $i++ ) {
-    Write-Progress -Activity "Waiting to reboot" -Status "Seconds: $i" -PercentComplete $($i / 20)
+    Write-Progress -Activity "Waiting to reboot" -Status "Seconds: $i" -PercentComplete $($i / 20 * 100)
     Start-Sleep -Seconds 1
 }
 wpeutil reboot
