@@ -19,8 +19,7 @@ Import-Module -Name "OSD" -Force
 Write-Host -ForegroundColor "Cyan" "Start OSDCloud deployment"
 $params = @{
     OSLanguage = "en-US"
-    OSName     = "Windows 11 22H2 x64 Insider Preview 22621.1"
-    #OSName     = "Windows 11 21H2 x64"
+    OSName     = "Windows 10 21H2 x64"
     OSEdition  = "Pro"
     OSLicense  = "Retail"
     ZTI        = $True

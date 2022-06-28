@@ -38,10 +38,11 @@ $params = @{
 New-OSDCloudTemplate @params
 New-OSDCloudWorkspace -WorkspacePath "E:\OSDCloud"
 $params = @{
-    CloudDriver      = 'IntelNet', 'Surface', 'USB', 'WiFi'
+    #CloudDriver      = 'IntelNet', 'Surface', 'USB', 'WiFi'
+    CloudDriver      = 'Surface', 'USB', 'WiFi'
     StartOSDCloudGUI = $true
-    #StartOSDCloud    = "-OSBuild 21H1 -OSEdition Pro -OSLanguage en-us -OSLicense Retail"
-    Wallpaper        = "E:\Temp\wallpaper.jpg"
+    WebPSScript      = "https://raw.githubusercontent.com/aaronparker/azure/main/hyperv/Osd-Windows11-Zti.ps1"
+    #Wallpaper        = "E:\Temp\wallpaper.jpg"
     Brand            = "stealthpuppy"
 }
 Edit-OSDCloudWinPE @params
