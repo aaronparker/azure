@@ -30,23 +30,20 @@ Example commands used to create the OSDCloud ISO:
 
 ```powershell
 $params = @{
+    Name           = "OSD"
     Language       = "en-GB"
     SetAllIntl     = "en-GB"
     SetInputLocale = "en-AU"
-    Public         = $True
 }
 New-OSDCloudTemplate @params
 New-OSDCloudWorkspace -WorkspacePath "E:\OSDCloud"
 $params = @{
-    #CloudDriver      = 'IntelNet', 'Surface', 'USB', 'WiFi'
     CloudDriver      = 'Surface', 'USB', 'WiFi'
     StartOSDCloudGUI = $true
-    WebPSScript      = "https://raw.githubusercontent.com/aaronparker/azure/main/hyperv/Osd-Windows11-Zti.ps1"
-    #Wallpaper        = "E:\Temp\wallpaper.jpg"
     Brand            = "stealthpuppy"
 }
 Edit-OSDCloudWinPE @params
-New-OSDCloudIso
+New-OSDCloudISO
 ```
 
 ### Export Autopilot Profiles
