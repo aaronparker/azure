@@ -15,12 +15,9 @@
     Twitter: @stealthpuppy
 #>
 [CmdletBinding()]
-param (
-    [Parameter(Mandatory = $false)]
-    [System.String] $IsoPath = $env:ISO_PATH
-)
+param ()
 
-#region New-LabVM - create a v2 VM with Secure Boot, vTPM etc. enabled
+#region New-LabVM - create a Gen2 VM with Secure Boot, vTPM etc. enabled
 function New-LabVM {
     <#
         .SYNOPSIS
@@ -93,13 +90,13 @@ function New-LabVM {
                         AutomaticStartAction        = "Nothing"
                         AutomaticStopAction         = "ShutDown"
                         CheckpointType              = "Standard"
-                        AutomaticCheckpointsEnabled = $False
-                        DynamicMemory               = $True
+                        AutomaticCheckpointsEnabled = $false
+                        DynamicMemory               = $true
                         #MemoryMaximumBytes   = ""
                         #MemoryMinimumBytes   = ""
                         #MemoryStartupBytes   = ""
                         Notes                       = "Created by New-LabVM. $IsoFile"
-                        PassThru                    = $True
+                        PassThru                    = $true
                         ProcessorCount              = 2
                         #SmartPagingFilePath  = ""
                         #SnapshotFileLocation = ""
@@ -112,10 +109,10 @@ function New-LabVM {
                         $params = @{
                             VM       = $NewVM
                             Path     = $IsoFile
-                            PassThru = $True
+                            PassThru = $true
                         }
                         $DvdDrive = Add-VMDvdDrive @params
-                        if ($Null -ne $DvdDrive ) {
+                        if ($null -ne $DvdDrive ) {
                             $params = @{
                                 VM              = $NewVM
                                 FirstBootDevice = $DvdDrive
@@ -141,7 +138,7 @@ function New-LabVM {
                             Enable-VMTPM -VM $NewVM
                         }
                         catch {
-                            Write-Warning -Message "Unable to add virtual TPM. Create one VM with a vTPM manually, and try again."
+                            Write-Warning -Message "Unable to add virtual TPM. Create one VM with a vTPM manually and try again."
                         }
                     }
                     #endregion
@@ -235,12 +232,14 @@ function Remove-LabVM {
 #endregion
 
 # Populate dynamic parameter set - tab completion for ISO files
-try {
-    $ScriptBlock = { Get-ChildItem -Path $IsoPath -Filter "*.iso" -Recurse | Select-Object -ExpandProperty "FullName" | ForEach-Object { "`"$_`"" } }
-    Register-ArgumentCompleter -CommandName "New-LabVM" -ParameterName "IsoFile" -ScriptBlock $ScriptBlock
-}
-catch {
-    throw $_
+if (Test-Path -Path "env:ISO_PATH") {
+    try {
+        $ScriptBlock = { Get-ChildItem -Path $env:ISO_PATH -Filter "*.iso" -Recurse | Select-Object -ExpandProperty "FullName" | ForEach-Object { "`"$_`"" } }
+        Register-ArgumentCompleter -CommandName "New-LabVM" -ParameterName "IsoFile" -ScriptBlock $ScriptBlock
+    }
+    catch {
+        throw $_
+    }
 }
 
 # Populate dynamic parameter set - tab completion for existing VM names
