@@ -24,9 +24,6 @@ function New-LabVM {
         [System.String] $IsoFile = "E:\ISOs\Microsoft\Windows 11\en-us_windows_11_business_editions_version_22h2_updated_sep_2022_x64_dvd_840da535.iso",
 
         [Parameter(Mandatory = $false)]
-        [System.String] $IsoPath = "E:\ISOs",
-
-        [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter] $Connect
     )
 
@@ -228,7 +225,7 @@ function Remove-LabVM {
 
 # Populate dynamic parameter set - tab completion for ISO files
 try {
-    $ScriptBlock = { Get-ChildItem -Path $IsoPath -Filter "*.iso" -Recurse | Select-Object -ExpandProperty "FullName" | ForEach-Object { "`"$_`"" } }
+    $ScriptBlock = { Get-ChildItem -Path "E:\ISOs" -Filter "*.iso" -Recurse | Select-Object -ExpandProperty "FullName" | ForEach-Object { "`"$_`"" } }
     Register-ArgumentCompleter -CommandName "New-LabVM" -ParameterName "IsoFile" -ScriptBlock $ScriptBlock
 }
 catch {
