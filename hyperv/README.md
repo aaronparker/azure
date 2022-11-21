@@ -1,6 +1,10 @@
 # Create Hyper-V VMs
 
-`VirtualMachineManagement.psm1` includes functions to create local VMs on Hyper-V, configured with a vTPM and Secure Boot etc., required for testing scenarios.
+`VirtualMachineManagement.psm1` includes functions to create local VMs on Hyper-V, configured with a vTPM and Secure Boot etc., required for testing scenarios.Import the functions via the following command which could be added to your [PowerShell profile](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles):
+
+```powershell
+Import-Module -Name .\VirtualMachineManagement.psm1
+```
 
 `New-LabVM` - creates a new lab VM. Provide a VM name with `-Name`, and a ISO file with `-IsoFile` to create the VM and attach the target ISO to it. The new VM will be created with these properties:
 
