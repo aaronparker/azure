@@ -2,12 +2,23 @@
     .SYNOPSIS
     Wrappers for managing virtual machines on Hyper-V
 
+    Set a path to ISO files used to installing an OS into a VM in the system environment variable 'ISO_PATH'.
+
+    Set the variable and value via the following command, then restart the PowerShell session before running New-LabVM:
+
+    ```powershell
+    [System.Environment]::SetEnvironmentVariable("ISO_PATH", "E:\ISOs", "Machine")
+    ```
+
     .NOTES
     Author: Aaron Parker
     Twitter: @stealthpuppy
 #>
 [CmdletBinding()]
-param ()
+param (
+    [Parameter(Mandatory = $false)]
+    [System.String] $IsoPath = $env:ISO_PATH
+)
 
 #region New-LabVM - create a v2 VM with Secure Boot, vTPM etc. enabled
 function New-LabVM {
@@ -185,7 +196,7 @@ function Remove-LabVM {
                 }
             }
             if ((Get-VMSnapshot -VM $VM | Measure-Object).Count -gt 0) {
-                Get-VMSnapshot -VM $VM | ForEach-Object { Write-Information -MessageData "Found snapshot: `"$($_.Name)`"." -InformationAction "Continue"}
+                Get-VMSnapshot -VM $VM | ForEach-Object { Write-Information -MessageData "Found snapshot: `"$($_.Name)`"." -InformationAction "Continue" }
 
                 if ($PSCmdlet.ShouldProcess("Remove-VMSnapshot will remove all snapshots.", $($VM.Name), "Remove-VMSnapshot")) {
                     Remove-VMSnapshot -VM $VM
@@ -225,7 +236,7 @@ function Remove-LabVM {
 
 # Populate dynamic parameter set - tab completion for ISO files
 try {
-    $ScriptBlock = { Get-ChildItem -Path "E:\ISOs" -Filter "*.iso" -Recurse | Select-Object -ExpandProperty "FullName" | ForEach-Object { "`"$_`"" } }
+    $ScriptBlock = { Get-ChildItem -Path $IsoPath -Filter "*.iso" -Recurse | Select-Object -ExpandProperty "FullName" | ForEach-Object { "`"$_`"" } }
     Register-ArgumentCompleter -CommandName "New-LabVM" -ParameterName "IsoFile" -ScriptBlock $ScriptBlock
 }
 catch {
