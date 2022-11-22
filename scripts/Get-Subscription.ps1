@@ -29,7 +29,7 @@ If (!(Get-Module -ListAvailable Az)) {
 }
 
 # Get credentials
-If ($Password) { 
+If ($Password) {
     Write-Verbose "Creating a credential object with $Username."
     $securePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
     $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $securePassword

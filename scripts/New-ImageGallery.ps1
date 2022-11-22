@@ -28,4 +28,3 @@ $imageDefinition = New-AzGalleryImageDefinition `
     -Offer 'Windows-10' `
     -Sku '20h2-ent-wvd'
 
-   

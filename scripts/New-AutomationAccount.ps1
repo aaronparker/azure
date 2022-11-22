@@ -14,9 +14,9 @@ if (!$GetKeyVault) {
 
     Write-Warning -Message "Key Vault not found. Creating the Key Vault $keyVaultName"
 
-    $keyValut = New-AzKeyVault -VaultName $keyVaultName -ResourceGroupName $ResourceGroupName -Location $Location
+    $KeyVault = New-AzKeyVault -VaultName $keyVaultName -ResourceGroupName $ResourceGroupName -Location $Location
 
-    if (!$keyValut) {
+    if (!$KeyVault) {
         Write-Error -Message "Key Vault $keyVaultName creation failed. Please fix and continue"
         return
     }
@@ -50,7 +50,7 @@ While ($AddAzureKeyVaultCertificateStatus.Status -eq "inProgress") {
 }
 
 if ($AddAzureKeyVaultCertificateStatus.Status -ne "completed") {
-    Write-Error -Message "Key vault cert creation is not sucessfull and its status is: $status.Status"
+    Write-Error -Message "Key vault cert creation is not successful and its status is: $($status.Status)"
 }
 
 $secretRetrieved = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name $certificateName
@@ -87,7 +87,7 @@ Start-Sleep -s 15
 
 $NewRole = $null
 $Retries = 0;
-While ($NewRole -eq $null -and $Retries -le 6) {
+While ($null -eq $NewRole -and $Retries -le 6) {
     New-AzRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $Application.ApplicationId -Scope ("/subscriptions/" + $subscriptionId) -ErrorAction SilentlyContinue
     Start-Sleep -s 10
     $NewRole = Get-AzRoleAssignment -ServicePrincipalName $Application.ApplicationId -ErrorAction SilentlyContinue

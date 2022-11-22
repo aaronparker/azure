@@ -69,7 +69,7 @@ resource vnet1 'Microsoft.Network/virtualNetworks@2018-10-01' = {
           addressPrefix: vnet1cfg.subnet2Prefix
           networkSecurityGroup: {
             id: vnet1nsg2.id
-          }          
+          }
         }
       }
       {

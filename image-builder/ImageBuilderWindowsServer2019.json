@@ -67,7 +67,7 @@
                 "type": "WindowsRestart",
                 "restartCheckCommand": "",
                 "restartTimeout": "5m"
-            }            
+            }
         ],
         "distribute": [
             {

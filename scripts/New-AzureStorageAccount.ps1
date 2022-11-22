@@ -92,9 +92,9 @@ $params = @{
 
 
 #region Join to domain
-# Register the target storage account with your active directory environment under the target OU (for example: specify the OU with Name as "UserAccounts" or DistinguishedName as "OU=UserAccounts,DC=CONTOSO,DC=COM"). 
+# Register the target storage account with your active directory environment under the target OU (for example: specify the OU with Name as "UserAccounts" or DistinguishedName as "OU=UserAccounts,DC=CONTOSO,DC=COM").
 # You can use to this PowerShell cmdlet: Get-ADOrganizationalUnit to find the Name and DistinguishedName of your target OU. If you are using the OU Name, specify it with -OrganizationalUnitName as shown below. If you are using the OU DistinguishedName, you can set it with -OrganizationalUnitDistinguishedName. You can choose to provide one of the two names to specify the target OU.
-# You can choose to create the identity that represents the storage account as either a Service Logon Account or Computer Account (default parameter value), depends on the AD permission you have and preference. 
+# You can choose to create the identity that represents the storage account as either a Service Logon Account or Computer Account (default parameter value), depends on the AD permission you have and preference.
 # Run Get-Help Join-AzStorageAccountForAuth for more details on this cmdlet.
 # If you don't provide the OU name as an input parameter, the AD identity that represents the storage account is created under the root directory.
 
@@ -102,7 +102,7 @@ $params = @{
     ResourceGroupName                   = $ResourceGroups.Infrastructure
     StorageAccountName                  = ("$($ShortOrgName)fslogix$($ShortLocation)").ToLower()
     DomainAccountType                   = "ComputerAccount"
-    OrganizationalUnitDistinguishedName = "OU=Services,OU=stealthpuppy,DC=home,DC=stealthpuppy,DC=com" 
+    OrganizationalUnitDistinguishedName = "OU=Services,OU=stealthpuppy,DC=home,DC=stealthpuppy,DC=com"
 }
 Join-AzStorageAccountForAuth @params
 
@@ -142,7 +142,7 @@ ForEach ($item in $FileShares.GetEnumerator()) {
 }
 #endregion
 
-#region 
+#region
 <#
 SET Folder="\\stpyfslogixause.file.core.windows.net\fslogixcontainers\Profile"
 SET Folder="\\stpyfslogixause.file.core.windows.net\fslogixcontainers\Office"

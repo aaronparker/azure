@@ -36,7 +36,7 @@ ForEach ($subscription in $subscriptions) {
 
     # For each Resource apply the Tag of the Resource Group
     Foreach ($resource in $Resources) {
-        
+
         # Get resources in the group
         $resourceid = $resource.resourceId
         $Tags = (Get-AzResourceGroup -Name $ResourceGroupName).Tags
@@ -47,7 +47,7 @@ ForEach ($subscription in $subscriptions) {
         }
         Else {
             $TagsFinal = @{ }
-            $TagsFinal = $Tags                  
+            $TagsFinal = $Tags
             Foreach ($resourcetag in $resource.Tags.GetEnumerator()) {
                 If ($Tags.Keys -inotcontains $resourcetag.Key) {
                     Write-Host "Key doesn't exist in RG Tags adding to Hash Table" $resourcetag
@@ -56,6 +56,6 @@ ForEach ($subscription in $subscriptions) {
             }
             Write-Host "Applying the following Tags to $($resourceid)" $TagsFinal
             Set-AzResource -ResourceId $resourceid -Tag $TagsFinal -Force
-        }   
+        }
     }
 }

@@ -43,11 +43,13 @@ function New-LabVM {
             if ($null -eq $VM) {
 
                 #region Get host properties
-                $VMSwitch = Get-VMSwitch | Where-Object { $_.SwitchType -eq "External" } | Select-Object -First 1
-                if ($null -eq $VMSwitch) {
+                try {
+                    $VMSwitch = Get-VMSwitch | Where-Object { $_.SwitchType -eq "External" } | Select-Object -First 1
+                }
+                catch {
                     $VMSwitch = Get-VMSwitch | Select-Object -First 1
                 }
-                if ($null -eq $VMSwitch) { Write-Error -Message "Unable to determine external network."; Break }
+                if ($null -eq $VMSwitch) { Write-Error -Message "Unable to determine external network."; break }
                 $VMHost = Get-VMHost
                 #endregion
 
