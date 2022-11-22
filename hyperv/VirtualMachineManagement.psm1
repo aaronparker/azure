@@ -241,6 +241,9 @@ if (Test-Path -Path "env:ISO_PATH") {
         throw $_
     }
 }
+else {
+    Write-Information -MessageData "'ISO_PATH' environment variable not defined. Tab completion for ISO files will not be enabled." -InformationAction "Continue"
+}
 
 # Populate dynamic parameter set - tab completion for existing VM names
 try {
