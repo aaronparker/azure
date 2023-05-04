@@ -1,3 +1,4 @@
+using namespace System.Management.Automation
 <#
     .SYNOPSIS
     Wrappers for managing virtual machines on Hyper-V
@@ -14,8 +15,35 @@
     Author: Aaron Parker
     Twitter: @stealthpuppy
 #>
-[CmdletBinding()]
-param ()
+
+function Write-Msg {
+    [CmdletBinding()]
+    param(
+        [System.String[]] $Msg
+    )
+    process {
+        foreach ($String in $Msg) {
+            $Message = [HostInformationMessage]@{
+                Message         = "[$(Get-Date -Format 'dd.MM.yyyy HH:mm:ss')]"
+                ForegroundColor = "Black"
+                BackgroundColor = "DarkCyan"
+                NoNewline       = $true
+            }
+            $params = @{
+                MessageData       = $Message
+                InformationAction = "Continue"
+                Tags              = "Microsoft365"
+            }
+            Write-Information @params
+            $params = @{
+                MessageData       = " $String"
+                InformationAction = "Continue"
+                Tags              = "Microsoft365"
+            }
+            Write-Information @params
+        }
+    }
+}
 
 #region New-LabVM - create a Gen2 VM with Secure Boot, vTPM etc. enabled
 function New-LabVM {
@@ -23,15 +51,25 @@ function New-LabVM {
         .SYNOPSIS
             Creates a new VM on the local Hyper-V host
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $false, ConfirmImpact = "Low")]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = "NewVM")]
+        [Parameter(Mandatory = $true, ParameterSetName = "TemplateVM")]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false, ParameterSetName = "NewVM")]
+        [ValidateScript({ if (Test-Path -Path $_ -PathType "Leaf") { $true } else { throw "Path not found: '$_'" } })]
+        [ValidateNotNullOrEmpty()]
         [System.String] $IsoFile = "E:\ISOs\Microsoft\Windows 11\en-us_windows_11_business_editions_version_22h2_updated_sep_2022_x64_dvd_840da535.iso",
 
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true, ParameterSetName = "TemplateVM")]
+        [ValidateScript({ if (Test-Path -Path $_ -PathType "Leaf") { $true } else { throw "Path not found: '$_'" } })]
+        [ValidateNotNullOrEmpty()]
+        [System.String] $TemplateDisk,
+
+        [Parameter(Mandatory = $true, ParameterSetName = "NewVM")]
+        [Parameter(Mandatory = $true, ParameterSetName = "TemplateVM")]
         [System.Management.Automation.SwitchParameter] $Connect
     )
 
@@ -43,13 +81,12 @@ function New-LabVM {
             if ($null -eq $VM) {
 
                 #region Get host properties
-                try {
-                    $VMSwitch = Get-VMSwitch | Where-Object { $_.SwitchType -eq "External" } | Select-Object -First 1
-                }
-                catch {
+                $VMSwitch = Get-VMSwitch | Where-Object { $_.SwitchType -eq "External" } | Select-Object -First 1
+                if ($null -eq $VMSwitch) {
                     $VMSwitch = Get-VMSwitch | Select-Object -First 1
                 }
                 if ($null -eq $VMSwitch) { Write-Error -Message "Unable to determine external network."; break }
+                Write-Msg -Msg "Using switch '$($VMSwitch.Name)'"
                 $VMHost = Get-VMHost
                 #endregion
 
@@ -59,11 +96,23 @@ function New-LabVM {
                     break
                 }
                 $NewVHDPath = Join-Path -Path $VMHost.VirtualHardDiskPath  -ChildPath "$VMName.VHDX"
+                Write-Msg -Msg "New VHD path is: '$NewVHDPath'"
                 #endregion
+
+                if ($PSBoundParameters.ContainsKey("TemplateDisk")) {
+                    Write-Msg -Msg "Copy '$TemplateDisk' to '$NewVHDPath'"
+                    $params = @{
+                        Path        = $TemplateDisk
+                        Destination = $NewVHDPath
+                        ErrorAction = "Stop"
+                    }
+                    Copy-Item @params
+                    Write-Msg -Msg "Copy template disk complete."
+                }
 
                 #region Create the new VM
                 if (Test-Path -Path $NewVHDPath) {
-                    Write-Information -MessageData "Attaching existing virtual hard disk: $NewVHDPath." -InformationAction "Continue"
+                    Write-Msg -Msg "Attaching existing virtual hard disk: $NewVHDPath."
                     $params = @{
                         Name               = $VMName
                         MemoryStartupBytes = 4GB
@@ -107,23 +156,25 @@ function New-LabVM {
                     #endregion
 
                     #region Add MDT boot ISO; set DVD as boot device
-                    if (Test-Path -Path $IsoFile) {
-                        $params = @{
-                            VM       = $NewVM
-                            Path     = $IsoFile
-                            PassThru = $true
-                        }
-                        $DvdDrive = Add-VMDvdDrive @params
-                        if ($null -ne $DvdDrive ) {
+                    if ($PSBoundParameters.ContainsKey("IsoFile")) {
+                        if (Test-Path -Path $IsoFile) {
                             $params = @{
-                                VM              = $NewVM
-                                FirstBootDevice = $DvdDrive
+                                VM       = $NewVM
+                                Path     = $IsoFile
+                                PassThru = $true
                             }
-                            Set-VMFirmware @params
+                            $DvdDrive = Add-VMDvdDrive @params
+                            if ($null -ne $DvdDrive ) {
+                                $params = @{
+                                    VM              = $NewVM
+                                    FirstBootDevice = $DvdDrive
+                                }
+                                Set-VMFirmware @params
+                            }
                         }
-                    }
-                    else {
-                        Write-Warning -Message "Failed to find ISO: $IsoFile. Cannot add DVD drive to VM."
+                        else {
+                            Write-Warning -Message "Failed to find ISO: $IsoFile. Cannot add DVD drive to VM."
+                        }
                     }
                     #endregion
 
@@ -149,7 +200,7 @@ function New-LabVM {
                 }
             }
             else {
-                Write-Information -MessageData "Virtual machine already exists: $VMName. Skipping." -InformationAction "Continue"
+                Write-Msg -Msg "Virtual machine already exists: $VMName. Skipping."
             }
 
             # Open a connection to the new VM
@@ -170,6 +221,7 @@ function Remove-LabVM {
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "High")]
     param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $VMName
     )
 
@@ -195,7 +247,7 @@ function Remove-LabVM {
                 }
             }
             if ((Get-VMSnapshot -VM $VM | Measure-Object).Count -gt 0) {
-                Get-VMSnapshot -VM $VM | ForEach-Object { Write-Information -MessageData "Found snapshot: `"$($_.Name)`"." -InformationAction "Continue" }
+                Get-VMSnapshot -VM $VM | ForEach-Object { Write-Msg -Msg "Found snapshot: `"$($_.Name)`"." -InformationAction "Continue" }
 
                 if ($PSCmdlet.ShouldProcess("Remove-VMSnapshot will remove all snapshots.", $($VM.Name), "Remove-VMSnapshot")) {
                     Remove-VMSnapshot -VM $VM
@@ -233,7 +285,7 @@ function Remove-LabVM {
 }
 #endregion
 
-# Populate dynamic parameter set - tab completion for ISO files
+#region Populate dynamic parameter set - tab completion for ISO files
 if (Test-Path -Path "env:ISO_PATH") {
     try {
         $ScriptBlock = { Get-ChildItem -Path $env:ISO_PATH -Filter "*.iso" -Recurse | Select-Object -ExpandProperty "FullName" | ForEach-Object { "`"$_`"" } }
@@ -244,7 +296,20 @@ if (Test-Path -Path "env:ISO_PATH") {
     }
 }
 else {
-    Write-Information -MessageData "'ISO_PATH' environment variable not defined. Tab completion for ISO files will not be enabled." -InformationAction "Continue"
+    Write-Msg -Msg "'ISO_PATH' environment variable not defined. Tab completion for ISO files will not be enabled." -InformationAction "Continue"
+}
+
+if (Test-Path -Path "env:TEMPLATE_PATH") {
+    try {
+        $ScriptBlock = { Get-ChildItem -Path $env:TEMPLATE_PATH -Filter "*.vhdx" -Recurse | Select-Object -ExpandProperty "FullName" | ForEach-Object { "`"$_`"" } }
+        Register-ArgumentCompleter -CommandName "New-LabVM" -ParameterName "TemplateDisk" -ScriptBlock $ScriptBlock
+    }
+    catch {
+        throw $_
+    }
+}
+else {
+    Write-Msg -Msg "'TEMPLATE_PATH' environment variable not defined. Tab completion for VHDX files will not be enabled." -InformationAction "Continue"
 }
 
 # Populate dynamic parameter set - tab completion for existing VM names
@@ -255,3 +320,4 @@ try {
 catch {
     throw $_
 }
+#endregion
