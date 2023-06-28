@@ -1,0 +1,25 @@
+{
+    "properties": {
+        "roleName": "Azure Image Builder Service Image Creation Role",
+        "description": "Grants Azure Image Builder permission to work with images and image templates.",
+        "assignableScopes": [
+            "/subscriptions/3fc4c8ac-a2b8-4b39-9729-f1a5eeacbab5/resourceGroups/rg-AvdLabImages-australiaeast"
+        ],
+        "permissions": [
+            {
+                "actions": [
+                    "Microsoft.Compute/galleries/read",
+                    "Microsoft.Compute/galleries/images/read",
+                    "Microsoft.Compute/galleries/images/versions/read",
+                    "Microsoft.Compute/galleries/images/versions/write",
+                    "Microsoft.Compute/images/read",
+                    "Microsoft.Compute/images/write",
+                    "Microsoft.Compute/images/delete"
+                ],
+                "notActions": [],
+                "dataActions": [],
+                "notDataActions": []
+            }
+        ]
+    }
+}
