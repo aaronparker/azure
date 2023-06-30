@@ -1,10 +1,9 @@
 <#
     .SYNOPSIS
-    A script used to export all NSGs rules in all your Azure Subscriptions
+    A script used to export all NSGs rules in all your Azure subscriptions
 
     .DESCRIPTION
-    A script is used to get the list of all Network Security Groups (NSGs) in all your Azure Subscriptions.
-    Finally, it will export the report into a CSV file in your Azure Cloud Shell storage.
+    A script is used to get the list of all Network Security Groups (NSGs) in all your Azure subscriptions.
 
     .NOTES
     Created : 04-January-2021
@@ -14,57 +13,89 @@
     Twitter : @CharbelNemnom
     Blog : https://charbelnemnom.com
     Disclaimer: This script is provided "AS IS" with no warranties.
+
+    Updates: Aaron Parker
 #>
 
-$Path = "$($home)\clouddrive"
-$Path = $PWD
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [ValidateScript({ if ([System.Guid]::TryParse($_, [System.Management.Automation.PSReference]$([System.Guid]::Empty))) { $true } else { throw "Not a GUID." } })]
+    [System.String[]] $Subscription = "3fc4c8ac-a2b8-4b39-9729-f1a5eeacbab5",
 
-#! Check Azure Connection
-try {
-    Connect-AzAccount -ErrorAction "Stop" -WarningAction "SilentlyContinue" | Out-Null
-    $AzSubscription = Set-AzContext -Subscription "6c67f21a-c7fc-4098-8bff-b6f8b4da92ac"
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [System.String[]] $NetworkSecurityGroupName,
+
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [System.String[]] $Path = $PWD
+)
+
+begin {
+    try {
+        # Connect to the tenant
+        Connect-AzAccount -DeviceCode -ErrorAction "Stop"
+    }
+    catch {
+        throw $_
+    }
 }
-catch {
-    throw $_
-}
 
-#! Use the following if you want to select a specific Azure Subscription
-# $AzSubscription = Get-AzSubscription | Out-GridView -PassThru -Title 'Select Azure Subscription'
+process {
+    foreach ($Sub in $Subscription) {
+        try {
+            $AzSubscription = Set-AzContext -Subscription $Sub
+        }
+        catch {
+            throw $_
+        }
 
-foreach ($Subscription in $AzSubscription) {
-    #Set-AzContext -Subscription $Subscription | Out-Null
-    $NetworkSecurityGroups = Get-AzNetworkSecurityGroup | Where-Object { $_.Id -ne $null }
+        foreach ($AzSub in $AzSubscription) {
+            # Create output file name
+            $SubscriptionName = $($($AzSub.Name -split "\(")[0]).Trim()
+            $OutputFile = "$Path\$SubscriptionName-nsg-rules.csv"
 
-    foreach ($Nsg in $NetworkSecurityGroups) {
-        # Export custom rules
-        Get-AzNetworkSecurityRuleConfig -NetworkSecurityGroup $Nsg | `
-            Select-Object @{label = 'NSG Name'; Expression = { $Nsg.Name } }, `
-        @{label = 'NSG Location'; Expression = { $Nsg.Location } }, `
-        @{label = 'Rule Name'; Expression = { $_.Name } }, `
-        @{label = 'Source'; Expression = { $_.SourceAddressPrefix -join "; " } }, `
-        @{label = 'Source Application Security Group'; Expression = { foreach ($Asg in $_.SourceApplicationSecurityGroups) { $Asg.id.Split('/')[-1] } } }, `
-        @{label = 'Source Port Range'; Expression = { $_.SourcePortRange } }, Access, Priority, Direction, `
-        @{label = 'Destination'; Expression = { $_.DestinationAddressPrefix -join "; "} }, `
-        @{label = 'Destination Application Security Group'; Expression = { foreach ($Asg in $_.DestinationApplicationSecurityGroups) { $Asg.id.Split('/')[-1] } } }, `
-        @{label = 'Destination Port Range'; Expression = { $_.DestinationPortRange -join "; " } }, `
-        @{label = 'Resource Group Name'; Expression = { $Nsg.ResourceGroupName } } | `
-            Export-Csv -Path "$Path\$($Subscription.Name)-nsg-rules.csv" -NoTypeInformation -Append -Force
-        # Or you can use the following syntax to export to a single CSV file and to a local folder on your machine
-        # Export-Csv -Path ".\Azure-nsg-rules.csv" -NoTypeInformation -Append -force
+            if ($PSBoundParameters.ContainsKey('Nsg')) {
+                # Get network security groups listed in -NetworkSecurityGroupName
+                $NetworkSecurityGroups = Get-AzNetworkSecurityGroup | Where-Object { $_.Name -in $NetworkSecurityGroupName -and $_.Id -ne $null }
+            }
+            else {
+                # Get all network security groups
+                $NetworkSecurityGroups = Get-AzNetworkSecurityGroup | Where-Object { $_.Id -ne $null }
+            }
 
-        # Export default rules
-        Get-AzNetworkSecurityRuleConfig -NetworkSecurityGroup $Nsg -DefaultRules | `
-            Select-Object @{label = 'NSG Name'; Expression = { $Nsg.Name } }, `
-        @{label = 'NSG Location'; Expression = { $Nsg.Location } }, `
-        @{label = 'Rule Name'; Expression = { $_.Name } }, `
-        @{label = 'Source'; Expression = { $_.SourceAddressPrefix -join "; " } }, `
-        @{label = 'Source Port Range'; Expression = { $_.SourcePortRange } }, Access, Priority, Direction, `
-        @{label = 'Destination'; Expression = { $_.DestinationAddressPrefix -join "; "} }, `
-        @{label = 'Destination Port Range'; Expression = { $_.DestinationPortRange -join "; " } }, `
-        @{label = 'Resource Group Name'; Expression = { $Nsg.ResourceGroupName } } | `
-            Export-Csv -Path "$Path\$($Subscription.Name)-nsg-rules.csv" -NoTypeInformation -Append -Force
+            foreach ($Nsg in $NetworkSecurityGroups) {
+                # Export custom rules
+                Get-AzNetworkSecurityRuleConfig -NetworkSecurityGroup $Nsg | `
+                    Select-Object @{label = 'NSG Name'; Expression = { $Nsg.Name } }, `
+                @{label = 'NSG Location'; Expression = { $Nsg.Location } }, `
+                @{label = 'Rule Name'; Expression = { $_.Name } }, `
+                @{label = 'Source'; Expression = { $_.SourceAddressPrefix -join "; " } }, `
+                @{label = 'Source Application Security Group'; Expression = { foreach ($Asg in $_.SourceApplicationSecurityGroups) { $Asg.id.Split('/')[-1] } } }, `
+                @{label = 'Source Port Range'; Expression = { $_.SourcePortRange } }, "Access", "Priority", "Direction", `
+                @{label = 'Destination'; Expression = { $_.DestinationAddressPrefix -join "; " } }, `
+                @{label = 'Destination Application Security Group'; Expression = { foreach ($Asg in $_.DestinationApplicationSecurityGroups) { $Asg.id.Split('/')[-1] } } }, `
+                @{label = 'Destination Port Range'; Expression = { $_.DestinationPortRange -join "; " } }, `
+                @{label = 'Resource Group Name'; Expression = { $Nsg.ResourceGroupName } } | `
+                    Export-Csv -Path $OutputFile -NoTypeInformation -Append -Force
 
-        # Or you can use the following syntax to export to a single CSV file and to a local folder on your machine
-        # Export-Csv -Path ".\Azure-nsg-rules.csv" -NoTypeInformation -Append -force
+                # Export default rules
+                Get-AzNetworkSecurityRuleConfig -NetworkSecurityGroup $Nsg -DefaultRules | `
+                    Select-Object @{label = 'NSG Name'; Expression = { $Nsg.Name } }, `
+                @{label = 'NSG Location'; Expression = { $Nsg.Location } }, `
+                @{label = 'Rule Name'; Expression = { $_.Name } }, `
+                @{label = 'Source'; Expression = { $_.SourceAddressPrefix -join "; " } }, `
+                @{label = 'Source Port Range'; Expression = { $_.SourcePortRange } }, "Access", "Priority", "Direction", `
+                @{label = 'Destination'; Expression = { $_.DestinationAddressPrefix -join "; " } }, `
+                @{label = 'Destination Port Range'; Expression = { $_.DestinationPortRange -join "; " } }, `
+                @{label = 'Resource Group Name'; Expression = { $Nsg.ResourceGroupName } } | `
+                    Export-Csv -Path $OutputFile -NoTypeInformation -Append -Force
+            }
+
+            # Output the output file name
+            Write-Output -InputObject (Get-ChildItem -Path $OutputFile)
+        }
     }
 }
