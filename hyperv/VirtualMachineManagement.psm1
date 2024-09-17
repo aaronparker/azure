@@ -240,6 +240,7 @@ function Remove-LabVM {
     process {
         # Retrieve the target VM
         try {
+            Write-Msg -Msg "Retrieve VM: $VMName."
             $VM = Get-VM -Name $VMName
         }
         catch {
@@ -249,6 +250,7 @@ function Remove-LabVM {
         if ($null -ne $VM) {
             if ($VM.State -ne [Microsoft.HyperV.PowerShell.VMState]::Off) {
                 if ($PSCmdlet.ShouldProcess("Stop-VM will shut down the virtual machine `"$($VM.Name)`".", $($VM.Name), "Stop-VM")) {
+                    Write-Msg -Msg "Stopping VM: $VMName."
                     Stop-VM -VM $VM -TurnOff -Force
                 }
             }
@@ -256,6 +258,7 @@ function Remove-LabVM {
                 Get-VMSnapshot -VM $VM | ForEach-Object { Write-Msg -Msg "Found snapshot: `"$($_.Name)`"." -InformationAction "Continue" }
 
                 if ($PSCmdlet.ShouldProcess("Remove-VMSnapshot will remove all snapshots.", $($VM.Name), "Remove-VMSnapshot")) {
+                    Write-Msg -Msg "Remove all snapshots."
                     Remove-VMSnapshot -VM $VM
 
                     # wait until Hyper-V has processed all checkpoints
@@ -278,12 +281,14 @@ function Remove-LabVM {
             # Delete hard drives
             Get-VHD -VMId $VM.Id | ForEach-Object {
                 if ($PSCmdlet.ShouldProcess("Remove-Item will remove virtual hard disk: `"$($_.Path)`".", $($_.Path), "Remove-Item")) {
+                    Write-Msg -Msg "Remove virtual hard disk: $($_.Path)."
                     $_.Path | Remove-Item
                 }
             }
 
             # finally delete the vm
             if ($PSCmdlet.ShouldProcess("Remove-VM will remove virtual machine `"$($VM.Name)`".", $($VM.Name), "Remove-VM")) {
+                Write-Msg -Msg "Remove VM: $VMName."
                 Remove-VM -VM $VM -Force
             }
         }
