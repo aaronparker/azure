@@ -1,15 +1,13 @@
 using namespace System.Management.Automation
 <#
     .SYNOPSIS
-    Wrappers for managing virtual machines on Hyper-V
+    Wrappers for managing virtual machines on Hyper-V.
 
     Set a path to ISO files used to installing an OS into a VM in the system environment variable 'ISO_PATH'.
 
     Set the variable and value via the following command, then restart the PowerShell session before running New-LabVM:
 
-    ```powershell
     [System.Environment]::SetEnvironmentVariable("ISO_PATH", "E:\ISOs", "Machine")
-    ```
 
     .NOTES
     Author: Aaron Parker
@@ -122,6 +120,7 @@ function New-LabVM {
                     }
                 }
                 else {
+                    Write-Msg -Msg "Create VM with virtual hard disk: $NewVHDPath."
                     $params = @{
                         Name               = $VMName
                         MemoryStartupBytes = 4GB
@@ -131,6 +130,7 @@ function New-LabVM {
                         SwitchName         = $VMSwitch.Name
                     }
                 }
+                Write-Msg -Msg "Create VM: $VMName."
                 $NewVM = New-VM @params
                 #endregion
 
@@ -152,6 +152,7 @@ function New-LabVM {
                         #SmartPagingFilePath  = ""
                         #SnapshotFileLocation = ""
                     }
+                    Write-Msg -Msg "Configure start / stop actions, checkpoint settings."
                     $NewVM = Set-VM @params
                     #endregion
 
@@ -163,12 +164,14 @@ function New-LabVM {
                                 Path     = $IsoFile
                                 PassThru = $true
                             }
+                            Write-Msg -Msg "Attach ISO: $IsoFile."
                             $DvdDrive = Add-VMDvdDrive @params
                             if ($null -ne $DvdDrive ) {
                                 $params = @{
                                     VM              = $NewVM
                                     FirstBootDevice = $DvdDrive
                                 }
+                                Write-Msg -Msg "Set DVD as first boot device."
                                 Set-VMFirmware @params
                             }
                         }
@@ -181,12 +184,15 @@ function New-LabVM {
                     #region Enable vTPM
                     $HgsGuardian = Get-HgsGuardian -Name UntrustedGuardian
                     if ($HgsGuardian) {
+                        Write-Msg -Msg "Create key protector."
                         $KeyProtector = New-HgsKeyProtector -Owner $HgsGuardian -AllowUntrustedRoot
                         Set-VMKeyProtector -VM $NewVM -KeyProtector $KeyProtector.RawData
+                        Write-Msg -Msg "Enable TPM."
                         Enable-VMTPM -VM $NewVM
                     }
                     else {
                         try {
+                            Write-Msg -Msg "Enable TPM."
                             Set-VMKeyProtector -VM $NewVM -NewLocalKeyProtector
                             Enable-VMTPM -VM $NewVM
                         }
@@ -260,7 +266,7 @@ function Remove-LabVM {
                     while ($true) {
                         try {
                             if (& $all (Get-VHD -VMId $VM.Id) { [System.String]::IsNullOrWhiteSpace($_.ParentPath) }) {
-                                break;
+                                break
                             }
                         }
                         catch { }
@@ -288,7 +294,9 @@ function Remove-LabVM {
 #region Populate dynamic parameter set - tab completion for ISO files
 if (Test-Path -Path "env:ISO_PATH") {
     try {
-        $ScriptBlock = { Get-ChildItem -Path $env:ISO_PATH -Filter "*.iso" -Recurse | Select-Object -ExpandProperty "FullName" | ForEach-Object { "`"$_`"" } }
+        $ScriptBlock = { Get-ChildItem -Path $env:ISO_PATH -Filter "*.iso" -Recurse | `
+                Select-Object -ExpandProperty "FullName" | `
+                ForEach-Object { "`"$_`"" } }
         Register-ArgumentCompleter -CommandName "New-LabVM" -ParameterName "IsoFile" -ScriptBlock $ScriptBlock
     }
     catch {
